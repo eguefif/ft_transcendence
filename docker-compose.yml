@@ -7,11 +7,10 @@ services:
       - .env
     ports:
       - "80:80"
+      - "443:443"
     networks:
       - transcendence-net
-    restart: on-failure
-    volumes:
-      - wordpress-vol:/var/www/wp
+        #restart: on-failure
 
   postgres:
     image: postgres:latest

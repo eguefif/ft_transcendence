@@ -1,12 +1,13 @@
-FROM nginx:latest
+FROM nginx:1.25.3-bookworm
 
+RUN apt-get update && apt-get upgrade
+RUN apt-get install -y openssl
 
 ADD ./conf/default.conf /etc/nginx/nginx.conf
-#COPY ./tools/entry-point.sh /
-#RUN chmod +x /entry-point.sh
-COPY ./html/* /var/www/html
+COPY ./tools/entry-point.sh /
+RUN chmod +x /entry-point.sh
+COPY ./html/* /var/www/
 
-EXPOSE 443
 
-#ENTRYPOINT ["/entry-point.sh"]
-CMD ["nginx", "-g", "daemon off;"]
+ENTRYPOINT ["/entry-point.sh"]
+#CMD ["tail", "-f", "/dev/null"]
