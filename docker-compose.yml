@@ -1,0 +1,34 @@
+version: '3'
+services:
+  nginx:
+    container_name: nginx
+    build: ./nginx/
+    env_file:
+      - .env
+    ports:
+      - "80:80"
+    networks:
+      - transcendence-net
+    restart: on-failure
+    volumes:
+      - wordpress-vol:/var/www/wp
+
+  postgres:
+    image: postgres:latest
+    container_name: postgres
+    env_file:
+      - .env
+    volumes:
+      - postgres-vol:/var/lib/postgresql/data
+    networks:
+      - transcendence-net
+    restart: unless-stopped
+
+volumes:
+  postgres-vol:
+    name: postgres-vol
+
+networks:
+  transcendence-net:
+    name: transcendence-net
+    driver: bridge
