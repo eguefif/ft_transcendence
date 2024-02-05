@@ -1,4 +1,6 @@
 
+path=$(shell pwd)/
+
 all:
 	docker compose up
 

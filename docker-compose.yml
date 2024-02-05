@@ -10,7 +10,9 @@ services:
       - "443:443"
     networks:
       - transcendence-net
-        #restart: on-failure
+    volumes:
+      - nginx-vol:/var/www/
+    restart: on-failure
 
   postgres:
     image: postgres:latest
@@ -26,6 +28,13 @@ services:
 volumes:
   postgres-vol:
     name: postgres-vol
+  nginx-vol:
+    name: nginx-vol
+    driver: local
+    driver_opts:
+      type: none
+      o: bind
+      device: "./nginx/www/"
 
 networks:
   transcendence-net:
