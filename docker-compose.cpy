@@ -13,7 +13,7 @@ services:
     networks:
       - transcendence-net
     volumes:
-      - ./nginx/www:/var/www/
+      - nginx-vol:/var/www/
     restart: on-failure
 
   django:
@@ -28,7 +28,7 @@ services:
     networks:
       - transcendence-net
     volumes:
-      - ./django/transcendence:/usr/src/app
+      - django-vol:/usr/src/app
 
   postgres:
     image: postgres:latest
@@ -36,7 +36,7 @@ services:
     env_file:
       - .env
     volumes:
-      - postgres-vol:/var/lib/postgresql/data/
+      - postgres-vol:/var/lib/postgresql/data
     networks:
       - transcendence-net
     restart: unless-stopped
@@ -46,8 +46,18 @@ volumes:
     name: postgres-vol
   nginx-vol:
     name: nginx-vol
+    driver: local
+    driver_opts:
+      type: none
+      o: bind
+      device: ./nginx/www
   django-vol:
     name: django-vol
+    driver: local
+    driver_opts:
+      type: none
+      o: bind
+      device: ./django/transcendence
 
 networks:
   transcendence-net:
