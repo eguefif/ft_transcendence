@@ -9,6 +9,9 @@ clean:
 	docker compose down
 	docker compose up --build
 
+rmvol:
+	docker volume rm postgres-vol
+
 removeAll:
 	@cp ./.env ./django/transcendence/transcendence/
 	docker compose down
