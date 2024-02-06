@@ -21,7 +21,7 @@ services:
     build: ./django
     env_file:
       - .env
-    expose:
+    ports:
       - 8000
     depends_on:
       - postgres

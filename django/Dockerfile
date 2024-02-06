@@ -16,6 +16,4 @@ RUN mkdir -p /usr/src/app
 expose 8000
 
 WORKDIR /usr/src/app/
-#CMD ["tail", "-f", "/dev/null"]
-#CMD ["/entry-point.sh"]
-CMD ["python3", "./manage.py", "runserver"]
+CMD ["python3", "./manage.py", "runserver", "0.0.0.0:8000"]
