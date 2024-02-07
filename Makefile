@@ -1,4 +1,4 @@
-all: checks
+all: 
 	cp .env ./django/transcendence/transcendence
 	docker compose up;\
 
@@ -11,7 +11,7 @@ install: checks
 	cp .env ./django/transcendence/transcendence
 	docker compose up --build
 
-rebuild: checks
+rebuild:
 	docker compose down
 	cp .env ./django/transcendence/transcendence
 	docker compose up --build
@@ -23,7 +23,7 @@ rmnetwork:
 	docker network rm transcendence-net
 
 rmcontainer:
-	docker ps -qa | xargs docker rm
+	docker rm nginx django postgres
 
 removeAll:
 	docker compose down
