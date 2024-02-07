@@ -9,11 +9,9 @@ RUN rm /requirements.txt
 
 RUN mkdir -p /usr/src
 RUN mkdir -p /usr/src/app
-COPY ./.env /usr/src/app/transcendence/
+COPY ./tools/entry-point.sh /
+RUN chmod +x entry-point.sh
 
 expose 8000
 
-WORKDIR /usr/src/app/
-CMD ["python3", "./manage.py", "makemigrations"]
-CMD ["python3", "./manage.py", "migrate"]
-CMD ["python3", "./manage.py", "runserver", "0.0.0.0:8000"]
+CMD ["./entry-point.sh"]

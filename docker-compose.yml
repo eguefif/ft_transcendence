@@ -3,6 +3,7 @@ services:
   nginx:
     container_name: nginx
     build: ./nginx/
+    image: nginx-transcedence
     env_file:
       - .env
     ports:
@@ -19,6 +20,7 @@ services:
   django:
     container_name: django
     build: ./django
+    image: django-transcendence
     env_file:
       - .env
     expose:
