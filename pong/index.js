@@ -4,6 +4,7 @@ const player1 = 1;
 const player2 = 2;
 const paddle_margin_x = 15;
 const paddle_margin_y = 10
+const paddle_speed = 3;
 
 class Vector {
     constructor(x, y){
@@ -24,43 +25,37 @@ class Vector {
 class Paddle {
     constructor(player)
     {
-        // this.height = height;
-        // this.width = width;
         this.y = board.height / 2;
-        this.paddleHeight = 60;
-        this.top = this.y + (this.paddleHeight / 2);
-        this.bottom = this.y - (this.paddleHeight / 2);
+        this.halfPaddleHeight = 30;
+        this.top = this.y + this.halfPaddleHeight;
+        this.bottom = this.y - this.halfPaddleHeight;
         this.move_up = false;
         this.move_down = false;
-        if (player == player1)
-        {
+        if (player == player1)//ASSUMING THERE ARE 2 PLAYERS
             this.x = paddle_margin_x;
-        }
         else if (player == player2)
-        {
             this.x = board.width - paddle_margin_x;
-        }
     }
 
     draw(){
-        ctx.moveTo(this.x, this.y - this.paddleHeight / 2);
-        ctx.lineTo(this.x, this.y + this.paddleHeight / 2);
+        ctx.moveTo(this.x, this.top);
+        ctx.lineTo(this.x, this.bottom);
         ctx.stroke();
     }
 
     move(){
-        if (this.y + (paddle_1.paddleHeight / 2)>= board.height - paddle_margin_y)
+        if (this.top >= board.height - paddle_margin_y)
             this.move_down = false;
-        else if (this.y - (paddle_1.paddleHeight / 2) <= paddle_margin_y)
+        else if (this.bottom <= paddle_margin_y)
             this.move_up = false;
 
         if (this.move_up)
-            this.y -= 3;
-        if (this.move_down)
-            this.y += 3;
-        this.top = this.y + (this.paddleHeight / 2);
-        this.bottom = this.y - (this.paddleHeight / 2);
-
+            this.y -= paddle_speed;
+        else if (this.move_down)
+            this.y += paddle_speed;
+        
+        this.top = this.y + this.halfPaddleHeight;
+        this.bottom = this.y - this.halfPaddleHeight;
     }
     loop(){
         this.move();
@@ -69,12 +64,13 @@ class Paddle {
 
 }
 
+//MOST COLLISION LOGIC IS IN HERE
 class Ball {
 
-    constructor(pos_x, pos_y, size, speed, dir, paddle1, paddle2){
-        this.pos_x = pos_x;
-        this.pos_y = pos_y;
-        this.size = size;
+    constructor(x, y, radius, speed, dir, paddle1, paddle2){
+        this.x = x;
+        this.y = y;
+        this.radius = radius;
         this.speed = speed;
         this.dir = dir;
         this.dir.norm();
@@ -83,21 +79,20 @@ class Ball {
     }
     draw(){
         ctx.beginPath();
-        ctx.arc(this.pos_x, this.pos_y, this.size, 0, 2 * Math.PI);
+        ctx.arc(this.x, this.y, this.radius, 0, 2 * Math.PI);
         ctx.stroke();
     }
     move(){
-        // this.dir.norm();
-        this.pos_x += this.speed * this.dir.x;
-        this.pos_y += this.speed * this.dir.y;
+        this.x += this.speed * this.dir.x;
+        this.y += this.speed * this.dir.y;
     }
     checkCollision(){
-        if (this.pos_x <= this.size || this.pos_x >= board.width - this.size)
+        if (this.x <= this.radius || this.x >= board.width - this.radius)
             this.speed = 0;
-        if (this.pos_y <= this.size || this.pos_y >= board.height - this.size)
+        if (this.y <= this.radius || this.y >= board.height - this.radius)
             this.dir.y *= -1;
-        if (((this.pos_x <= paddle_margin_x + this.size) && (this.pos_y < this.paddle_1.top + this.size) && (this.pos_y  > this.paddle_1.bottom  - this.size))
-                || ((this.pos_x >= board.width - paddle_margin_x - this.size) && (this.pos_y  < this.paddle_2.top  + this.size) && (this.pos_y  > this.paddle_2.bottom  - this.size)))
+        if (((this.x <= paddle_margin_x + this.radius) && (this.y < this.paddle_1.top + this.radius) && (this.y  > this.paddle_1.bottom  - this.radius))
+                || ((this.x >= board.width - paddle_margin_x - this.radius) && (this.y  < this.paddle_2.top  + this.radius) && (this.y  > this.paddle_2.bottom  - this.radius)))
             this.dir.x *= -1;
     }
     loop(){
@@ -105,14 +100,6 @@ class Ball {
         this.move();
         this.draw();
     }
-}
-
-function gameloop(){
-    ctx.clearRect(0,0,board.width, board.height);
-    ball.loop();
-    paddle_1.loop();
-    paddle_2.loop();
-    window.requestAnimationFrame(gameloop);
 }
 
 document.addEventListener("keydown", (e) => {
@@ -141,6 +128,13 @@ document.addEventListener("keyup", (e) => {
         paddle_2.move_up = false;
 });
 
+function gameloop(){
+    ctx.clearRect(0,0,board.width, board.height);
+    ball.loop();
+    paddle_1.loop();
+    paddle_2.loop();
+    window.requestAnimationFrame(gameloop);
+}
 
 
 var paddle_1 = new Paddle(player1);
