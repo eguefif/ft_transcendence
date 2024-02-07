@@ -5,13 +5,25 @@ function authRegister()
 		e.preventDefault()
 		const data = new FormData(e.target);
 		const url = e.target.action
-		const username = data.get('username')
-		const email = data.get('email')
-		const password = data.get('password')
 		const body = {
-			'username': username,
-			'email': email,
-			'password': password,
+			'username': data.get('username'),
+			'email': data.get('email'),
+			'password': data.get('password'),
+		}
+		sendRegistrationRequest(url, body)
+	})
+}
+
+function authLogin()
+{
+	const registrationForm = document.querySelector("#loginForm")
+	registrationForm.addEventListener("submit", function(e){
+		e.preventDefault()
+		const data = new FormData(e.target);
+		const url = e.target.action
+		const body = {
+			'username': data.get('username'),
+			'password': data.get('password'),
 		}
 		sendRegistrationRequest(url, body)
 	})
@@ -39,4 +51,7 @@ async function sendRegistrationRequest(url, body)
 	return;
 }
 
-authRegister();
+(function() {
+	authRegister();
+	loginRegister();
+})();

@@ -13,8 +13,6 @@ install: checks
 
 rebuild:
 	docker compose down
-	docker rm nginx django postgres
-	docker rmi nginx-transcendence postgres django-transcendence
 	cp .env ./django/transcendence/transcendence
 	docker compose up --build
 
