@@ -1,6 +1,6 @@
 #!/bin/bash
 
-sleep 3
+sleep 2
 
 cd /usr/src/app
 python3 ./manage.py makemigrations

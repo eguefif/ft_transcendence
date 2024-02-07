@@ -27,7 +27,6 @@ rmcontainer:
 
 removeAll:
 	docker compose down
-	docker network rm transcendence-net
 	docker rmi nginx-transcendence postgres django-transcendence
 
 migrate:
