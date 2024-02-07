@@ -1,6 +1,6 @@
 from django.shortcuts import render
 from django.contrib.auth.models import User
-from rest_framework import status
+from rest_framework import status, permissions
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework.renderers import JSONRenderer
@@ -10,6 +10,7 @@ from register.serializers import UserSerializer
 
 class RegisterView(APIView):
     renderer_classes = [JSONRenderer]
+    permission_classes = (permissions.AllowAny,)
 
     def get(self, requets, format=None):
         users = User.objects.all()

@@ -51,7 +51,5 @@ async function sendRegistrationRequest(url, body)
 	return;
 }
 
-(function() {
-	authRegister();
-	loginRegister();
-})();
+authRegister();
+authLogin();
