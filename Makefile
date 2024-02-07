@@ -2,6 +2,9 @@ all: checks
 	cp .env ./django/transcendence/transcendence
 	docker compose up;\
 
+down:
+	docker compose down
+
 install: checks
 	cd ./django && pip install -r requirements.txt; \
 	cd ../;\
@@ -45,4 +48,4 @@ checks:
 		exit 1;\
 	fi
 
-.PHONY: all rebuild rmvol removeAll migrate install rmcontainer checks rmnetwork
+.PHONY: all rebuild rmvol removeAll migrate install rmcontainer checks rmnetwork down
