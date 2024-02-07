@@ -1,83 +1,105 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="en">
-  <head>
-    <meta charset="utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Bootstrap demo</title>
-<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-T3c6CoIi6uLrA9TneNEoa7RxnatzjcDSCmG1MXxSR1GAsXEV/Dwwykc2MPK8M2HN" crossorigin="anonymous">
-<script src="./js/main.js" defer></script>
+<head>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<title>ft-Transcendence</title>
+	<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-T3c6CoIi6uLrA9TneNEoa7RxnatzjcDSCmG1MXxSR1GAsXEV/Dwwykc2MPK8M2HN" crossorigin="anonymous">
+	<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-C6RzsynM9kWDrMNeT87bh95OGNyZPhcTNXj1NW7RuBCsyN/o0jlpcV8Qyq46cDfL" crossorigin="anonymous"></script>
+	<link rel="stylesheet" href="navbar.css">
+	<link src="./js/main.js">
 </head>
 <body>
-<a 
-		class="btn btn-primary"
-		data-bs-toggle="modal"
-		data-bs-target="#modalRegistration">Register
-</a>
-<a 
-		class="btn btn-primary"
-		data-bs-toggle="modal"
-		data-bs-target="#modalLogin">Login
-</a>
+	<nav class="navbar navbar-expand-lg sticky-top bg-primary">
+		<div class="container-fluid">
+			<a class="navbar-brand" href="#">
+				<img src="images/logo-no-background.svg" alt="" width="150" />
+			</a>
+			<button
+				class="navbar-toggler"
+				type="button"
+				data-bs-toggle="collapse"
+				data-bs-target="#navbarNavDropdown"
+				aria-controls="navbarNavDropdown"
+				aria-expended="false"
+				aria-label="Toggle navigation"
+				>
+				<span class="navbar-toggler-icon"></span>
+			</button>
+			<div class="collapse navbar-collapse" id="navbarNavDropdown">
+				<ul class="navbar-nav ms-auto">
+					<li class="nav-item btn new-color">
+						<a 
+								data-bs-toggle="modal"
+								data-bs-target="#modalRegistration">Register
+						</a>
+					</li>
+					<li class="nav-item btn new-color">
+						<a 
+								data-bs-toggle="modal"
+								data-bs-target="#modalLogin">Login
+						</a>
+					</li>
+				</ul>
+			</div>
+		</div>
+	</nav>
 
-<div class="modal fade" id="modalRegistration">
-  <div class="modal-dialog">
-	<div class="modal-content">
-	  <div class="modal-header">
-		<h1 class="modal-title fs-5" id="registrationLabel">Registration</h1>
-		<div class="btn-close" data-bs-dismiss="modal"></div>
+	<div class="modal fade" id="modalRegistration">
+		<div class="modal-dialog">
+		  <div class="modal-content">
+			<div class="modal-header">
+			  <h1 class="modal-title fs-5" id="registrationLabel">Registration</h1>
+			  <div class="btn-close" data-bs-dismiss="modal"></div>
+			</div>
+			<div class="modal-body">
+			  <form id="registrationForm" action="api/register/" method="POST">
+				  <div class="mb-3">
+					<label for="username" class="form-label">Username</label>
+					<input type="username" name='username' id="username" class="form-control">
+				  </div>
+				  
+				  <div class="mb-3">
+					<label for="email" class="form-label">Email</label>
+					<input type="email" name='email' id="email" class="form-control">
+				  </div>
+				  <div class="mb-3">
+					<label for="password" class="form-label">Password</label>
+					<input type="password" name='password' id="password1" class="form-control">
+				  </div>
+				  <div class="mb-3">
+					<label for="password-check" class="form-label">Password</label>
+					<input type="password" name='password-check' id="password-check" class="form-control">
+				  </div>
+				<button type="submit" value="Register" class="btn btn-primary">Submit</button>
+			  </form>
+			</div>
+		  </div>
+		</div>
 	  </div>
-	  <div class="modal-body">
-		<form id="registrationForm" action="api/register/" method="POST">
-			<div class="mb-3">
-			  <label for="username" class="form-label">Username</label>
-			  <input type="username" name='username' id="username" class="form-control">
+	  
+	  <div class="modal fade" id="modalLogin">
+		<div class="modal-dialog">
+		  <div class="modal-content">
+			<div class="modal-header">
+			  <h1 class="modal-title fs-5" id="loginLabel">Login</h1>
+			  <div class="btn-close" data-bs-dismiss="modal"></div>
 			</div>
-			
-			<div class="mb-3">
-			  <label for="email" class="form-label">Email</label>
-			  <input type="email" name='email' id="email" class="form-control">
+			<div class="modal-body">
+			  <form id="loginForm" action="api/login/" method="POST">
+				  <div class="mb-3">
+					<label for="username" class="form-label">Username</label>
+					<input type="username" name='username' id="loginUsername" class="form-control">
+				  </div>
+				  <div class="mb-3">
+					<label for="password" class="form-label">Password</label>
+					<input type="password" name='password' id="login1assword" class="form-control">
+				  </div>
+				<button type="submit" value="Login" class="btn btn-primary">Submit</button>
+			  </form>
 			</div>
-			<div class="mb-3">
-			  <label for="password" class="form-label">Password</label>
-			  <input type="password" name='password' id="password1" class="form-control">
-			</div>
-			<div class="mb-3">
-			  <label for="password-check" class="form-label">Password</label>
-			  <input type="password" name='password-check' id="password-check" class="form-control">
-			</div>
-		  <button type="submit" value="Register" class="btn btn-primary">Submit</button>
-		</form>
+		  </div>
+		</div>
 	  </div>
-	</div>
-  </div>
-</div>
-
-<div class="modal fade" id="modalLogin">
-  <div class="modal-dialog">
-	<div class="modal-content">
-	  <div class="modal-header">
-		<h1 class="modal-title fs-5" id="loginLabel">Login</h1>
-		<div class="btn-close" data-bs-dismiss="modal"></div>
-	  </div>
-	  <div class="modal-body">
-		<form id="loginForm" action="api/login/" method="POST">
-			<div class="mb-3">
-			  <label for="username" class="form-label">Username</label>
-			  <input type="username" name='username' id="loginUsername" class="form-control">
-			</div>
-			<div class="mb-3">
-			  <label for="password" class="form-label">Password</label>
-			  <input type="password" name='password' id="login1assword" class="form-control">
-			</div>
-		  <button type="submit" value="Login" class="btn btn-primary">Submit</button>
-		</form>
-	  </div>
-	</div>
-  </div>
-</div>
-
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-C6RzsynM9kWDrMNeT87bh95OGNyZPhcTNXj1NW7RuBCsyN/o0jlpcV8Qyq46cDfL" crossorigin="anonymous"></script>
-  </body>
+</body>
 </html>
-
-
