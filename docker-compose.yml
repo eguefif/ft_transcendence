@@ -3,6 +3,7 @@ services:
   nginx:
     container_name: nginx
     build: ./nginx/
+    image: nginx-transcedence
     env_file:
       - .env
     ports:
@@ -13,22 +14,23 @@ services:
     networks:
       - transcendence-net
     volumes:
-      - nginx-vol:/var/www/
+      - ./nginx/www:/var/www/
     restart: on-failure
 
   django:
     container_name: django
     build: ./django
+    image: django-transcendence
     env_file:
       - .env
-    ports:
+    expose:
       - 8000
     depends_on:
       - postgres
     networks:
       - transcendence-net
     volumes:
-      - django-vol:/usr/src/app
+      - ./django/transcendence:/usr/src/app
 
   postgres:
     image: postgres:latest
@@ -36,7 +38,7 @@ services:
     env_file:
       - .env
     volumes:
-      - postgres-vol:/var/lib/postgresql/data
+      - postgres-vol:/var/lib/postgresql/data/
     networks:
       - transcendence-net
     restart: unless-stopped
@@ -46,18 +48,8 @@ volumes:
     name: postgres-vol
   nginx-vol:
     name: nginx-vol
-    driver: local
-    driver_opts:
-      type: none
-      o: bind
-      device: "./nginx/www/"
   django-vol:
     name: django-vol
-    driver: local
-    driver_opts:
-      type: none
-      o: bind
-      device: "./django/transcendence/"
 
 networks:
   transcendence-net:
