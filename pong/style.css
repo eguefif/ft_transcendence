@@ -1,0 +1,8 @@
+#board { 
+    /* background-image: linear-gradient( 
+            to right, #8a2727ef, #cb0202);  */
+    border-radius: 14px;
+    margin-left: 20%; 
+    margin-top: 20%;
+    border:0.2em solid #000000;
+}
