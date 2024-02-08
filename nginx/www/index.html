@@ -10,7 +10,7 @@
 	<script src="./js/main.js" defer></script>
 </head>
 <body>
-	<nav class="navbar navbar-expand-lg sticky-top bg-primary">
+	<nav class="navbar navbar-expand-sm sticky-top bg-primary">
 		<div class="container-fluid">
 			<a class="navbar-brand" href="#">
 				<img src="images/logo-no-background.svg" alt="" width="150" />
@@ -28,17 +28,25 @@
 			</button>
 			<div class="collapse navbar-collapse" id="navbarNavDropdown">
 				<ul class="navbar-nav ms-auto">
-					<li class="nav-item btn new-color">
+	
+					<li class="nav-item btn new-color" id="registerButton">
 						<a 
-								data-bs-toggle="modal"
-								data-bs-target="#modalRegistration">Register
+						data-bs-toggle="modal"
+						data-bs-target="#modalRegistration">
+							Register
 						</a>
 					</li>
-					<li class="nav-item btn new-color">
+
+					<li class="nav-item btn new-color" id="loginButton">
 						<a 
-								data-bs-toggle="modal"
-								data-bs-target="#modalLogin">Login
+						data-bs-toggle="modal"
+						data-bs-target="#modalLogin">
+							Login
 						</a>
+					</li>
+
+					<li class="nav-item btn new-color d-none" id="logoutButton">
+						<button class="btn btn-primary new-color shadow-none border-0" type="button">Logout</button>  
 					</li>
 				</ul>
 			</div>

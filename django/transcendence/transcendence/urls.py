@@ -19,5 +19,4 @@ from django.urls import path, include
 
 urlpatterns = [
     path('', include('register.urls')),
-    path('', include('authentification.urls')),
 ]
