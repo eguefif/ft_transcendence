@@ -3,21 +3,27 @@ function authLogout()
 	const logoutBtn = document.querySelector("#logoutButton")
 	logoutBtn.addEventListener("click", async function(e){
 			const body = localStorage.getItem('user')
-			const bodyJSON = JSON.stringify(body);
-			await fetch("/api/logout/", {
-				method: "DELETE",
-				credentials: "same-origin",
-				headers: {"Content-Type": "application/json"},
-				body: bodyJSON
-			})
-			.then((response) => response.json())
-			.then((result) => {
-					console.log(result)
-					localStorage.removeItem('csrf')
-			})
-			.catch(() => {
-				throw new Error("Leaderboards fetch failed")
-			})
+			const csrf = localStorage.getItem('csrf')
+
+			try {
+					const res = await fetch("/api/logout/", {
+						method: "DELETE",
+						credentials: "same-origin",
+						headers: {"Content-Type": "application/json", 'Authorization': 'Token ' + csrf},
+						body: body
+					})
+					const data = await res.json()
+					if (data.logout == true){
+						localStorage.removeItem('csrf')
+						showLogin()
+					}
+					else{
+						console.log("Logout failed")
+					}
+			}
+			catch (error) {
+					console.log("Logout error: " + error)
+			}
 			}
 		)
 }
@@ -49,34 +55,53 @@ function authLogin()
 			'username': data.get('username'),
 			'password': data.get('password'),
 		}
-		sendRegistrationRequest(url, body)
+		sendLoginRequest(url, body)
 	})
+}
+
+async function sendLoginRequest(url, body, method)
+{
+	const bodyJSON = JSON.stringify(body);
+	try
+	{
+		const res = await fetch(url, {
+			method: "POST",
+			headers: {"Content-Type": "application/json"},
+			body: bodyJSON
+		})
+		const data = await res.json()
+		localStorage.setItem('csrf', data.token)
+		localStorage.setItem('user', JSON.stringify(data.user))
+		showLobby()
+	}
+	catch (error) {
+			console.log("Error registration: " + error)
+	}
+	return ;
 }
 
 async function sendRegistrationRequest(url, body, method)
 {
-	let returnValue
 	const bodyJSON = JSON.stringify(body);
-	await fetch(url, {
-		method: "POST",
-		headers: {"Content-Type": "application/json"},
-		body: bodyJSON
-	})
-	.then((response) => response.json())
-    .then((result) => {
-        returnValue = result
-    })
-    .then(() => {
-		localStorage.setItem('csrf', returnValue.token)
-		//localStrorage.setItem('user', returnValue.user)
-    })
-    .catch(() => {
-        throw new Error("Leaderboards fetch failed")
-    })
-	return;
+	try
+	{
+		const res = await fetch(url, {
+			method: "POST",
+			headers: {"Content-Type": "application/json"},
+			body: bodyJSON
+		})
+		const data = await res.json()
+		localStorage.setItem('csrf', data.token)
+		localStorage.setItem('user', JSON.stringify(data.user))
+		return true
+	}
+	catch (error) {
+			console.log("Error registration: " + error)
+	}
+	return ;
 }
 
-function turnOnLobby()
+function showLobby()
 {
 		let loginButton = document.getElementById("loginButton")
 		let logoutButton = document.getElementById("logoutButton")
@@ -86,7 +111,7 @@ function turnOnLobby()
 		logoutButton.classList.remove('d-none')
 }
 
-function turnOffLobby()
+function showLogin()
 {
 		let loginButton = document.getElementById("loginButton")
 		let logoutButton = document.getElementById("logoutButton")
@@ -99,13 +124,13 @@ function turnOffLobby()
 function isAuthenticated()
 {
 	token = localStorage.getItem('csrf')
-	return (typeof token != "undefine" && token.length >= 1)
+	return (token && token.length >= 1)
 }
 
 if (isAuthenticated() == true)
-	turnOnLobby()
+	showLobby()
 else
-	turnOffLobby()
+	showLogin()
 
 authRegister();
 authLogin();

@@ -49,7 +49,9 @@ def is_token_valid(request):
 @authentication_classes([SessionAuthentication, TokenAuthentication])
 @permission_classes([IsAuthenticated])
 def logout(request):
-    data = UserSerializer(data=request.data)
-    token = Token.objects.get(username=data.user.username)
+    user = get_object_or_404(User, username=request.data['username'])
+    token = get_object_or_404(Token, user=request.data['id'])
     if token:
         token.delete()
+        return Response({"logout": True}, status.HTTP_200_OK)
+    return Response({"logout": False}, status.HTTP_400_BAD_REQUEST)
