@@ -2,8 +2,8 @@ from django.contrib.auth import authenticate
 from django.contrib.auth.models import User
 from rest_framework import serializers
 
-class UserAuthSerializer(serializers.ModelSerializer):
-    username = serializers.Charfield(label="username", write_only=True)
+class UserAuthSerializer(serializers.Serializer):
+    username = serializers.CharField(label="username", write_only=True)
     password = serializers.CharField(label="password", style={'input_type': 'password'}, trim_whitespace=False, write_only=True)
 
     def validate(self, attrs):

@@ -3,7 +3,10 @@ from rest_framework.urlpatterns import format_suffix_patterns
 from register import views
 
 urlpatterns = [
-        path('api/register/', views.RegisterView.as_view()),
+        path('api/register/', views.register),
+        path('api/login/', views.login),
+        path('api/logout/', views.logout),
+        path('api/is_token_valid/', views.is_token_valid),
         ]
 
 urlpatterns = format_suffix_patterns(urlpatterns)

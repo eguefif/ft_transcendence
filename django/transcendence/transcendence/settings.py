@@ -46,6 +46,7 @@ INSTALLED_APPS = [
     'register',
     'authentification',
     'rest_framework',
+    'rest_framework.authtoken',
     'django.contrib.auth',
     'django.contrib.contenttypes',
     'django.contrib.sessions',
@@ -66,7 +67,7 @@ MIDDLEWARE = [
 REST_FRAMEWORK = {
     'DEFAULT_RENDERER_CLASSES': [
         'rest_framework.renderers.JSONRenderer',
-        ]
+        ],
 }
 
 ROOT_URLCONF = 'transcendence.urls'
