@@ -72,6 +72,7 @@ async function sendLoginRequest(url, body, method)
 		const data = await res.json()
 		localStorage.setItem('csrf', data.token)
 		localStorage.setItem('user', JSON.stringify(data.user))
+		$("#modalLogin").modal("hide")
 		showLobby()
 	}
 	catch (error) {
