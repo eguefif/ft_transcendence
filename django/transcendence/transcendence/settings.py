@@ -43,7 +43,10 @@ ALLOWED_HOSTS = ["localhost", "0.0.0.0"]
 # Application definition
 
 INSTALLED_APPS = [
-    'django.contrib.admin',
+    'register',
+    'authentification',
+    'rest_framework',
+    'rest_framework.authtoken',
     'django.contrib.auth',
     'django.contrib.contenttypes',
     'django.contrib.sessions',
@@ -60,6 +63,12 @@ MIDDLEWARE = [
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
 ]
+
+REST_FRAMEWORK = {
+    'DEFAULT_RENDERER_CLASSES': [
+        'rest_framework.renderers.JSONRenderer',
+        ],
+}
 
 ROOT_URLCONF = 'transcendence.urls'
 
