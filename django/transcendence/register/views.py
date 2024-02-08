@@ -53,5 +53,5 @@ def logout(request):
     token = get_object_or_404(Token, user=request.data['id'])
     if token:
         token.delete()
-        return Response({"logout": True}, status.HTTP_200_OK)
+        return Response({}, status.HTTP_204_no_content)
     return Response({"logout": False}, status.HTTP_400_BAD_REQUEST)
