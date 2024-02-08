@@ -66,20 +66,24 @@
 			  <form id="registrationForm" action="api/register/" method="POST">
 				  <div class="mb-3">
 					<label for="username" class="form-label">Username</label>
-					<input type="username" name='username' id="username" class="form-control">
+					<input type="username" name='username' id="username" class="form-control" required>
+					<div id="usernameValidation"></div>
 				  </div>
 				  
 				  <div class="mb-3">
 					<label for="email" class="form-label">Email</label>
-					<input type="email" name='email' id="email" class="form-control">
+					<input type="email" name='email' id="email" class="form-control" required>
+					<div id="emailValidation"></div>
 				  </div>
 				  <div class="mb-3">
 					<label for="password" class="form-label">Password</label>
-					<input type="password" name='password' id="password1" class="form-control">
+					<input type="password" name='password' id="password" class="form-control" required>
+					<div id="passwordValidation"></div>
 				  </div>
 				  <div class="mb-3">
 					<label for="password-check" class="form-label">Password</label>
-					<input type="password" name='password-check' id="password-check" class="form-control">
+					<input type="password" name='password-check' id="password-check" class="form-control" required>
+					<div id="password-checkValidation"></div>
 				  </div>
 				<button type="submit" value="Register" class="btn btn-primary">Submit</button>
 			  </form>

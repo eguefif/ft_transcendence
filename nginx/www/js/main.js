@@ -84,6 +84,15 @@ async function sendLoginRequest(url, body, method)
 async function sendRegistrationRequest(url, body, method)
 {
 	const bodyJSON = JSON.stringify(body);
+	
+	// TODO faire fonctions reset inputs a valid
+	const form = document.getElementById("registrationForm")
+	const inputs = form.querySelectorAll("input")
+	inputs.forEach(input => {
+		input.classList.remove("is-invalid")
+		input.classList.add("is-valid")
+	})
+	
 	try
 	{
 		const res = await fetch(url, {
@@ -92,9 +101,25 @@ async function sendRegistrationRequest(url, body, method)
 			body: bodyJSON
 		})
 		const data = await res.json()
-		localStorage.setItem('csrf', data.token)
-		localStorage.setItem('user', JSON.stringify(data.user))
-		return true
+		if (res.status == 400)
+		{
+			for (const obj in data)
+			{
+				const textbox = document.getElementById(`${obj}`)
+				const validation = document.getElementById(`${obj}Validation`) // depend de l'id des div validation
+				textbox.classList.add("is-invalid")
+				validation.classList.add("invalid-feedback")
+				validation.innerHTML = data[obj]
+			}
+		}
+		else if (res.status == 201)
+		{
+			localStorage.setItem('csrf', data.token)
+			localStorage.setItem('user', JSON.stringify(data.user))
+			$('#modalRegistration').modal('hide')
+			showLobby()
+			return true
+		}
 	}
 	catch (error) {
 			console.log("Error registration: " + error)
@@ -125,7 +150,7 @@ function showLogin()
 function isAuthenticated()
 {
 	token = localStorage.getItem('csrf')
-	return (token && token.length >= 1)
+	return ((typeof token != undefined) && token && token.length >= 1)
 }
 
 if (isAuthenticated() == true)
