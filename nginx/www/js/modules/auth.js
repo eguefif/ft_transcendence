@@ -12,8 +12,8 @@ function authLogout()
 						headers: {"Content-Type": "application/json", 'Authorization': 'Token ' + csrf},
 						body: body
 					})
-					const data = await res.json()
-					if (data.logout == true){
+					//const data = await res.json()
+					if (res.status == 204){
 						localStorage.removeItem('csrf')
 						showLogin()
 					}
@@ -70,10 +70,20 @@ async function sendLoginRequest(url, body, method)
 			body: bodyJSON
 		})
 		const data = await res.json()
-		localStorage.setItem('csrf', data.token)
-		localStorage.setItem('user', JSON.stringify(data.user))
-		$("#modalLogin").modal("hide")
-		showLobby()
+		const validation = document.getElementById("loginValidation")
+		if (res.status == 201)
+		{
+			localStorage.setItem('csrf', data.token)
+			localStorage.setItem('user', JSON.stringify(data.user))
+			validation.innerHTML = ""
+			$("#modalLogin").modal("hide")
+			showLobby()
+		}
+		else
+		{
+			document.getElementById("loginPassword").value = ""
+			validation.innerHTML = "Wrong credentials"
+		}
 	}
 	catch (error) {
 			console.log("Error registration: " + error)
@@ -101,6 +111,7 @@ async function sendRegistrationRequest(url, body, method)
 			body: bodyJSON
 		})
 		const data = await res.json()
+		console.log(data)
 		if (res.status == 400)
 		{
 			for (const obj in data)
@@ -150,7 +161,7 @@ function showLogin()
 function isAuthenticated()
 {
 	let token = localStorage.getItem('csrf')
-	return ((typeof token != undefined) && token && token.length >= 1)
+	return (token && (token != undefined))
 }
 
 export function initAuth() {
