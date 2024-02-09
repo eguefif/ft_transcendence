@@ -11,7 +11,7 @@ from rest_framework.authentication import SessionAuthentication, TokenAuthentica
 from rest_framework.permissions import IsAuthenticated
 
 
-from register.serializers import UserSerializer
+from register.serializers import UserSerializer, UserProfileSerializer
 
 
 @api_view(['POST'])
@@ -60,8 +60,13 @@ def logout(request):
 @authentication_classes([SessionAuthentication, TokenAuthentication])
 @permission_classes([IsAuthenticated])
 def user_info(request):
-    user_id = request.query_params.get('id', None)
-    if user_id:
-        token = get_object_or_404(Token, user=user_id)
-        return Response({"ok": "ok"}, status=status.HTTP_200_OK)
-    return Response(None, status=status.HTTP_404_NOT_FOUND)
+    user = request.user
+    serializer = UserProfileSerializer(user)
+    return Response(serializer.data, status=status.HTTP_200_OK)
+
+# class ProfileView(APIView):
+#     permission_classes = [permissions.IsAuthenticated]
+
+#     def get(self, request):
+#         user = User.objects.get(request.user)
+#         return Response(user.data)

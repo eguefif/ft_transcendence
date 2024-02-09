@@ -96,11 +96,10 @@ function profileInfo()
 {
 	const profileBtn = document.querySelector("#profileButton")
 	profileBtn.addEventListener("click", async function (e) {
-		const user = JSON.parse(localStorage.getItem('user'))
+		//const user = JSON.parse(localStorage.getItem('user'))
 		const csrf = localStorage.getItem('csrf')
-		console.log(user)
 		try {
-			const res = await fetch(`/api/userinfo/?id=${user['id']}`, {
+			const res = await fetch("/api/userinfo/", {
 				method: "GET",
 				credentials: "same-origin",
 				headers: {"Content-Type": "application/json", 'Authorization': 'Token ' + csrf}
@@ -109,7 +108,8 @@ function profileInfo()
 			console.log(data)
 			if (res.status == 200)
 			{
-
+				document.querySelector("#profileUsername").value = data['username']
+				document.querySelector("#profileEmail").value = data['email']
 			}
 			else
 			{
