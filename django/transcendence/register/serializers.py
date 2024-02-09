@@ -1,8 +1,23 @@
 from django.contrib.auth.models import User
 from rest_framework import serializers
+import re
 
 
 class UserSerializer(serializers.ModelSerializer):
     class Meta:
         model = User
         fields = ['id', 'username', 'email', 'password']
+    
+    def validate_username(self, value):
+        # Requirements: 8-24 characters, only letters and numbers
+        username_regex = r"^[a-z\d]{8,24}$"
+        if not re.fullmatch(username_regex, value):
+            raise serializers.ValidationError("Nickname does not meet requirements")
+        return value
+
+    def validate_password(self, value):
+        # Requirements: 8-24 characters, at least one uppercase, one lowercase and one number
+        password_regex = r"^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)[a-zA-Z\d\w\W]{8,24}$"
+        if len(value) < 8:
+            raise serializers.ValidationError("Password does not meet requirements")
+        return value
