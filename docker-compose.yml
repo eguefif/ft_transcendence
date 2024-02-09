@@ -30,7 +30,7 @@ services:
     networks:
       - transcendence-net
     volumes:
-      - ./django/transcendence:/usr/src/app
+      - ./django/transcendence:/var/src/app
 
   postgres:
     image: postgres:latest
@@ -42,6 +42,17 @@ services:
     networks:
       - transcendence-net
     restart: unless-stopped
+
+  serverpong:
+    container_name: serverpong
+    build: ./serverPong
+    image: django-serverpong
+    env_file:
+      - .env
+    ports:
+      - "10000:10000"
+    networks:
+      - transcendence-net
 
 volumes:
   postgres-vol:

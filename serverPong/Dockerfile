@@ -9,9 +9,10 @@ RUN rm /requirements.txt
 
 RUN mkdir -p /var/src
 RUN mkdir -p /var/src/app
-COPY ./serverPong /var/src/app/
+COPY ./serverPong/* /var/src/app/
 
 expose 8000
 
 WORKDIR /var/src/app
-CMD ["python3 serverPong.py"]
+#CMD ["tail", "-f", "/dev/null"]
+CMD ["python3 runServer.py"]
