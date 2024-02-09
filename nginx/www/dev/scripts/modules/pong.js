@@ -4,8 +4,6 @@ export function initLocalPong()
 	game.run()
 }
 
-
-
 class Game{
 	constructor(player1, player2)
 	{
@@ -16,20 +14,22 @@ class Game{
 		this.ball = new Ball(board)
 		this.graphicEngine = new graphicEngine()
 		this.init_event()
-		this.ball.init_position()
+		this.ball.reset()
 		this.game_active = false
+		this.in_play = true
 		this.state = "none"
 		this.player1Score = 0
 		this.player2Score = 0
+		this.pointsToWin = 3
 	}
 
 	reset(){
-		this.ball.init_position()
+		this.ball.reset()
 		this.ball.speed = 4
-		console.log("speed", this.ball.speed)
-		console.log("dir x ", this.ball.dir.x)
-		console.log("dir y ", this.ball.dir.y)
+		this.player1Score = 0
+		this.player2Score = 0
 		this.state = "none"
+		this.game_active = false
 	}
 
 	init_event()
@@ -39,10 +39,10 @@ class Game{
 			{
 				this.reset()
 				this.game_active=true
+				this.in_play=true
 				this.playButton.classList.add('d-none')
 				this.run()
 			}
-				
 		})
 
 		document.addEventListener("keydown", (e) => {
@@ -70,15 +70,20 @@ class Game{
 
 	run()
 	{
-		this.graphicEngine.display(this.ball, this.paddle_1, this.paddle_2, this.player1Score, this.player2Score)
+		this.graphicEngine.display(this)
 		if (this.game_active == true)
 		{
 			this.result = this.move()
 			if (this.result !== 'none')
 			{
-				this.game_active = false
 				this.updatePoint()
-				this.playButton.classList.remove('d-none')
+				if (this.player1Score == this.pointsToWin || this.player2Score == this.pointsToWin)
+				{
+					this.playButton.classList.remove('d-none')
+					// this.graphicEngine.displayWinner(this.paddle_1)
+					this.game_active = false
+				}
+				setTimeout(this.ball.reset(), 2000)
 			}
 			requestAnimationFrame(() => {this.run()})
 		}
@@ -86,16 +91,19 @@ class Game{
 
 	move()
 	{
-		// this.paddle_1.move()
-		// this.paddle_2.move()
+		this.paddle_1.move()
+		this.paddle_2.move()
 		return this.ball.move(this.paddle_1, this.paddle_2)
 	}
 
 	updatePoint(){
+		if (!this.ball.in_play)
+			return
 		if (this.result == "right")
 			this.player1Score++
 		else
 			this.player2Score++
+		this.ball.in_play = false
 	}
 }
 
@@ -140,10 +148,11 @@ class Ball {
 		this.board = gameBoard
         this.radius = 10
         this.speed = 4
-		this.init_position()
+		this.in_play = false
+		this.reset()
     }
 
-    init_position() {
+    reset() {
         this.x = this.board.width / 2
         this.y = this.board.height / 2
 		let dirX = Math.random() * 2 - 1
@@ -153,11 +162,12 @@ class Ball {
 		else 
 			this.dir.x = Math.max(0.5)
         this.dir.norm()
+		this.in_play = true
 	}
 
     move(paddle1, paddle2){
-        this.x += this.speed * this.dir.x
-        this.y += this.speed * this.dir.y
+        this.x += this.speed * this.dir.x * this.in_play
+        this.y += this.speed * this.dir.y * this.in_play
 		this.checkTopWallCollision()
 		this.checkPaddleCollision(paddle1, paddle2)
 		return this.checkSideWallCollision()
@@ -165,15 +175,9 @@ class Ball {
 
     checkSideWallCollision(){
         if (this.x >= this.board.width - this.radius)
-        {
-            this.speed = 0
 			return "right"
-        }
         else if (this.x <= 0 + this.radius) //GOAL COLLISION
-        {
-            this.speed = 0
 			return "left"
-        }
 		return "none"
     }
 
@@ -189,7 +193,6 @@ class Ball {
 		{
 			this.dir.x = -0.5
 			let diff = this.y - paddle_2.y
-			
 			this.dir.y = diff * 0.866025403784439 / (paddle_2.halfPaddleHeight * 2)//voir cercle trigo: 0.866025403784439
 			this.dir.norm();
 		}
@@ -199,9 +202,7 @@ class Ball {
 			let diff = this.y - paddle_1.y
 			this.dir.y = diff * 0.866025403784439 / (paddle_2.halfPaddleHeight * 2)
 			this.dir.norm();
-
 		}
-
 	}
 
 	isCollidingLeftPaddle(paddle)
@@ -222,11 +223,11 @@ class graphicEngine
 		this.ctx =  board.getContext("2d")
 	}
 
-	display(ball, paddle1, paddle2, score1=1, score2=1) {
-		this.displayBall(ball)
-		this.displayPaddle1(paddle1)
-		this.displayPaddle2(paddle2)
-		this.displayScore(score1, score2)
+	display(game) {
+		this.displayBall(game.ball)
+		this.displayPaddle1(game.paddle_1)
+		this.displayPaddle2(game.paddle_2)
+		this.displayScore(game.player1Score, game.player2Score, game.pointsToWin)	
 	}
 
 	displayBall(ball){
@@ -248,7 +249,7 @@ class graphicEngine
 		this.ctx.stroke()
 	}
 
-	displayScore(score1, score2)
+	displayScore(score1, score2, pointsToWin)
 	{
 		const y = 50
 		const mid = board.width / 2
@@ -257,6 +258,15 @@ class graphicEngine
 		this.ctx.font = "30px Arial"
 		this.ctx.fillText(dis1, mid - 100, y)
 		this.ctx.fillText(dis2, mid + 100, y)
+
+		let winnerMessage = ""
+		if (score1 == pointsToWin)
+			winnerMessage = "Player 1 wins!"
+		else if (score1 == pointsToWin)
+			winnerMessage = "Player 2 wins!"
+
+		this.ctx.font = "30px Arial"
+		this.ctx.fillText(winnerMessage, mid -100, y + 100)
 	}
 }
 
