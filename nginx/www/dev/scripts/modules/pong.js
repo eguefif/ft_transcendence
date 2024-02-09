@@ -4,10 +4,13 @@ export function initLocalPong()
 	game.run()
 }
 
+
+
 class Game{
 	constructor(player1, player2)
 	{
 		this.board = document.getElementById("board")
+		this.playButton = document.querySelector("#playButton")
 		this.paddle_1 = new Paddle(player1, "right", board)
 		this.paddle_2 = new Paddle(player2, "left", board)
 		this.ball = new Ball(board)
@@ -22,7 +25,7 @@ class Game{
 
 	reset(){
 		this.ball.init_position()
-		this.ball.speed = 5
+		this.ball.speed = 4
 		console.log("speed", this.ball.speed)
 		console.log("dir x ", this.ball.dir.x)
 		console.log("dir y ", this.ball.dir.y)
@@ -31,6 +34,17 @@ class Game{
 
 	init_event()
 	{
+		this.playButton.addEventListener("click", (e) => {
+			if (!this.game_active)
+			{
+				this.reset()
+				this.game_active=true
+				this.playButton.classList.add('d-none')
+				this.run()
+			}
+				
+		})
+
 		document.addEventListener("keydown", (e) => {
 			if (e.key == 'ArrowDown')
 				this.paddle_2.move_down = true
@@ -39,7 +53,7 @@ class Game{
 			if (e.code == 'KeyS')
 				this.paddle_1.move_down = true
 			else if (e.code == 'KeyW') 
-				this.paddle_1.move_up = true
+				this.paddle_1.move_up = true	
 			})
 
 		document.addEventListener("keyup", (e) => {
@@ -51,12 +65,6 @@ class Game{
 				this.paddle_2.move_down = false
 			else if (e.key == 'ArrowUp') 
 				this.paddle_2.move_up = false
-			if (e.code == 'Space' && !this.game_active)
-			{
-				this.reset()
-				this.game_active=true
-				this.run()
-			}
 			})
 		}
 
@@ -70,6 +78,7 @@ class Game{
 			{
 				this.game_active = false
 				this.updatePoint()
+				this.playButton.classList.remove('d-none')
 			}
 			requestAnimationFrame(() => {this.run()})
 		}
@@ -77,8 +86,8 @@ class Game{
 
 	move()
 	{
-		this.paddle_1.move()
-		this.paddle_2.move()
+		// this.paddle_1.move()
+		// this.paddle_2.move()
 		return this.ball.move(this.paddle_1, this.paddle_2)
 	}
 
@@ -130,7 +139,7 @@ class Ball {
     constructor(gameBoard) {
 		this.board = gameBoard
         this.radius = 10
-        this.speed = 5
+        this.speed = 4
 		this.init_position()
     }
 
@@ -138,10 +147,11 @@ class Ball {
         this.x = this.board.width / 2
         this.y = this.board.height / 2
 		let dirX = Math.random() * 2 - 1
-		if (dirX <= 0)
-        	this.dir = new Vector(0.75, Math.random() * 2 - 1)
-		else
-        	this.dir = new Vector(0.75, Math.random() * 2 - 1)
+        this.dir = new Vector(Math.random() * 2 - 1, Math.random() * 2 - 1)
+		if (this.dir.x < 0)
+			this.dir.x = Math.min(-0.5)
+		else 
+			this.dir.x = Math.max(0.5)
         this.dir.norm()
 	}
 
@@ -175,18 +185,33 @@ class Ball {
 
 	checkPaddleCollision(paddle_1, paddle_2)
 	{
-		if (this.isCollidingRightPaddle(paddle_2) || this.isCollidingLeftPaddle(paddle_1))
-			this.dir.x *= -1
+		if (this.isCollidingRightPaddle(paddle_2))
+		{
+			this.dir.x = -0.5
+			let diff = this.y - paddle_2.y
+			
+			this.dir.y = diff * 0.866025403784439 / (paddle_2.halfPaddleHeight * 2)//voir cercle trigo: 0.866025403784439
+			this.dir.norm();
+		}
+		if (this.isCollidingLeftPaddle(paddle_1))
+		{
+			this.dir.x = 0.5
+			let diff = this.y - paddle_1.y
+			this.dir.y = diff * 0.866025403784439 / (paddle_2.halfPaddleHeight * 2)
+			this.dir.norm();
+
+		}
+
 	}
 
 	isCollidingLeftPaddle(paddle)
 	{
-		return this.x - this.radius <= paddle.x && this.y <= paddle.top && this.y >= paddle.bottom
+		return this.x - this.radius <= paddle.x && this.y <= paddle.top && this.y >= paddle.bottom && this.dir.x < 0
 	}
 
 	isCollidingRightPaddle(paddle)
 	{
-		return this.x + this.radius >= paddle.x && this.y <= paddle.top && this.y >= paddle.bottom
+		return this.x + this.radius >= paddle.x && this.y <= paddle.top && this.y >= paddle.bottom && this.dir.x > 0
 	}
 }
 

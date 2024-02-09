@@ -5,6 +5,7 @@
 	<meta name="viewport" content="width=device-width, initial-scale=1.0">
 	<title>ft-Transcendence</title>
 	<link rel="stylesheet" href="styles/styles.css">
+	<link rel="stylesheet" href="css/temp.css">
 	<script type="module" src="scripts/main.js" defer></script>
 </head>
 <body>
@@ -126,7 +127,7 @@
 					<form id="profileForm" action="api/updateprofile/" method="PATCH">
 						<div class="mb-3">
 							<label for="username" class="col-md-3 col-form-label">Username</label>
-							<input type="username" name="username" id="profileUsername" class="form-control" placeholder="name" disabled>
+							<input type="username" name="username" id="profileUsername" class="form-control" placeholder="${name}" disabled>
 						</div>
 						<div class="mb-3">
 							<label for="email" class="col-md-3 col-form-label">Email</label>
@@ -141,5 +142,9 @@
 	  </div>
 
 	  <canvas id="board" width="640" height="480"></canvas>
+	  <div id="gameBoard">
+		  <button type="button" id="playButton" class="btn btn-secondary btn-lg">Play!</button>
+		  <canvas id="board" width="640" height="480"></canvas>
+		</div>
 </body>
 </html>

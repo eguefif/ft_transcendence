@@ -1,0 +1,22 @@
+FROM python:latest
+
+RUN apt-get update && apt-get upgrade
+
+COPY ./requirements.txt /
+RUN python -m pip install --upgrade pip 
+RUN python -m pip install -r requirements.txt
+RUN python -m pip install gunicorn
+RUN rm /requirements.txt
+
+
+RUN mkdir -p /var/src
+RUN mkdir -p /var/src/app
+COPY ./transcendence /var/src/app/
+COPY ./tools/entry-point.sh /var/src/app
+RUN chmod +x /var/src/app/entry-point.sh
+
+expose 8000
+
+WORKDIR /var/src/app/
+CMD ["./entry-point.sh"]
+CMD ["gunicorn", "transcendence.wsgi", "--bind", "0.0.0.0:8000"]
