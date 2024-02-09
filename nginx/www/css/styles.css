@@ -3,18 +3,11 @@ li {
   margin: 1rem;
 }
 
-#gameBoard {
-  /* background-image: linear-gradient( 
-          to right, #8a2727ef, #cb0202);  */
-  border-radius: 14px;
+#playButton{
   position: absolute;
     top: 50%;
     left: 50%;
     transform: translate(-50%, -50%);
-  border: 0.2em solid #ff0000;
-  display: flex;
-  justify-content: center;
-  align-items: center;
 }
 
 #board {
@@ -23,6 +16,21 @@ li {
   border-radius: 14px;
   border: 0.2em solid #000000;
 }
+
+#gameBoard {
+  /* background-image: linear-gradient( 
+          to right, #8a2727ef, #cb0202);  */
+  border-radius: 14px;
+  position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+  /* border: 0.2em solid #ff0000; */
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
 
 #player1_score {
   margin-left: 20%;
