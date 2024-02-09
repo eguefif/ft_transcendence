@@ -4,18 +4,18 @@
 	<meta charset="UTF-8">
 	<meta name="viewport" content="width=device-width, initial-scale=1.0">
 	<title>ft-Transcendence</title>
-	<link rel="stylesheet" href="css/styles.css">
-	<script src="js/bootstrap/bootstrap.bundle.min.js" defer></script>
-	<script type="module" src="js/main.js" defer></script>
+	<link rel="stylesheet" href="styles/styles.css">
+	<link rel="stylesheet" href="styles/temp.css">
+	<script type="module" src="scripts/main.js" defer></script>
 </head>
 <body>
 	<nav class="navbar navbar-expand-sm sticky-top bg-primary">
 		<div class="container-fluid">
-			<a class="navbar-brand" href="#">
+			<a class="navbar-brand test" href="#">
 				<img src="images/logo-no-background.svg" alt="" width="150" />
 			</a>
 			<button
-				class="navbar-toggler"
+				class="test navbar-toggler"
 				type="button"
 				data-bs-toggle="collapse"
 				data-bs-target="#navbarNavDropdown"
@@ -26,24 +26,6 @@
 				<span class="navbar-toggler-icon"></span>
 			</button>
 			<div class="collapse navbar-collapse" id="navbarNavDropdown">
-				<ul class="navbar-nav ms-auto">
-
-					<li class="nav-item btn btn-secondary" id="registerButton"
-						data-bs-toggle="modal"
-						data-bs-target="#modalRegistration">
-							Register
-					</li>
-
-					<li class="nav-item btn btn-secondary" id="loginButton"
-						data-bs-toggle="modal"
-						data-bs-target="#modalLogin">
-							Login
-					</li>
-
-					<li class="nav-item btn btn-secondary d-none shadow-none border-0"" id="logoutButton">Logout
-						<!-- <button class="btn btn-secondary shadow-none border-0" type="button">Logout</button> -->
-					</li>
-				</ul>
 			</div>
 		</div>
 	</nav>
@@ -59,23 +41,23 @@
 			  <form id="registrationForm" action="api/register/" method="POST">
 				  <div class="mb-3">
 					<label for="username" class="form-label">Username</label>
-					<input type="username" name='username' id="username" class="form-control" required>
+					<input type="username" name='username' id="username" class="form-control">
 					<div id="usernameValidation"></div>
 				  </div>
 
 				  <div class="mb-3">
 					<label for="email" class="form-label">Email</label>
-					<input type="email" name='email' id="email" class="form-control" required>
+					<input type="email" name='email' id="email" class="form-control">
 					<div id="emailValidation"></div>
 				  </div>
 				  <div class="mb-3">
 					<label for="password" class="form-label">Password</label>
-					<input type="password" name='password' id="password" class="form-control" required>
+					<input type="password" name='password' id="password" class="form-control">
 					<div id="passwordValidation"></div>
 				  </div>
 				  <div class="mb-3">
-					<label for="password-check" class="form-label">Password</label>
-					<input type="password" name='password-check' id="password-check" class="form-control" required>
+					<label for="password-check" class="form-label">Comfirm Password</label>
+					<input type="password" name='password-check' id="password-check" class="form-control">
 					<div id="password-checkValidation"></div>
 				  </div>
 				<button type="submit" value="Register" class="btn btn-primary">Submit</button>
@@ -109,6 +91,35 @@
 		  </div>
 		</div>
 	  </div>
-	  <canvas id="board" width="640" height="480"></canvas>
+
+	  <div class="modal fade" id="modalProfile">
+		<div class="modal-dialog modal-lg">
+			<div class="modal-content">
+				<div class="modal-header">
+					<h1 class="modal-title fs-5" id="profileLabel">Profile</h1>
+					<div class="btn-close" data-bs-dismiss="modal"></div>
+				</div>
+				<div class="modal-body">
+					<form id="profileForm" action="api/updateprofile/" method="PATCH">
+						<div class="mb-3">
+							<label for="username" class="col-md-3 col-form-label">Username</label>
+							<input type="username" name="username" id="profileUsername" class="form-control" placeholder="${name}" disabled>
+						</div>
+						<div class="mb-3">
+							<label for="email" class="col-md-3 col-form-label">Email</label>
+							<input type="email" name="email" id="profileEmail" class="form-control" placeholder="mail" disabled>
+						</div>
+						<button type="button" class="btn btn-primary">Modify</button>
+						<button type="submit" class="btn btn-primary d-none">Save changes</button>
+					</form>
+				</div>
+			</div>
+		</div>
+	  </div>
+
+	  <div id="gameBoard">
+		  <button type="button" id="playButton" class="btn btn-secondary btn-lg">Play!</button>
+		  <canvas id="board" width="640" height="480"></canvas>
+		</div>
 </body>
 </html>
