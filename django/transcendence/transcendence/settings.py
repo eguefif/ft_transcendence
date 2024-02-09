@@ -37,7 +37,7 @@ SECRET_KEY = env["SECRET"]
 
 DEBUG = env["DEBUG"]
 
-ALLOWED_HOSTS = ["localhost", "0.0.0.0"]
+ALLOWED_HOSTS = [env["HOSTNAME"]]
 
 
 # Application definition
