@@ -56,6 +56,7 @@ function authLogin()
 			'password': data.get('password'),
 		}
 		sendLoginRequest(url, body)
+		// showLobby()
 	})
 }
 
@@ -76,8 +77,11 @@ async function sendLoginRequest(url, body, method)
 			localStorage.setItem('csrf', data.token)
 			localStorage.setItem('user', JSON.stringify(data.user))
 			validation.innerHTML = ""
-			$("#modalLogin").modal("hide")
+			document.querySelector("#modalLogin").classList.remove("show")
+			document.querySelector(".modal-backdrop").classList.remove("show")
+			// $("#modalLogin").modal("hide")
 			showLobby()
+
 		}
 		else
 		{
@@ -94,7 +98,7 @@ async function sendLoginRequest(url, body, method)
 async function sendRegistrationRequest(url, body, method)
 {
 	const bodyJSON = JSON.stringify(body);
-	
+
 	// TODO faire fonctions reset inputs a valid
 	const form = document.getElementById("registrationForm")
 	const inputs = form.querySelectorAll("input")
@@ -102,7 +106,7 @@ async function sendRegistrationRequest(url, body, method)
 		input.classList.remove("is-invalid")
 		input.classList.add("is-valid")
 	})
-	
+
 	try
 	{
 		const res = await fetch(url, {
@@ -127,7 +131,9 @@ async function sendRegistrationRequest(url, body, method)
 		{
 			localStorage.setItem('csrf', data.token)
 			localStorage.setItem('user', JSON.stringify(data.user))
-			$('#modalRegistration').modal('hide')
+			// $('#modalRegistration').modal('hide')
+			document.querySelector("#modalRegistration").classList.remove("show")
+			document.querySelector(".modal-backdrop").classList.remove("show")
 			showLobby()
 			return true
 		}
