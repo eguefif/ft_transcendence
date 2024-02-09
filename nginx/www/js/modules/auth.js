@@ -64,7 +64,28 @@ function profileInfo()
 {
 	const profileBtn = document.querySelector("#profileButton")
 	profileBtn.addEventListener("click", async function (e) {
-		
+		const user = JSON.parse(localStorage.getItem('user'))
+		const csrf = localStorage.getItem('csrf')
+		console.log(user)
+		try {
+			const res = await fetch(`/api/userinfo/?id=${user['id']}`, {
+				method: "GET",
+				credentials: "same-origin",
+				headers: {"Content-Type": "application/json", 'Authorization': 'Token ' + csrf}
+			})
+			const data = await res.json()
+			console.log(data)
+			if (res.status == 200)
+			{
+
+			}
+			else
+			{
+
+			}
+		} catch (error) {
+			console.log("Profile: could not get user info")
+		}
 	})
 }
 
@@ -191,4 +212,5 @@ export function initAuth() {
 	authRegister();
 	authLogin();
 	authLogout();
+	profileInfo();
 }
