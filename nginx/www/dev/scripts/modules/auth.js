@@ -60,6 +60,35 @@ function authLogin()
 	})
 }
 
+function profileInfo()
+{
+	const profileBtn = document.querySelector("#profileButton")
+	profileBtn.addEventListener("click", async function (e) {
+		const user = JSON.parse(localStorage.getItem('user'))
+		const csrf = localStorage.getItem('csrf')
+		console.log(user)
+		try {
+			const res = await fetch(`/api/userinfo/?id=${user['id']}`, {
+				method: "GET",
+				credentials: "same-origin",
+				headers: {"Content-Type": "application/json", 'Authorization': 'Token ' + csrf}
+			})
+			const data = await res.json()
+			console.log(data)
+			if (res.status == 200)
+			{
+
+			}
+			else
+			{
+
+			}
+		} catch (error) {
+			console.log("Profile: could not get user info")
+		}
+	})
+}
+
 async function sendLoginRequest(url, body, method)
 {
 	const bodyJSON = JSON.stringify(body);
@@ -149,9 +178,11 @@ function showLobby()
 		let loginButton = document.getElementById("loginButton")
 		let logoutButton = document.getElementById("logoutButton")
 		let registerButton = document.getElementById("registerButton")
+		let profileButton = document.getElementById("profileButton")
 		loginButton.classList.add('d-none')
 		registerButton.classList.add('d-none')
 		logoutButton.classList.remove('d-none')
+		profileButton.classList.remove('d-none')
 }
 
 function showLogin()
@@ -159,9 +190,11 @@ function showLogin()
 		let loginButton = document.getElementById("loginButton")
 		let logoutButton = document.getElementById("logoutButton")
 		let registerButton = document.getElementById("registerButton")
+		let profileButton = document.getElementById("profileButton")
 		loginButton.classList.remove('d-none')
 		registerButton.classList.remove('d-none')
 		logoutButton.classList.add('d-none')
+		profileButton.classList.add('d-none')
 }
 
 function isAuthenticated()
@@ -179,4 +212,5 @@ export function initAuth() {
 	authRegister();
 	authLogin();
 	authLogout();
+	profileInfo();
 }
