@@ -14,7 +14,7 @@ services:
     networks:
       - transcendence-net
     volumes:
-      - ./nginx/www:/var/www/
+      - nginx-vol:/var/www/
     restart: on-failure
 
   django:
@@ -30,7 +30,7 @@ services:
     networks:
       - transcendence-net
     volumes:
-      - ./django/transcendence:/usr/src/app
+      - django-vol:/usr/src/app
 
   postgres:
     image: postgres:latest
@@ -55,4 +55,3 @@ networks:
   transcendence-net:
     name: transcendence-net
     driver: bridge
-

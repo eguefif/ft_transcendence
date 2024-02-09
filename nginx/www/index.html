@@ -1,1 +1,114 @@
-<center><h1>ft-transcendence</h1></center>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<title>ft-Transcendence</title>
+	<link rel="stylesheet" href="css/styles.css">
+	<script src="js/bootstrap/bootstrap.bundle.min.js" defer></script>
+	<script type="module" src="js/main.js" defer></script>
+</head>
+<body>
+	<nav class="navbar navbar-expand-sm sticky-top bg-primary">
+		<div class="container-fluid">
+			<a class="navbar-brand" href="#">
+				<img src="images/logo-no-background.svg" alt="" width="150" />
+			</a>
+			<button
+				class="navbar-toggler"
+				type="button"
+				data-bs-toggle="collapse"
+				data-bs-target="#navbarNavDropdown"
+				aria-controls="navbarNavDropdown"
+				aria-expended="false"
+				aria-label="Toggle navigation"
+				>
+				<span class="navbar-toggler-icon"></span>
+			</button>
+			<div class="collapse navbar-collapse" id="navbarNavDropdown">
+				<ul class="navbar-nav ms-auto">
+
+					<li class="nav-item btn btn-secondary" id="registerButton"
+						data-bs-toggle="modal"
+						data-bs-target="#modalRegistration">
+							Register
+					</li>
+
+					<li class="nav-item btn btn-secondary" id="loginButton"
+						data-bs-toggle="modal"
+						data-bs-target="#modalLogin">
+							Login
+					</li>
+
+					<li class="nav-item btn btn-secondary d-none shadow-none border-0"" id="logoutButton">Logout
+						<!-- <button class="btn btn-secondary shadow-none border-0" type="button">Logout</button> -->
+					</li>
+				</ul>
+			</div>
+		</div>
+	</nav>
+
+	<div class="modal fade" id="modalRegistration">
+		<div class="modal-dialog">
+		  <div class="modal-content">
+			<div class="modal-header">
+			  <h1 class="modal-title fs-5" id="registrationLabel">Registration</h1>
+			  <div class="btn-close" data-bs-dismiss="modal"></div>
+			</div>
+			<div class="modal-body">
+			  <form id="registrationForm" action="api/register/" method="POST">
+				  <div class="mb-3">
+					<label for="username" class="form-label">Username</label>
+					<input type="username" name='username' id="username" class="form-control" required>
+					<div id="usernameValidation"></div>
+				  </div>
+
+				  <div class="mb-3">
+					<label for="email" class="form-label">Email</label>
+					<input type="email" name='email' id="email" class="form-control" required>
+					<div id="emailValidation"></div>
+				  </div>
+				  <div class="mb-3">
+					<label for="password" class="form-label">Password</label>
+					<input type="password" name='password' id="password" class="form-control" required>
+					<div id="passwordValidation"></div>
+				  </div>
+				  <div class="mb-3">
+					<label for="password-check" class="form-label">Password</label>
+					<input type="password" name='password-check' id="password-check" class="form-control" required>
+					<div id="password-checkValidation"></div>
+				  </div>
+				<button type="submit" value="Register" class="btn btn-primary">Submit</button>
+			  </form>
+			</div>
+		  </div>
+		</div>
+	  </div>
+
+	  <div class="modal fade" id="modalLogin">
+		<div class="modal-dialog">
+		  <div class="modal-content">
+			<div class="modal-header">
+			  <h1 class="modal-title fs-5" id="loginLabel">Login</h1>
+			  <div class="btn-close" data-bs-dismiss="modal"></div>
+			</div>
+			<div class="modal-body">
+			  <form id="loginForm" action="api/login/" method="POST">
+				  <div class="mb-3">
+					<label for="username" class="form-label">Username</label>
+					<input type="username" name='username' id="loginUsername" class="form-control">
+				  </div>
+				  <div class="mb-3">
+					<label for="password" class="form-label">Password</label>
+					<input type="password" name='password' id="loginPassword" class="form-control">
+					<span id="loginValidation" class="error text-danger"></span>
+				  </div>
+				<button type="submit" value="Login" class="btn btn-primary">Submit</button>
+			  </form>
+			</div>
+		  </div>
+		</div>
+	  </div>
+	  <canvas id="board" width="640" height="480"></canvas>
+</body>
+</html>
