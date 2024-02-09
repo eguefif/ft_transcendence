@@ -21,7 +21,11 @@ const test = `
 	<li class="nav-item btn btn-secondary d-none shadow-none border-0"" id="logoutButton">
 	${logout}
 	</li>
-	`
+	<li class="nav-item btn btn-secondary d-none shadow-none border-0" id="profileButton"
+	data-bs-toggle="modal"
+	data-bs-target="#modalProfile">
+	Profile
+</li>`
 
 	export function createPage () {
 		document.querySelector('#navbarNavDropdown').insertAdjacentHTML("afterbegin", test);
