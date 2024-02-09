@@ -18,6 +18,6 @@ class UserSerializer(serializers.ModelSerializer):
     def validate_password(self, value):
         # Requirements: 4-24 characters, at least one uppercase, one lowercase and one number
         password_regex = r"^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)[a-zA-Z\d\w\W]{4,24}$"
-        if len(value) < 8:
+        if not re.fullmatch(password_regex, value):
             raise serializers.ValidationError("Password does not meet requirements")
         return value
