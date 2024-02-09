@@ -57,3 +57,13 @@ def logout(request):
         token.delete()
         return Response({}, status.HTTP_204_NO_CONTENT)
     return Response({"logout": False}, status.HTTP_400_BAD_REQUEST)
+
+@api_view(['GET'])
+@authentication_classes([SessionAuthentication, TokenAuthentication])
+@permission_classes([IsAuthenticated])
+def user_info(request):
+    user_id = request.query_params.get('id', None)
+    if user_id:
+        token = get_object_or_404(Token, user=user_id)
+        return Response({"ok": "ok"}, status=status.HTTP_200_OK)
+    return Response(None, status=status.HTTP_404_NOT_FOUND)

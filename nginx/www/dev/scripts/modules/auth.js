@@ -12,7 +12,6 @@ function authLogout()
 						headers: {"Content-Type": "application/json", 'Authorization': 'Token ' + csrf},
 						body: body
 					})
-					//const data = await res.json()
 					if (res.status == 204){
 						localStorage.removeItem('csrf')
 						showLogin()
@@ -28,19 +27,53 @@ function authLogout()
 		)
 }
 
+
+function validateInput(textBox, validationBox, errorMessage) {
+    textBox.addEventListener('focusout', (event) => {
+		event.preventDefault()
+        const value = textBox.value;
+        if ( value.length < 4) {
+            validationBox.classList.add("error");
+            validationBox.innerHTML = errorMessage;
+        }
+		else {
+			validationBox.classList.remove("error");
+            validationBox.innerHTML = "";
+		}
+    });
+}
+
+const textBoxName = document.getElementById('username');
+const textBoxEmail = document.getElementById('email');
+const textBoxPassword = document.getElementById('password');
+const textBoxPasswordCheck = document.getElementById('password-check');
+
+const usernameValidationBox = document.getElementById('usernameValidation');
+const emailValidationBox = document.getElementById('emailValidation');
+const passwordValidationBox = document.getElementById('passwordValidation');
+const passwordCheckValidationBox = document.getElementById('password-checkValidation');
+
+validateInput(textBoxName, usernameValidationBox, "This field is the wrong size.");
+validateInput(textBoxEmail, emailValidationBox, "This field is the wrong size.");
+validateInput(textBoxPassword, passwordValidationBox, "This field is the wrong size.");
+validateInput(textBoxPasswordCheck, passwordCheckValidationBox, "This field is the wrong size.");
+
+
+
+
 function authRegister()
 {
 	const registrationForm = document.querySelector("#registrationForm")
 	registrationForm.addEventListener("submit", function(e){
 		e.preventDefault()
-		const data = new FormData(e.target);
-		const url = e.target.action
-		const body = {
-			'username': data.get('username'),
-			'email': data.get('email'),
-			'password': data.get('password'),
-		}
-		sendRegistrationRequest(url, body)
+			const data = new FormData(e.target);
+			const url = e.target.action
+			const body = {
+				'username': data.get('username'),
+				'email': data.get('email'),
+				'password': data.get('password'),
+			}
+			sendRegistrationRequest(url, body)
 	})
 }
 
@@ -56,7 +89,35 @@ function authLogin()
 			'password': data.get('password'),
 		}
 		sendLoginRequest(url, body)
-		// showLobby()
+	})
+}
+
+function profileInfo()
+{
+	const profileBtn = document.querySelector("#profileButton")
+	profileBtn.addEventListener("click", async function (e) {
+		const user = JSON.parse(localStorage.getItem('user'))
+		const csrf = localStorage.getItem('csrf')
+		console.log(user)
+		try {
+			const res = await fetch(`/api/userinfo/?id=${user['id']}`, {
+				method: "GET",
+				credentials: "same-origin",
+				headers: {"Content-Type": "application/json", 'Authorization': 'Token ' + csrf}
+			})
+			const data = await res.json()
+			console.log(data)
+			if (res.status == 200)
+			{
+
+			}
+			else
+			{
+
+			}
+		} catch (error) {
+			console.log("Profile: could not get user info")
+		}
 	})
 }
 
@@ -79,7 +140,6 @@ async function sendLoginRequest(url, body, method)
 			validation.innerHTML = ""
 			document.querySelector("#modalLogin").classList.remove("show")
 			document.querySelector(".modal-backdrop").classList.remove("show")
-			// $("#modalLogin").modal("hide")
 			showLobby()
 
 		}
@@ -149,9 +209,11 @@ function showLobby()
 		let loginButton = document.getElementById("loginButton")
 		let logoutButton = document.getElementById("logoutButton")
 		let registerButton = document.getElementById("registerButton")
+		let profileButton = document.getElementById("profileButton")
 		loginButton.classList.add('d-none')
 		registerButton.classList.add('d-none')
 		logoutButton.classList.remove('d-none')
+		profileButton.classList.remove('d-none')
 }
 
 function showLogin()
@@ -159,9 +221,11 @@ function showLogin()
 		let loginButton = document.getElementById("loginButton")
 		let logoutButton = document.getElementById("logoutButton")
 		let registerButton = document.getElementById("registerButton")
+		let profileButton = document.getElementById("profileButton")
 		loginButton.classList.remove('d-none')
 		registerButton.classList.remove('d-none')
 		logoutButton.classList.add('d-none')
+		profileButton.classList.add('d-none')
 }
 
 function isAuthenticated()
@@ -179,4 +243,5 @@ export function initAuth() {
 	authRegister();
 	authLogin();
 	authLogout();
+	profileInfo();
 }

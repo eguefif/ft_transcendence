@@ -9,7 +9,9 @@ RUN rm /requirements.txt
 
 RUN mkdir -p /var/src
 RUN mkdir -p /var/src/app
+
 COPY ./transcendence /var/src/app/
+
 COPY ./tools/entry-point.sh /
 RUN chmod +x /entry-point.sh
 

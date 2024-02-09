@@ -1,0 +1,23 @@
+{
+  "name": "transcendence",
+  "version": "1.0.0",
+  "description": "Transcendence project",
+  "main": "main.js",
+  "scripts": {
+    "dev": "sass --no-source-map --watch scss/styles.scss:styles/styles.css",
+    "build": "webpack --mode='production'"
+  },
+  "author": "PelletierM",
+  "license": "ISC",
+  "dependencies": {
+    "babel-loader": "^9.1.3",
+    "bootstrap": "^5.3.2",
+    "copy-webpack-plugin": "^12.0.2",
+    "file-loader": "^6.2.0",
+    "html-loader": "^5.0.0",
+    "sass": "^1.70.0",
+    "sass-loader": "^14.1.0",
+    "webpack": "^5.90.1",
+    "webpack-cli": "^5.1.4"
+  }
+}
