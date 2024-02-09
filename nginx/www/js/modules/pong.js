@@ -15,7 +15,7 @@ class Game{
 		this.init_event()
 		this.ball.init_position()
 		this.game_active = false
-		this.state = "none"
+		this.result = "none"
 		this.player1Score = 0
 		this.player2Score = 0
 	}
@@ -26,7 +26,7 @@ class Game{
 		console.log("speed", this.ball.speed)
 		console.log("dir x ", this.ball.dir.x)
 		console.log("dir y ", this.ball.dir.y)
-		this.state = "none"
+		this.result = "none"
 	}
 
 	init_event()
