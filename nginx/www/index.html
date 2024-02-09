@@ -40,9 +40,15 @@
 							Login
 					</li>
 
+					<li class="nav-item btn btn-secondary d-none shadow-none border-0" id="profileButton"
+						data-bs-toggle="modal"
+						data-bs-target="#modalProfile">
+						Profile
+					</li>
 					<li class="nav-item btn btn-secondary d-none shadow-none border-0"" id="logoutButton">Logout
 						<!-- <button class="btn btn-secondary shadow-none border-0" type="button">Logout</button> -->
 					</li>
+					
 				</ul>
 			</div>
 		</div>
@@ -109,6 +115,32 @@
 		  </div>
 		</div>
 	  </div>
+
+	  <div class="modal fade" id="modalProfile">
+		<div class="modal-dialog modal-lg">
+			<div class="modal-content">
+				<div class="modal-header">
+					<h1 class="modal-title fs-5" id="profileLabel">Profile</h1>
+					<div class="btn-close" data-bs-dismiss="modal"></div>
+				</div>
+				<div class="modal-body">
+					<form id="profileForm" action="api/updateprofile/" method="PATCH">
+						<div class="mb-3">
+							<label for="username" class="col-md-3 col-form-label">Username</label>
+							<input type="username" name="username" id="profileUsername" class="form-control" placeholder="name" disabled>
+						</div>
+						<div class="mb-3">
+							<label for="email" class="col-md-3 col-form-label">Email</label>
+							<input type="email" name="email" id="profileEmail" class="form-control" placeholder="mail" disabled>
+						</div>
+						<button type="button" class="btn btn-primary">Modify</button>
+						<button type="submit" class="btn btn-primary d-none">Save changes</button>
+					</form>
+				</div>
+			</div>
+		</div>
+	  </div>
+
 	  <canvas id="board" width="640" height="480"></canvas>
 </body>
 </html>
