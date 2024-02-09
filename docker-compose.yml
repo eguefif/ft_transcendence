@@ -30,7 +30,7 @@ services:
     networks:
       - transcendence-net
     volumes:
-      - ./django/transcendence:/usr/src/app
+      - ./django/transcendence:/var/src/app
 
   postgres:
     image: postgres:latest
