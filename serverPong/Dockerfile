@@ -9,10 +9,10 @@ RUN rm /requirements.txt
 
 RUN mkdir -p /var/src
 RUN mkdir -p /var/src/app
-COPY ./serverPong/* /var/src/app/
+
+COPY ./tools/entry-point.sh /
+RUN chmod +x /entry-point.sh
 
 expose 8000
 
-WORKDIR /var/src/app
-#CMD ["tail", "-f", "/dev/null"]
-CMD ["python3 runServer.py"]
+CMD ["./entry-point.sh"]

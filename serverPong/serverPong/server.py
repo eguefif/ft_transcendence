@@ -13,8 +13,7 @@ class serverPong:
         addr = writer.get_extra_info('peername')
         print(addr)
 
-        writer.write(b"hello\n")
-        await writer.drain()
+        self.sendMsg("endgame")
         writer.close()
         await writer.wait_closed()
 
