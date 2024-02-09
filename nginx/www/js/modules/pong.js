@@ -4,6 +4,8 @@ export function initLocalPong()
 	game.run()
 }
 
+
+
 class Game{
 	constructor(player1, player2)
 	{
@@ -22,7 +24,7 @@ class Game{
 
 	reset(){
 		this.ball.init_position()
-		this.ball.speed = 5
+		this.ball.speed = 1
 		console.log("speed", this.ball.speed)
 		console.log("dir x ", this.ball.dir.x)
 		console.log("dir y ", this.ball.dir.y)
@@ -175,18 +177,21 @@ class Ball {
 
 	checkPaddleCollision(paddle_1, paddle_2)
 	{
-		if (this.isCollidingRightPaddle(paddle_2) || this.isCollidingLeftPaddle(paddle_1))
+		if (this.isCollidingRightPaddle(paddle_2))
 			this.dir.x *= -1
+		if (this.isCollidingLeftPaddle(paddle_1))
+			this.dir.x *= -1
+
 	}
 
 	isCollidingLeftPaddle(paddle)
 	{
-		return this.x - this.radius <= paddle.x && this.y <= paddle.top && this.y >= paddle.bottom
+		return this.x - this.radius <= paddle.x && this.y <= paddle.top && this.y >= paddle.bottom && this.dir.x < 0
 	}
 
 	isCollidingRightPaddle(paddle)
 	{
-		return this.x + this.radius >= paddle.x && this.y <= paddle.top && this.y >= paddle.bottom
+		return this.x + this.radius >= paddle.x && this.y <= paddle.top && this.y >= paddle.bottom && this.dir.x > 0
 	}
 }
 
