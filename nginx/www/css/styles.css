@@ -3,6 +3,30 @@ li {
   margin: 1rem;
 }
 
+#board {
+  /* background-image: linear-gradient( 
+          to right, #8a2727ef, #cb0202);  */
+  border-radius: 14px;
+  margin-left: 20%;
+  margin-top: 20%;
+  border: 0.2em solid #000000;
+}
+
+#player1_score {
+  margin-left: 20%;
+  color: rgb(0, 0, 0);
+  display: inline-block;
+  padding: 10px; /* Adjust as needed */
+  font-size: 20px; /* Adjust as needed */
+}
+
+#player2_score {
+  color: rgb(255, 0, 0);
+  display: inline-block;
+  padding: 10px; /* Adjust as needed */
+  font-size: 20px; /* Adjust as needed */
+}
+
 /*!
  * Bootstrap  v5.3.2 (https://getbootstrap.com/)
  * Copyright 2011-2023 The Bootstrap Authors
