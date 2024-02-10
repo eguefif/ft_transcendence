@@ -1,62 +1,66 @@
-const newFrameEvent = new Event("newFrameEvent")
-
 export function initLocalPong()
 {
 	const model = new Game("player1", "player2")
 	const view = new graphicEngine()
 	const controller = new Controller(model, view)
-
-	model.run()
 }
 
 class Controller{
 	constructor(model, view){
 		this.model = model
 		this.view = view
-		this.setupNewFrameListener()
-		document.dispatchEvent(newFrameEvent)
+		this.playButton = document.querySelector("#playButton")
+		this.initListener()
+		this.view.display(this.model);
+		this.run()
 	}
-
-	setupNewFrameListener()
+	
+	run()
 	{
-		document.addEventListener("newFrameEvent", (e) => {
-			this.startTimer = this.model.startTimer
-			this.paddle1_x = this.model.paddle1.x
-			this.paddle1_top = this.model.paddle1.top
-			this.paddle1_bottom = this.model.paddle1.bottom
-			this.paddle2_x = this.model.paddle2.x
-			this.paddle2_top = this.model.paddle2.top
-			this.paddle2_bottom = this.model.paddle2.bottom
-			this.ball_radius = this.model.ball.radius
-			this.ball_x = this.model.ball.x
-			this.ball_y = this.model.ball.y
-			this.player1Score = this.model.player1Score
-			this.player2Score = this.model.player2Score
-			this.winnerMessage = this.model.winnerMessage
+		const update = () => {
+			if (!this.model.game_active)
+				this.playButton.classList.remove('d-none')
 
-			this.view.display(this)
+			this.model.update();
+			this.view.display(this.model);
+
+			requestAnimationFrame(update);
+		};
+	
+		update();
+	}
+	initListener(){
+		this.playButton.addEventListener("click", (e) => {
+			if (!this.model.game_active)
+			{
+				this.model.initGame()
+				this.playButton.classList.add('d-none')
+			}
 		})
 	}
-
 }
 
 class Game{
 	constructor(player1, player2)
 	{
 		this.board = document.getElementById("board")
-		this.playButton = document.querySelector("#playButton")
 		this.paddle1 = new Paddle(player1, "right", board)
 		this.paddle2 = new Paddle(player2, "left", board)
 		this.ball = new Ball(board)
-		this.graphicEngine = new graphicEngine()
 		this.init_event()
 		this.game_active = false
 		this.state = "none"
 		this.player1Score = 0
 		this.player2Score = 0
-		this.pointsToWin = 3
+		this.pointsToWin = 1
 		this.startTimer = 0
 		this.winnerMessage = ""
+	}
+
+	initGame()
+	{
+		this.reset()
+		this.game_active=true
 	}
 
 	countdown()
@@ -86,15 +90,6 @@ class Game{
 
 	init_event()
 	{
-		this.playButton.addEventListener("click", (e) => {
-			if (!this.game_active)
-			{
-				this.reset()
-				this.game_active=true
-				this.playButton.classList.add('d-none')
-				this.run()
-			}
-		})
 
 		document.addEventListener("keydown", (e) => {
 			if (e.key == 'ArrowDown')
@@ -119,7 +114,7 @@ class Game{
 			})
 	}
 
-	run()
+	update()
 	{
 		if (this.game_active == true)
 		{
@@ -139,14 +134,12 @@ class Game{
 				
 				this.ball.in_play = false
 			}
-			document.dispatchEvent(newFrameEvent)
-			requestAnimationFrame(() => {this.run()})
 		}
 	}
 
 	playerWonUpdate(message)
 	{
-		this.playButton.classList.remove('d-none')
+		// this.playButton.classList.remove('d-none')
 		this.game_active = false
 		this.winnerMessage = message
 	}
@@ -284,14 +277,14 @@ class graphicEngine
 		this.ctx =  board.getContext("2d")
 	}
 
-	display(controller) {
+	display(model) {
 		this.ctx.clearRect(0, 0, board.width, board.height)
-		this.displayStartTimer(controller.startTimer)
-		this.displayBall(controller.ball_x, controller.ball_y, controller.ball_radius)
-		this.displayPaddle(controller.paddle1_x, controller.paddle1_top, controller.paddle1_bottom)
-		this.displayPaddle(controller.paddle2_x, controller.paddle2_top, controller.paddle2_bottom)
-		this.displayScore(controller.player1Score, controller.player2Score)
-		this.displayWinner(controller.winnerMessage)
+		this.displayStartTimer(model.startTimer)
+		this.displayBall(model.ball.x, model.ball.y, model.ball.radius)
+		this.displayPaddle(model.paddle1.x, model.paddle1.top, model.paddle1.bottom)
+		this.displayPaddle(model.paddle2.x, model.paddle2.top, model.paddle2.bottom)
+		this.displayScore(model.player1Score, model.player2Score)
+		this.displayWinner(model.winnerMessage)
 
 		this.ctx.stroke()
 	}
