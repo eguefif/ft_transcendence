@@ -1,5 +1,6 @@
 from server import serverPong
 import asyncio
 
-server = serverPong()
-asyncio.run(server.run())
+if __name__ == "__main__":
+    server = serverPong()
+    asyncio.run(server.run())

@@ -1,41 +1,21 @@
 import asyncio
-import signal
+import websockets
 import logging
+import time
 
 class serverPong:
     def __init__(self):
-        print("init")    
-        streams = []
+        gamesList = []
 
-    async def handleNewClient(self, reader, writer):
-        data = await reader.read(100)
-        message = data.decode()
-        addr = writer.get_extra_info('peername')
-        print(addr)
+    async def handler(self, websocket):
+        message = await websocket.recv()
+        if (message == "game"):
+            await websocket.send("player1")
+        time.sleep(3)
+        await websocket.send("getready")
 
-        self.sendMsg("endgame")
-        writer.close()
-        await writer.wait_closed()
-
-    async def graceFullyExit(self, signal, frame):
-        loggind.info("Gracefully exit server")
-        for writer, _ in streams:
-            logging.info("Close the connection")
-            self.sendMsg("endgame", writer)
-            writer.close()
-            await writer.wait_closed()
-
-    async def sendMsg(msg, writer):
-        writer.write(bytes(msg))
-        writer.write(b"\n")
-        await writer.drain()
 
     async def run(self):
-        server = await asyncio.start_server(
-                self.handleNewClient, '0.0.0.0', 10000)
+        async with websockets.serve(self.handler, "", 10000):
+            await asyncio.Future()
 
-        addrs = ','.join(str(sock.getsockname()) for sock in server.sockets)
-        print(f'Serving on {addrs}')
-
-        async with server:
-            await server.serve_forever()
