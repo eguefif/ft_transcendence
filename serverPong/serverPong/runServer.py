@@ -1,4 +1,4 @@
-from server import serverPong
+from Server import serverPong
 import asyncio
 
 if __name__ == "__main__":
