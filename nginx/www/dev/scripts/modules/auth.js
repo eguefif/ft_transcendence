@@ -92,13 +92,30 @@ function authLogin()
 	})
 }
 
+function authUpdateProfile()
+{
+	const modifyProfileForm = document.querySelector("#profileForm")
+	modifyProfileForm.addEventListener("submit", function (e) {
+		e.preventDefault()
+		const data = new FormData(e.target)
+		const url = e.target.action
+		const body = {
+			'username': data.get('username'),
+			'email': data.get('email'),
+		}
+		sendUpdateProfileRequest(url, body)
+	})
+}
+
 function profileInfo()
 {
 	const profileBtn = document.querySelector("#profileButton")
 	profileBtn.addEventListener("click", async function (e) {
-		//const user = JSON.parse(localStorage.getItem('user'))
+		document.querySelector("#profileUsername").disabled = true
+		document.querySelector("#profileEmail").disabled = true
 		const csrf = localStorage.getItem('csrf')
 		try {
+			
 			const res = await fetch("/api/userinfo/", {
 				method: "GET",
 				credentials: "same-origin",
@@ -119,6 +136,37 @@ function profileInfo()
 			console.log("Profile: could not get user info")
 		}
 	})
+}
+
+function changeProfile()
+{
+	const modifyProfileBtn = document.querySelector("#modifyProfile")
+	modifyProfileBtn.addEventListener("click", async function (e) {
+		const profileUsername = document.querySelector("#profileUsername")
+		const emailUsername = document.querySelector("#profileEmail")
+		profileUsername.disabled = false
+		emailUsername.disabled = false
+		document.querySelector("#modifyProfile").classList.add("d-none")
+		document.querySelector("#profileSaveChanges").classList.remove("d-none")
+	})
+}
+
+async function sendUpdateProfileRequest(url, body)
+{
+	const bodyJSON = JSON.stringify(body)
+	const csrf = localStorage.getItem('csrf')
+
+	try {
+		const res = await fetch(url, {
+			method: "PATCH",
+			credentials: "same-origin",
+			headers: {"Content-Type": "application/json", 'Authorization': 'Token ' + csrf},
+			body: bodyJSON
+		})
+		console.log(res)
+	} catch (error) {
+		console.log(error)
+	}
 }
 
 async function sendLoginRequest(url, body, method)
@@ -243,5 +291,7 @@ export function initAuth() {
 	authRegister();
 	authLogin();
 	authLogout();
+	authUpdateProfile();
 	profileInfo();
+	changeProfile();
 }
