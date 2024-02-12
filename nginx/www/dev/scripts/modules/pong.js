@@ -1,6 +1,6 @@
 export function initLocalPong()
 {
-	const model = new Game("player1", "player2")
+	const model = new LocalGame("player1", "player2")
 	const view = new graphicEngine()
 	const controller = new Controller(model, view)
 }
@@ -41,20 +41,118 @@ class Controller{
 }
 
 class Game{
-	constructor(player1, player2)
-	{
-		this.board = document.getElementById("board")
-		this.paddle1 = new Paddle(player1, "right", board)
-		this.paddle2 = new Paddle(player2, "left", board)
-		this.ball = new Ball(board)
-		this.init_event()
-		this.game_active = false
-		this.state = "none"
+	constructor(){
 		this.player1Score = 0
 		this.player2Score = 0
-		this.pointsToWin = 1
-		this.startTimer = 0
+		this.StartTimer = 0
 		this.winnerMessage = ""
+
+
+		
+		if (this.constructor == Game) {//abstract class
+			throw new Error("Abstract classes can't be instantiated.");
+		  }
+	}
+}
+
+class remoteGame extends Game{
+	constructor(){
+		super()
+		this.paddle1 = new Paddle()
+		this.paddle2 = new Paddle()
+		this.ball = new Ball()
+		this.websocket = new WebSocket("ws://localhost:10000/")
+		this.init_event()
+		this.state = "waiting"
+	}
+
+	update(msg){
+		// this = msg
+		this.paddle1 = msg.paddle1
+		this.paddle2 = msg.paddle2
+		this.ball = msg.ball
+		this.player1Score = msg.score.player1
+		this.player2Score = msg.score.player2
+		this.StartTimer = msg.startTimer
+		this.winnerMessage = msg.winnerMessage
+	}
+
+	init_event()
+	{
+		this.websocket.addEventListener("open", (e) => {
+				this.websocket.send("game")
+		})
+
+		this.websocket.addEventListener("message", (e) => {
+				msg = JSON.parse(e)
+				if (msg.command == "wait")
+					this.state = "waiting"
+				if (msg.command == "getready")
+					this.state = "getready"
+				if (msg.command == "data") {
+						this.update(msg)
+				}
+				if (msg.command == "end")
+						this.state == "over"
+		})
+
+		document.addEventListener("keydown", (e) => {
+			if (this.state == "running") {
+				if (e.key == 'ArrowDown')
+					this.websocket.send("down")
+				else if (e.key == 'ArrowUp') 
+					this.websocket.send("up")
+			}
+			if (e.key == 'space' && this.state == "getready")
+				this.websocket.send("ready")
+				this.state = "running"
+			})
+
+		document.addEventListener("keyup", (e) => {
+			if (this.state == "running")
+				this.websocket.send("stop")
+			})
+		}
+
+	}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+class LocalGame extends Game{
+	constructor(player1, player2)
+	{
+		super()
+		this.board = document.getElementById("board")
+		this.paddle1 = new LocalPaddle(player1, "right", board)
+		this.paddle2 = new LocalPaddle(player2, "left", board)
+		this.ball = new LocalBall(board)
+		this.init_event()
+		this.game_active	= false
+		this.state			= "none"
+		this.pointsToWin	= 1
 	}
 
 	initGame()
@@ -163,16 +261,25 @@ class Game{
 
 }
 
-class Paddle {
+class Paddle{
+	constructor(){
+		this.x = 0
+		this.top = 0
+		this.bottom = 0
+	}
+}
+
+class LocalPaddle extends Paddle{
     constructor(playerName, side, gameBoard)
     {
+		super()
 		this.board = gameBoard
-		this.paddle_margin_x = 15
-		this.paddle_margin_y = 10
-		this.paddle_speed = 5
+		this.paddle_margin_x = board.width / 32
+		this.paddle_margin_y = board.height / 48
+		this.paddle_speed = this.board.height / 96
 		this.name = playerName
         this.y = this.board.height / 2
-        this.halfPaddleHeight = 30
+        this.halfPaddleHeight = this.board.height / 16
         this.top = this.y + this.halfPaddleHeight
         this.bottom = this.y - this.halfPaddleHeight
         this.move_up = false
@@ -199,11 +306,20 @@ class Paddle {
     }
 }
 
-class Ball {
+
+class Ball{
+	constructor(){
+		this.radius = board.height / 50
+		this.x = 0
+		this.y = 0
+	}
+}
+
+class LocalBall extends Ball{
     constructor(gameBoard) {
+		super()
 		this.board = gameBoard
-        this.radius = 10
-        this.speed = 4
+        this.speed = this.board.height / 120
 		this.reset()
 		this.in_play = false
     }
@@ -270,6 +386,17 @@ class Ball {
 		return this.x + this.radius >= paddle.x && this.y <= paddle.top && this.y >= paddle.bottom && this.dir.x > 0
 	}
 }
+
+
+
+
+
+
+
+
+
+
+
 
 class graphicEngine
 {
