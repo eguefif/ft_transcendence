@@ -42,6 +42,9 @@
 				  <div class="mb-3">
 					<label for="username" class="form-label">Username</label>
 					<input type="username" name='username' id="username" class="form-control">
+					<small class="form-text text-muted">
+						Your username must have between 4-24 characters, only letters and numbers.
+					</small>
 					<div id="usernameValidation"></div>
 				  </div>
 
@@ -53,6 +56,9 @@
 				  <div class="mb-3">
 					<label for="password" class="form-label">Password</label>
 					<input type="password" name='password' id="password" class="form-control">
+					<small class="form-text text-muted">
+						Your password must have between 4-24 characters, at least one uppercase, one lowercase and one number.
+					</small>
 					<div id="passwordValidation"></div>
 				  </div>
 				  <div class="mb-3">
@@ -103,14 +109,18 @@
 					<form id="profileForm" action="api/updateprofile/" method="PATCH">
 						<div class="mb-3">
 							<label for="username" class="col-md-3 col-form-label">Username</label>
-							<input type="username" name="username" id="profileUsername" class="form-control" placeholder="${name}" disabled>
+							<input type="username" name="username" id="profileUsername" class="form-control" placeholder="username" disabled>
+							<div id="profileUsernameValidation"></div>
 						</div>
 						<div class="mb-3">
 							<label for="email" class="col-md-3 col-form-label">Email</label>
-							<input type="email" name="email" id="profileEmail" class="form-control" placeholder="mail" disabled>
+							<input type="email" name="email" id="profileEmail" class="form-control" placeholder="email" disabled>
+							<div id="profileEmailValidation"></div>
 						</div>
 						<button type="button" class="btn btn-primary" id="modifyProfile">Modify</button>
 						<button type="submit" class="btn btn-primary d-none" id="profileSaveChanges">Save changes</button>
+						<!-- <a href="waddup" data-bs-toggle="modal"
+						data-bs-target="#modalPassword">Change Password</a> -->
 					</form>
 				</div>
 			</div>

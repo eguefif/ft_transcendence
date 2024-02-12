@@ -59,8 +59,6 @@ validateInput(textBoxPassword, passwordValidationBox, "This field is the wrong s
 validateInput(textBoxPasswordCheck, passwordCheckValidationBox, "This field is the wrong size.");
 
 
-
-
 function authRegister()
 {
 	const registrationForm = document.querySelector("#registrationForm")
@@ -113,6 +111,8 @@ function profileInfo()
 	profileBtn.addEventListener("click", async function (e) {
 		document.querySelector("#profileUsername").disabled = true
 		document.querySelector("#profileEmail").disabled = true
+		document.querySelector("#profileSaveChanges").classList.add("d-none")
+		document.querySelector("#modifyProfile").classList.remove("d-none")
 		const csrf = localStorage.getItem('csrf')
 		try {
 			
@@ -151,10 +151,26 @@ function changeProfile()
 	})
 }
 
+function resetFormInput(form) {
+	const inputs = form.querySelectorAll("input")
+	inputs.forEach(input => {
+		input.classList.remove("is-invalid")
+		//input.classList.add("is-valid")
+	})
+	// Reset validations
+}
+
 async function sendUpdateProfileRequest(url, body)
 {
 	const bodyJSON = JSON.stringify(body)
 	const csrf = localStorage.getItem('csrf')
+	const profileUsername = document.querySelector("#profileUsername")
+	const profileEmail = document.querySelector("#profileEmail")
+	const profileUsernameValidation = document.querySelector("#profileUsernameValidation")
+	const profileEmailValidation = document.querySelector("#profileEmailValidation")
+
+	const form = document.getElementById("profileForm")
+	resetFormInput(form)
 
 	try {
 		const res = await fetch(url, {
@@ -163,7 +179,36 @@ async function sendUpdateProfileRequest(url, body)
 			headers: {"Content-Type": "application/json", 'Authorization': 'Token ' + csrf},
 			body: bodyJSON
 		})
-		console.log(res)
+		const data = await res.json()
+		if (res.status == 201)
+		{
+			document.querySelector("#profileSaveChanges").classList.add("d-none")
+			document.querySelector("#modifyProfile").classList.remove("d-none")
+			profileUsername.disabled = true
+			profileEmail.disabled = true
+			// alert test
+			document.querySelector("#modalProfile").insertAdjacentHTML("afterbegin", `
+			<div class="alert alert-success alert-dismissible fade show" role="alert">
+				<strong>Success!</strong> Your information has been saved.
+				<button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+			</div>
+			`)
+		}
+		else if (res.status == 400)
+		{
+			if (data['username'])
+			{
+				profileUsername.classList.add("is-invalid")
+				profileUsernameValidation.classList.add("invalid-feedback")
+				profileUsernameValidation.innerHTML = data['username']
+			}
+			if (data['email'])
+			{
+				profileEmail.classList.add("is-invalid")
+				profileEmailValidation.classList.add("invalid-feedback")
+				profileEmailValidation.innerHTML = data['email']
+			}
+		}
 	} catch (error) {
 		console.log(error)
 	}
@@ -189,7 +234,6 @@ async function sendLoginRequest(url, body, method)
 			document.querySelector("#modalLogin").classList.remove("show")
 			document.querySelector(".modal-backdrop").classList.remove("show")
 			showLobby()
-
 		}
 		else
 		{
@@ -207,13 +251,8 @@ async function sendRegistrationRequest(url, body, method)
 {
 	const bodyJSON = JSON.stringify(body);
 
-	// TODO faire fonctions reset inputs a valid
 	const form = document.getElementById("registrationForm")
-	const inputs = form.querySelectorAll("input")
-	inputs.forEach(input => {
-		input.classList.remove("is-invalid")
-		input.classList.add("is-valid")
-	})
+	resetFormInput(form)
 
 	try
 	{
