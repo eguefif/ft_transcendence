@@ -58,9 +58,6 @@ validateInput(textBoxEmail, emailValidationBox, "This field is the wrong size.")
 validateInput(textBoxPassword, passwordValidationBox, "This field is the wrong size.");
 validateInput(textBoxPasswordCheck, passwordCheckValidationBox, "This field is the wrong size.");
 
-
-
-
 function authRegister()
 {
 	const registrationForm = document.querySelector("#registrationForm")
@@ -69,6 +66,7 @@ function authRegister()
 			const data = new FormData(e.target);
 			const url = e.target.action
 			const body = {
+				'formType': "register",
 				'username': data.get('username'),
 				'email': data.get('email'),
 				'password': data.get('password'),
@@ -85,6 +83,7 @@ function authLogin()
 		const data = new FormData(e.target);
 		const url = e.target.action
 		const body = {
+			'formType': "login",
 			'username': data.get('username'),
 			'password': data.get('password'),
 		}
