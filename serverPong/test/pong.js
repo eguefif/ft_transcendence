@@ -96,8 +96,8 @@ class Game{
 	constructor(player1, player2)
 	{
 		this.board = document.getElementById("board")
-		this.paddle_1 = new Paddle(player1, "right", this.board)
-		this.paddle_2 = new Paddle(player2, "left", this.board)
+		this.paddle1 = new Paddle(player1, "right", this.board)
+		this.paddle2 = new Paddle(player2, "left", this.board)
 		this.ball = new Ball(this.board)
 		this.graphicEngine = new graphicEngine()
 		this.init_event()
@@ -126,6 +126,7 @@ class Game{
 					break;
 				case "getready":
 					this.state = "getready"
+					console.log("getready received")
 					break;
 				case "data":
 						this.paddle1.update(msg.paddle1)
@@ -147,20 +148,23 @@ class Game{
 				else if (e.key == 'ArrowUp') 
 					websocket.send("up")
 			}
-			if (e.key == 'space' && this.state == "getready")
-				websocket.send("ready")
-				this.state = "running"
 			})
 
 		document.addEventListener("keyup", (e) => {
-			if (this.state == "running")
+			console.log(this.state)
+			if (this.state == "running" && this.state == "running")
 				websocket.send("stop")
-			})
-		}
+			if (e.code == 'Space' && this.state == "getready"){
+				websocket.send("ready")
+				console.log("sending ready")
+				this.state = "running"
+				}
+		})
+	}
 
 	run()
 	{
-		this.graphicEngine.display(this.ball, this.paddle_1, this.paddle_2, this.player1Score, this.player2Score)
+		this.graphicEngine.display(this.ball, this.paddle1, this.paddle2, this.player1Score, this.player2Score)
 		requestAnimationFrame(() => {this.run()})
 	}
 }

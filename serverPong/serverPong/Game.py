@@ -31,6 +31,7 @@ class Game:
         if self.state == "ending":
             return
         if self.state == "running":
+            print("running")
             if player == "player1":
                 self.paddle1.update(message)
             elif player == "player2":
@@ -44,7 +45,7 @@ class Game:
         if self.state == "starting":
             self.state = "running"
             retval = json.dumps({"command": "starting"})
-        elif self.state == "running" and not self.isEndGame():
+        elif self.state == "running" and self.isEndGame() is not True:
             result = self.move()
             if result is not None:
                 self.init_game()
@@ -58,7 +59,8 @@ class Game:
                     "score": self.score,
                 }
             )
-        elif self.isEndGame():
+        if self.isEndGame() is True:
+            print(self.isEndGame())
             self.state = "ending"
         return retval
 
@@ -79,7 +81,7 @@ class Game:
         return self.ball.move(self.paddle1, self.paddle2)
 
     def isEndGame(self):
-        return self.score["player1"] == 3 or self.score["player2"]
+        return self.score["player1"] == 3 or self.score["player2"] == 3
 
     def __repr__(self):
         retval = f"Game: {self.player1}, {self.player2}"
