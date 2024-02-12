@@ -43,6 +43,34 @@ function validateInput(textBox, validationBox, errorMessage) {
     });
 }
 
+function validatePassword(textBox, validationBox) {
+	textBox.addEventListener('focusout', (e) => {
+		e.preventDefault()
+		const value = textBox.value
+		if (value.length < 4) {
+			validationBox.classList.add("error")
+			validationBox.innerHTML = "Password is too short"
+		} else {
+			validationBox.classList.remove("error");
+            validationBox.innerHTML = "";
+		}
+	})
+}
+
+function validatePasswordCheck(passTextBox, confirmTextBox, confirmValidationBox) {
+	confirmTextBox.addEventListener('focusout', (e) => {
+		const passValue = passTextBox.value
+		const passCheckValue = confirmTextBox.value
+		if (passValue != passCheckValue) {
+			confirmValidationBox.classList.add("error")
+			confirmValidationBox.innerHTML = "Passwords don't match"
+		} else {
+			confirmValidationBox.classList.remove("error")
+			confirmValidationBox.innerHTML = ""
+		}
+	})
+}
+
 const textBoxName = document.getElementById('username');
 const textBoxEmail = document.getElementById('email');
 const textBoxPassword = document.getElementById('password');
@@ -55,9 +83,8 @@ const passwordCheckValidationBox = document.getElementById('password-checkValida
 
 validateInput(textBoxName, usernameValidationBox, "This field is the wrong size.");
 validateInput(textBoxEmail, emailValidationBox, "This field is the wrong size.");
-validateInput(textBoxPassword, passwordValidationBox, "This field is the wrong size.");
-validateInput(textBoxPasswordCheck, passwordCheckValidationBox, "This field is the wrong size.");
-
+validatePassword(textBoxPassword, passwordValidationBox);
+validatePasswordCheck(textBoxPassword, textBoxPasswordCheck, passwordCheckValidationBox);
 
 function authRegister()
 {
@@ -115,20 +142,18 @@ function profileInfo()
 		document.querySelector("#modifyProfile").classList.remove("d-none")
 		const csrf = localStorage.getItem('csrf')
 		try {
-			
 			const res = await fetch("/api/userinfo/", {
 				method: "GET",
 				credentials: "same-origin",
 				headers: {"Content-Type": "application/json", 'Authorization': 'Token ' + csrf}
 			})
 			const data = await res.json()
-			console.log(data)
 			if (res.status == 200)
 			{
 				document.querySelector("#profileUsername").value = data['username']
 				document.querySelector("#profileEmail").value = data['email']
 			}
-			else
+			else if (ResizeObserver.status == 403) //forbidden, retour a la page de connection
 			{
 
 			}
