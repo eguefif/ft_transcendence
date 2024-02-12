@@ -38,8 +38,9 @@ class serverPong:
 
     async def runGame(self, gameid):
         _, game, websocket1, websocket2 = self.getDataFromGameId(gameid)
-        await websocket1.send("getready")
-        await websocket1.send("getready")
+        cmd = json.dumps("command": getready)
+        await websocket1.send(cmd)
+        await websocket1.send(cmd)
         consumer_task1 = asyncio.create_task(consumer_handler(websocket1, game, "player1"))
         consumer_task2 = asyncio.create_task(consumer_handler(websocket2, game, "player2"))
         producer_task1 = asyncio.create_task(producer_handler(websocket1, game))
@@ -54,10 +55,9 @@ class serverPong:
 
     async def producer_handler(self, websocket, game):
         while game.state != "end":
-            message = await game.getData()
+            message = await game.run()
             await websocket.send(message)
-        await websocket.send("end")
-
+        await websocket.send(json.dumps({"command": "end"))
 
     def getDataFromGameId(self, gameid):
         for datum in self.data:

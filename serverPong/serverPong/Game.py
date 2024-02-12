@@ -1,5 +1,8 @@
 import json
 
+from Paddle import Paddle
+from Ball import Ball
+
 
 class Game:
     def __init__(self, player1):
@@ -9,6 +12,8 @@ class Game:
         self.score = {"player1": 0, "player2": 0}
         self.state = "waiting"
         self.player1 = player1
+        self.p1_ready = False
+        self.p2_ready = False
 
     def addPlayer(self, player):
         self.player2 = player
@@ -24,42 +29,52 @@ class Game:
                 return
         if self.state == "ending":
             return
+        if player == "player1":
+            self.paddle1.update(message)
+        elif player == "player2":
+            self.paddle1.update(message)
 
     def isReady(self):
         return self.p1_ready and self.p2_ready
 
-    async def getData(self):
+    def run(self):
+        retval = {}
         if self.state == "starting":
-            self.state == "running"
+            self.state = "running"
             retval = json.dumps({"commands": "starting"})
         elif self.state == "running" and not self.isEndGame():
-            retval = json.dumps({
-                "ball": self.ball.getPosition,
-                "paddle1": self.paddle1.getPosition,
-                "paddle2": self.paddle1.getPosition,
+            result = self.move()
+            if result != none:
+                self.init_game()
+                self.update_score()
+            retval = json.dumps({"command": "position",
+                "ball": self.ball.getPosition(),
+                "paddle1": self.paddle1.getPosition(),
+                "paddle2": self.paddle1.getPosition(),
                 "score": self.score})
         elif self.isEndGame():
             self.state = "end"
         return retval
 
-    def isEndGame():
+    def init_game(self):
+        self.ball.init()
+        self.palled2.init()
+        self.paddle2.init()
+
+    def update_score(self):
+        if result == "left":
+            self.score["player1"] += 1
+        else:
+            self.score["player2"] += 1
+
+    def mode(self):
+        self.paddle1.move()
+        self.paddle2.move()
+        self.ball.move(self.paddle1, self.paddle2)
+
+    def isEndGame(self):
         return self.score["player1"] == 3 or self.score["player2"]
 
     def __repr__(self):
         retval = f"Game: {self.player1}, {self.player2}"
         return retval
-
-class Ball:
-    def __init__(self):
-        self.x = 50
-        self.y = 50
-        self.speed = 3
-
-class Paddle:
-    def __init__(self, side):
-        self.y = 50
-        self.speed = 3
-        if side == 1:
-            self.x = 0
-        else :
-            self.x = 90
