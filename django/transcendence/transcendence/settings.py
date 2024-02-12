@@ -43,6 +43,7 @@ ALLOWED_HOSTS = [env["HOSTNAME"]]
 # Application definition
 
 INSTALLED_APPS = [
+    'authentication',
     'register',
     'authentification',
     'rest_framework',
