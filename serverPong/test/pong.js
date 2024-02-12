@@ -100,7 +100,6 @@ class Game{
 		this.paddle_2 = new Paddle(player2, "left", this.board)
 		this.ball = new Ball(this.board)
 		this.graphicEngine = new graphicEngine()
-		this.websocket = new WebSocket("ws://localhost:10000/")
 		this.init_event()
 		this.state = "waiting"
 		this.player1Score = 0
@@ -109,49 +108,63 @@ class Game{
 
 	init_event()
 	{
-		this.websocket.addEventListener("open", (e) => {
-				this.websocket.send("game")
-		})
+		websocket.onopen = (e) => {
+				websocket.send("game")
+		}
 
-		this.websocket.addEventListener("message", (e) => {
-				msg = JSON.stringify(e)
-				if (msg.command == "wait")
+		websocket.onclose = (e) => {
+			console.log(e)
+			console.log("disconnection")
+		}
+
+		websocket.onmessage = (e) => {
+			const msg = JSON.parse(e.data)
+			console.log(msg)
+			switch (msg.command) {
+				case "waiting":
 					this.state = "waiting"
-				if (msg.command == "getready")
+					break;
+				case "getready":
 					this.state = "getready"
-				if (msg.command == "data") {
+					break;
+				case "data":
 						this.paddle1.update(msg.paddle1)
 						this.paddle2.update(msg.paddle2)
 						this.ball.update(msg.ball)
 						this.player1Score = msg.score.player1
 						this.player2Score = msg.score.player2
-				}
-				if (msg.command == "end")
+						break;
+				case "ending":
 						this.state == "over"
-		})
+						break
+			}
+		}
 
 		document.addEventListener("keydown", (e) => {
-			if (e.key == 'ArrowDown')
-				this.websocket.send("down")
-			else if (e.key == 'ArrowUp') 
-				this.websocket.send("up")
+			if (this.state == "running") {
+				if (e.key == 'ArrowDown')
+					websocket.send("down")
+				else if (e.key == 'ArrowUp') 
+					websocket.send("up")
+			}
 			if (e.key == 'space' && this.state == "getready")
-				this.websocket.send("ready")
+				websocket.send("ready")
+				this.state = "running"
 			})
 
 		document.addEventListener("keyup", (e) => {
-			this.websocket.send("stop")
+			if (this.state == "running")
+				websocket.send("stop")
 			})
 		}
 
 	run()
 	{
 		this.graphicEngine.display(this.ball, this.paddle_1, this.paddle_2, this.player1Score, this.player2Score)
-		if (this.state == "running")
-			requestAnimationFrame(() => {this.run()})
+		requestAnimationFrame(() => {this.run()})
 	}
 }
 
+websocket = new WebSocket("ws://localhost:10001/")
 const game = new Game("player1", "player2")
 game.run()
-
