@@ -52,6 +52,7 @@ class Game:
             retval = json.dumps(
                 {
                     "command": "data",
+                    "startTimer": 0,
                     "ball": self.ball.getPosition(),
                     "paddle1": self.paddle1.getPosition(),
                     "paddle2": self.paddle2.getPosition(),
@@ -60,7 +61,16 @@ class Game:
             )
         if self.isEndGame() is True:
             self.state = "ending"
+            msg = self.getEndingMsg()
+            retval = json.dumps({"command": "ending", "winnerMessage": msg})
         return retval
+
+    def getEndingMsg(self):
+        if self.score["player1"] > self.score["player2"]:
+            return "The winner is player1"
+        elif self.score["player1"] < self.score["player2"]:
+            return "The winner is player2"
+        return "It's a tie"
 
     def init_game(self):
         self.ball.init()

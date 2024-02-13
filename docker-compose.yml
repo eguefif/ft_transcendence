@@ -3,7 +3,7 @@ services:
   nginx:
     container_name: nginx
     build: ./nginx/
-    image: nginx-transcedence
+    image: nginx-transcendence
     env_file:
       - .env
     ports:
@@ -49,12 +49,12 @@ services:
     image: django-serverpong
     env_file:
       - .env
-    ports:
+    expose:
       - "10000:10000"
     networks:
       - transcendence-net
     volumes:
-      - serverPong-vol:/var/src/app
+      - ./serverPong/serverPong:/var/src/app
 
 volumes:
   postgres-vol:
@@ -63,8 +63,6 @@ volumes:
     name: nginx-vol
   django-vol:
     name: django-vol
-  serverPong-vol:
-    name: serverPong-vol
 
 networks:
   transcendence-net:

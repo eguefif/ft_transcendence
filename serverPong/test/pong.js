@@ -69,7 +69,11 @@ class remoteGame extends Game{
 	init_event()
 	{
 		this.websocket.onopen = (e) => {
-				this.websocket.send("game")
+			const user = sessionStorage.getItem("user")	
+			let msg = {}
+			msg["cmd"] = user
+			msg["user"] = "game"
+			this.websocket.send(JSON.stringify(msg))
 		}
 
 		this.websocket.onclose = (e) => {

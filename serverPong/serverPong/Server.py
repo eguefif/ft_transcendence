@@ -17,12 +17,13 @@ class serverPong:
         self.tasks = list()
         self.currentId = 0
 
-    async def run(self, address="localhost", port=10000):
+    async def run(self, address="0.0.0.0", port=10000):
         loop = asyncio.get_running_loop()
         stop = loop.create_future()
         loop.add_signal_handler(signal.SIGTERM, stop.set_result, None)
         loop.add_signal_handler(signal.SIGQUIT, stop.set_result, None)
         loop.add_signal_handler(signal.SIGINT, stop.set_result, None)
+        print("Starting serverPong on 0.0.0.0:10000")
         async with serve(self.handler, address, port):
             await stop
 
@@ -47,8 +48,20 @@ class serverPong:
 
     async def runPlayer(self, gameId, websocket, player):
         print(player, " joining ", gameId)
+        try:
+            _ = self.games[gameId]
+        except exceptIndexError:
+                websocket.close()
+                await websocket.wait_closed()
         while self.games[gameId].state != "getready":
-            await asyncio.sleep(0.5)
+            try:
+                await websocket.pong()
+            except websockets.ConnectionClosedOK:
+                websocket.close()
+                await websocket.wait_closed()
+                self.games.pop(gameId)
+                return
+            await asyncio.sleep(0.1)
         try:
             await websocket.send(json.dumps({"command": "getready"}))
         except websockets.ConnectionClosedOK:
@@ -61,23 +74,13 @@ class serverPong:
         )
         await asyncio.gather(consumer_task, producer_task)
 
-    def tryToAddPlayerInWaitingGame(self, websocket):
-        if len(self.data):
-            for datum in self.data:
-                if datum["game"].state == "waiting":
-                    print("Game launched: ", self.currentId)
-                    datum["game"].addPlayer("player2")
-                    datum["player2"] = websocket
-                    return datum["game"]
-        return -1
-
     async def consumer_handler(self, websocket, gameid, player):
         async for message in websocket:
             self.games[gameid].update(message, player)
 
     async def producer_handler(self, websocket, gameid):
         while self.games[gameid].state != "ending":
-            await asyncio.sleep(1/30)
+            #await asyncio.sleep(1/30)
             message = self.games[gameid].run()
             if len(message):
                 await websocket.send(message)
