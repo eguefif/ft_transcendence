@@ -48,7 +48,6 @@ class Controller{
 		})
 
 		this.mainMenuButton.addEventListener("click", (e) => {
-			// this.model = new Game()
 			this.ShowMainMenu()
 		})
 	}
@@ -65,6 +64,8 @@ class Controller{
 		this.play2PlayerButton.classList.remove('d-none')
 		this.playTournamentButton.classList.remove('d-none')
 		this.mainMenuButton.classList.add('d-none')
+		if (this.model.playButton)
+			this.model.playButton.classList.add('d-none')
 		this.game_active = false
 		this.view.clearFrame()
 	}
@@ -97,7 +98,7 @@ class remoteGame extends Game{
 	}
 
 	update(){
-		if (this.serverUpdate != "none")
+		if (this.serverUpdate == "none")
 			return
 		this.paddle1 = this.serverUpdate.paddle1
 		this.paddle2 = this.serverUpdate.paddle2
