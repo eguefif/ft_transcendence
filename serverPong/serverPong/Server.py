@@ -17,7 +17,7 @@ class serverPong:
         self.tasks = list()
         self.currentId = 0
 
-    async def run(self, address="localhost", port=10001):
+    async def run(self, address="localhost", port=10000):
         loop = asyncio.get_running_loop()
         stop = loop.create_future()
         loop.add_signal_handler(signal.SIGTERM, stop.set_result, None)

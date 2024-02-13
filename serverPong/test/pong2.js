@@ -1,11 +1,7 @@
-export function initLocalPong()
-{
-	// const model = new LocalGame("player1", "player2")
-	const controller = new Controller()
-}
 
 class Controller{
-	constructor(){
+	constructor(model){
+		this.model = model
 		this.view = new graphicEngine()
 		// this.playButton = document.querySelector("#choose1PlayerButton")
 		this.play2PlayerButton = document.querySelector("#choose2PlayerButton")
@@ -17,7 +13,6 @@ class Controller{
 	run()
 	{
 		const update = () => {
-			this.model.update();
 			this.view.display(this.model);
 			requestAnimationFrame(update);
 		};
@@ -61,7 +56,7 @@ class remoteGame extends Game{
 		this.state = "waiting"
 	}
 
-	update(msg){
+	update(){
 		this.paddle1 = msg.paddle1
 		this.paddle2 = msg.paddle2
 		this.ball = msg.ball
@@ -70,58 +65,52 @@ class remoteGame extends Game{
 		this.startTimer = msg.startTimer
 		this.winnerMessage = msg.winnerMessage
 		this.game_active = false
+		const data = [this.ballthis.paddle1, this.paddle2]
+		return data
 	}
 
-	init_event()
-	{
-		this.websocket.addEventListener("open", (e) => {
-				this.websocket.send("game")
-		})
-
-		this.websocket.addEventListener("message", (e) => {
-				msg = JSON.parse(e)
-				if (msg.command == "wait")
-				{
+	init_event() {
+		websocket.onmessage = (e) => {
+			const msg = JSON.parse(e.data)
+			console.log(msg)
+			switch (msg.command) {
+				case "waiting":
 					this.state = "waiting"
-					this.game_active = true
-				}
-				if (msg.command == "getready")
+					break;
+				case "getready":
 					this.state = "getready"
-				if (msg.command == "data")
-						this.update(msg)
-				if (msg.command == "end")
-				{
-					this.state == "over"
-					this.game_active = false
-				}
-		})
+					console.log("getready received")
+					break;
+				case "data":
+					this.update(msg)
+					break;
+				case "ending":
+						this.state == "over"
+						break
+			}
+		}
 
 		document.addEventListener("keydown", (e) => {
 			if (this.state == "running") {
 				if (e.key == 'ArrowDown')
-					this.websocket.send("down")
+					websocket.send("down")
 				else if (e.key == 'ArrowUp') 
-					this.websocket.send("up")
+					websocket.send("up")
 			}
-			if (e.key == 'space' && this.state == "getready")
-				this.websocket.send("ready")
-				this.state = "running"
 			})
 
 		document.addEventListener("keyup", (e) => {
-			if (this.state == "running")
-				this.websocket.send("stop")
-			})
+			console.log(this.state)
+			if (this.state == "running" && this.state == "running")
+				websocket.send("stop")
+			if (e.code == 'Space' && this.state == "getready"){
+				websocket.send("ready")
+				console.log("sending ready")
+				this.state = "running"
+				}
+		})
 		}
-
-	}
-
-
-
-
-
-
-
+}
 
 
 class LocalGame extends Game{
@@ -202,7 +191,6 @@ class LocalGame extends Game{
 				this.playButton.classList.add('d-none')
 			}
 			})
-				
 	}
 
 	update()
@@ -259,7 +247,6 @@ class Paddle{
 		this.x = 0
 		this.top = 0
 		this.bottom = 0
-		this.height = 0.1
 	}
 }
 
@@ -380,6 +367,16 @@ class LocalBall extends Ball{
 }
 
 
+
+
+
+
+
+
+
+
+
+
 class graphicEngine
 {
 	constructor(mode="basic"){
@@ -401,12 +398,11 @@ class graphicEngine
 	}
 
 	display(model) {
-		console.log("display")
 		this.ctx.clearRect(0, 0, board.width, board.height)
 		this.displayStartTimer(model.startTimer)
 		this.displayBall(model.ball.x, model.ball.y, model.ball.radius)
-		this.displayPaddle(model.paddle1.x, model.paddle1.y, model.paddle.height)
-		this.displayPaddle(model.paddle2.x, model.paddle2.y, model.paddle.height)
+		this.displayPaddle(model.paddle1.x, model.paddle1.top, model.paddle1.bottom)
+		this.displayPaddle(model.paddle2.x, model.paddle2.top, model.paddle2.bottom)
 		this.displayScore(model.player1Score, model.player2Score)
 		this.displayWinner(model.winnerMessage)
 
@@ -418,10 +414,9 @@ class graphicEngine
 		this.ctx.arc(ball_x * this.width, ball_y * this.height, ball_radius * this.height, 0, 2 * Math.PI)
 	}
 
-	displayPaddle(paddle_x, paddle_y, paddle_height){
-		console.log(paddle_x, " ", paddle_y)
-		this.ctx.moveTo(paddle_x * this.width, paddle_y * this.height)
-		this.ctx.lineTo(paddle_x * this.width, (paddle_y + paddle_height) * this.height)
+	displayPaddle(paddle_x, paddle_top, paddle_bottom){
+		this.ctx.moveTo(paddle_x * this.width, paddle_top * this.height)
+		this.ctx.lineTo(paddle_x * this.width, paddle_bottom * this.height)
 	}
 
 	displayScore(player1Score, player2Score)
@@ -467,3 +462,13 @@ class Vector {
         }
     }
 }
+
+
+function initLocalPong()
+{
+	const model = new remoteGame()
+	const controller = new Controller(model)
+	controller.run()
+}
+
+initLocalPong()

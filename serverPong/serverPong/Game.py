@@ -55,7 +55,7 @@ class Game:
                     "command": "data",
                     "ball": self.ball.getPosition(),
                     "paddle1": self.paddle1.getPosition(),
-                    "paddle2": self.paddle1.getPosition(),
+                    "paddle2": self.paddle2.getPosition(),
                     "score": self.score,
                 }
             )
