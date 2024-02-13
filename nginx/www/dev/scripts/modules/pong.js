@@ -1,26 +1,28 @@
 export function initLocalPong()
 {
-	// const model = new LocalGame("player1", "player2")
 	const controller = new Controller()
 }
 
 class Controller{
 	constructor(){
 		this.view = new graphicEngine()
-		// this.playButton = document.querySelector("#choose1PlayerButton")
+		// this.playButton = document.querySelector("#choose1PlayerButton") //AI
 		this.play2PlayerButton = document.querySelector("#choose2PlayerButton")
 		this.playRemoteButton = document.querySelector("#chooseRemoteButton")
 		this.playTournamentButton = document.querySelector("#chooseTouramentButton")
+		this.mainMenuButton = document.querySelector("#mainMenuButton")
 		this.initListener()
 	}
 	
 	run()
 	{
 		const update = () => {
-			//this.model.update();
-			if (this.model.state == "running")
+			if (this.game_active)
+			{
+				this.model.update();
 				this.view.display(this.model);
-			requestAnimationFrame(update);
+				requestAnimationFrame(update);
+			}
 		};
 		update();
 	}
@@ -29,31 +31,42 @@ class Controller{
 	{
 		this.play2PlayerButton.addEventListener("click", (e) => {
 				this.model = new LocalGame("player1", "player2")
-				this.HideMenu()
+				this.HideMainMenu()
 				this.run()
 		})
 
 		this.playRemoteButton.addEventListener("click", (e) => {
 			this.model = new remoteGame("player1", "player2")
-			this.HideMenu()
+			this.HideMainMenu()
 			this.run()
 		})
 
 		this.playTournamentButton.addEventListener("click", (e) => {
 			this.model = new remoteGame("player1", "player2")
-			this.HideMenu()
+			this.HideMainMenu()
 			this.run()
 		})
+
+		this.mainMenuButton.addEventListener("click", (e) => {
+			// this.model = new Game()
+			this.ShowMainMenu()
+		})
 	}
-	HideMenu(){
+	HideMainMenu(){
 		this.playRemoteButton.classList.add('d-none')
 		this.play2PlayerButton.classList.add('d-none')
 		this.playTournamentButton.classList.add('d-none')
+		this.mainMenuButton.classList.remove('d-none')
+		this.game_active = true
+
 	}
-	ShowMenu(){
+	ShowMainMenu(){
 		this.playRemoteButton.classList.remove('d-none')
 		this.play2PlayerButton.classList.remove('d-none')
 		this.playTournamentButton.classList.remove('d-none')
+		this.mainMenuButton.classList.add('d-none')
+		this.game_active = false
+		this.view.clearFrame()
 	}
 }
 
@@ -80,29 +93,20 @@ class remoteGame extends Game{
 		this.websocket = new WebSocket(`wss://${address}/game/`)
 		this.init_event()
 		this.state = "waiting"
-
+		this.serverUpdate = "none"
 	}
 
-	update(msg){
-		if (this.serverUpdate != null) {
-			/*
-			this.paddle1 = this.serverUpdate.paddle1
-			this.paddle2 = this.serverUpdate.paddle2
-			this.ball = this.serverUpdate.ball
-			this.player1Score = this.serverUpdate.score.player1
-			this.player2Score = this.serverUpdate.score.player2
-			this.startTimer = this.serverUpdate.startTimer
-			this.winnerMessage = this.serverUpdate.winnerMessage
-			*/
-			// this.game_active = false
-		}
-		this.paddle1 = msg.paddle1
-		this.paddle2 = msg.paddle2
-		this.ball = msg.ball
-		this.player1Score = msg.score.player1
-		this.player2Score = msg.score.player2
-		this.startTimer = msg.startTimer
-		this.winnerMessage = msg.winnerMessage
+	update(){
+		if (this.serverUpdate != "none")
+			return
+		this.paddle1 = this.serverUpdate.paddle1
+		this.paddle2 = this.serverUpdate.paddle2
+		this.ball = this.serverUpdate.ball
+		this.player1Score = this.serverUpdate.score.player1
+		this.player2Score = this.serverUpdate.score.player2
+		this.startTimer = this.serverUpdate.startTimer
+		this.winnerMessage = this.serverUpdate.winnerMessage
+		// this.game_active = false
 	}
 	init_event()
 	{
@@ -298,9 +302,9 @@ class LocalGame extends Game{
 class Paddle{
 	constructor(){
 		this.x = 0
-		this.top = 0
-		this.bottom = 0
-		// this.height = 0.1
+		// this.top = 0
+		// this.bottom = 0
+		this.height = 0.1
 	}
 }
 
@@ -312,10 +316,10 @@ class LocalPaddle extends Paddle{
 		this.paddle_margin_y = 1 / 48
 		this.paddle_speed = 1 / 96
 		this.name = playerName
-        this.y = 1 / 2
-        this.halfPaddleHeight = 1 / 16
-        this.top = this.y + this.halfPaddleHeight
-        this.bottom = this.y - this.halfPaddleHeight
+		this.paddleHeight = 1 / 8
+        this.y = (1 / 2) - (this.paddleHeight / 2)
+        this.top = this.y
+        this.bottom = this.y - this.paddleHeight
         this.move_up = false
         this.move_down = false
         if (side == "right")//ASSUMING THERE ARE 2 PLAYERS
@@ -325,9 +329,9 @@ class LocalPaddle extends Paddle{
     }
 
     move(){
-        if (this.top >= 1 - this.paddle_margin_y)
+        if (this.y + this.paddleHeight >= 1 - this.paddle_margin_y)
             this.move_down = false
-        else if (this.bottom <= this.paddle_margin_y)
+        else if (this.y <= this.paddle_margin_y)
             this.move_up = false
 
         if (this.move_up)
@@ -335,8 +339,8 @@ class LocalPaddle extends Paddle{
         else if (this.move_down)
             this.y += this.paddle_speed
         
-        this.top = this.y + this.halfPaddleHeight
-        this.bottom = this.y - this.halfPaddleHeight
+        this.top = this.y
+        this.bottom = this.y - this.paddleHeight / 2
     }
 }
 
@@ -396,27 +400,27 @@ class LocalBall extends Ball{
 		if (this.isCollidingRightPaddle(paddle2))
 		{
 			this.dir.x = -0.5
-			let diff = this.y - paddle2.y
-			this.dir.y = diff * 0.866025403784439 / (paddle2.halfPaddleHeight * 2)//voir cercle trigo: 0.866025403784439
+			let diff = this.y - (paddle2.y + paddle2.paddleHeight / 2)
+			this.dir.y = diff * 0.866025403784439 / (paddle2.paddleHeight)//voir cercle trigo: 0.866025403784439
 			this.dir.norm();
 		}
 		if (this.isCollidingLeftPaddle(paddle1))
 		{
 			this.dir.x = 0.5
-			let diff = this.y - paddle1.y
-			this.dir.y = diff * 0.866025403784439 / (paddle2.halfPaddleHeight * 2)
+			let diff = this.y - (paddle1.y + paddle1.paddleHeight / 2)
+			this.dir.y = diff * 0.866025403784439 / (paddle2.paddleHeight)
 			this.dir.norm();
 		}
 	}
 
 	isCollidingLeftPaddle(paddle)
 	{
-		return this.x - this.radius <= paddle.x && this.y <= paddle.top && this.y >= paddle.bottom && this.dir.x < 0
+		return this.x - this.radius <= paddle.x && this.y >= paddle.y && this.y <= paddle.y + paddle.paddleHeight && this.dir.x < 0
 	}
 
 	isCollidingRightPaddle(paddle)
 	{
-		return this.x + this.radius >= paddle.x && this.y <= paddle.top && this.y >= paddle.bottom && this.dir.x > 0
+		return this.x + this.radius >= paddle.x && this.y >= paddle.y && this.y <= paddle.y + paddle.paddleHeight && this.dir.x > 0
 	}
 }
 
@@ -449,18 +453,24 @@ class graphicEngine
 		this.startTimerCenter = this.width / 2 - this.width / 48
 		this.startTimerMargin = this.height / 4
 		this.startTimerScale = this.height / 6
+
+		this.paddleHeigt = 1 / 8
 	}
 
 	display(model) {
-		this.ctx.clearRect(0, 0, board.width, board.height)
+		this.clearFrame()
 		this.displayStartTimer(model.startTimer)
 		this.displayBall(model.ball.x, model.ball.y, model.ball.radius)
-		this.displayPaddle(model.paddle1.x, model.paddle1.y, model.paddle1.height)
-		this.displayPaddle(model.paddle2.x, model.paddle2.y, model.paddle2.height)
+		this.displayPaddle(model.paddle1.x, model.paddle1.y)
+		this.displayPaddle(model.paddle2.x, model.paddle2.y)
 		this.displayScore(model.player1Score, model.player2Score)
 		this.displayWinner(model.winnerMessage)
 
 		this.ctx.stroke()
+	}
+
+	clearFrame(){
+		this.ctx.clearRect(0, 0, board.width, board.height)
 	}
 
 	displayBall(ball_x, ball_y, ball_radius){
@@ -468,10 +478,9 @@ class graphicEngine
 		this.ctx.arc(ball_x * this.width, ball_y * this.height, ball_radius * this.height, 0, 2 * Math.PI)
 	}
 
-	displayPaddle(paddle_x, paddle_y, paddle_height){
-		console.log("salut: ", paddle_x, " ", paddle_y)
+	displayPaddle(paddle_x, paddle_y){
 		this.ctx.moveTo(paddle_x * this.width, paddle_y * this.height)
-		this.ctx.lineTo(paddle_x * this.width, (paddle_y + paddle_height) * this.height)
+		this.ctx.lineTo(paddle_x * this.width, (paddle_y + this.paddleHeigt) * this.height)
 	}
 
 	displayScore(player1Score, player2Score)
