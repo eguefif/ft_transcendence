@@ -11,7 +11,7 @@ from rest_framework.authentication import SessionAuthentication, TokenAuthentica
 from rest_framework.permissions import IsAuthenticated
 
 
-from register.serializers import UserSerializer, UserProfileSerializer
+from register.serializers import UserSerializer
 
 
 @api_view(['POST'])
@@ -56,29 +56,3 @@ def logout(request):
         return Response({}, status.HTTP_204_NO_CONTENT)
     return Response({"logout": False}, status.HTTP_400_BAD_REQUEST)
 
-@api_view(['GET'])
-@authentication_classes([SessionAuthentication, TokenAuthentication])
-@permission_classes([IsAuthenticated])
-def user_info(request):
-    user = request.user
-    serializer = UserProfileSerializer(user)
-    return Response(serializer.data, status=status.HTTP_200_OK)
-
-@api_view(['PATCH'])
-@authentication_classes([SessionAuthentication, TokenAuthentication])
-@permission_classes([IsAuthenticated])
-def update_profile(request):
-    user = request.user
-    serializer = UserProfileSerializer(user, data=request.data, partial=True)
-    if serializer.is_valid():
-        serializer.save()
-        return Response({"user": serializer.data}, status=status.HTTP_201_CREATED)
-    return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
-
-
-# class ProfileView(APIView):
-#     permission_classes = [permissions.IsAuthenticated]
-
-#     def get(self, request):
-#         user = User.objects.get(request.user)
-#         return Response(user.data)
