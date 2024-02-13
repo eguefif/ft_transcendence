@@ -1,41 +1,36 @@
 export function initLocalPong()
 {
-	const model = new LocalGame("player1", "player2")
-	const view = new graphicEngine()
-	const controller = new Controller(model, view)
+	// const model = new LocalGame("player1", "player2")
+	const controller = new Controller()
 }
 
 class Controller{
-	constructor(model, view){
-		this.model = model
-		this.view = view
-		this.playButton = document.querySelector("#playButton")
+	constructor(){
+		this.view = new graphicEngine()
+		// this.playButton = document.querySelector("#choose1PlayerButton")
+		this.play2PlayerButton = document.querySelector("#choose2PlayerButton")
+		this.playRemoteButton = document.querySelector("#chooseRemoteButton")
+		this.playTournamentButton = document.querySelector("#chooseTouramentButton")
 		this.initListener()
-		this.view.display(this.model);
-		this.run()
 	}
 	
 	run()
 	{
 		const update = () => {
-			if (!this.model.game_active)
-				this.playButton.classList.remove('d-none')
-
 			this.model.update();
 			this.view.display(this.model);
-
 			requestAnimationFrame(update);
 		};
 	
 		update();
 	}
-	initListener(){
-		this.playButton.addEventListener("click", (e) => {
-			if (!this.model.game_active)
-			{
-				this.model.initGame()
-				this.playButton.classList.add('d-none')
-			}
+
+	initListener()
+	{
+		this.play2PlayerButton.addEventListener("click", (e) => {
+				this.model = new LocalGame("player1", "player2")
+				this.play2PlayerButton.classList.add('d-none')
+				this.run()
 		})
 	}
 }
@@ -44,7 +39,7 @@ class Game{
 	constructor(){
 		this.player1Score = 0
 		this.player2Score = 0
-		this.StartTimer = 0
+		this.startTimer = 0
 		this.winnerMessage = ""
 
 
@@ -67,14 +62,14 @@ class remoteGame extends Game{
 	}
 
 	update(msg){
-		// this = msg
 		this.paddle1 = msg.paddle1
 		this.paddle2 = msg.paddle2
 		this.ball = msg.ball
 		this.player1Score = msg.score.player1
 		this.player2Score = msg.score.player2
-		this.StartTimer = msg.startTimer
+		this.startTimer = msg.startTimer
 		this.winnerMessage = msg.winnerMessage
+		this.game_active = false
 	}
 
 	init_event()
@@ -86,14 +81,19 @@ class remoteGame extends Game{
 		this.websocket.addEventListener("message", (e) => {
 				msg = JSON.parse(e)
 				if (msg.command == "wait")
+				{
 					this.state = "waiting"
+					this.game_active = true
+				}
 				if (msg.command == "getready")
 					this.state = "getready"
-				if (msg.command == "data") {
+				if (msg.command == "data")
 						this.update(msg)
-				}
 				if (msg.command == "end")
-						this.state == "over"
+				{
+					this.state == "over"
+					this.game_active = false
+				}
 		})
 
 		document.addEventListener("keydown", (e) => {
@@ -124,31 +124,15 @@ class remoteGame extends Game{
 
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 class LocalGame extends Game{
 	constructor(player1, player2)
 	{
 		super()
-		this.board = document.getElementById("board")
-		this.paddle1 = new LocalPaddle(player1, "right", board)
-		this.paddle2 = new LocalPaddle(player2, "left", board)
-		this.ball = new LocalBall(board)
+		this.paddle1 = new LocalPaddle(player1, "right")
+		this.paddle2 = new LocalPaddle(player2, "left")
+		this.ball = new LocalBall()
+		this.playButton = document.querySelector("#playButton")
+		this.playButton.classList.remove('d-none')
 		this.init_event()
 		this.game_active	= false
 		this.state			= "none"
@@ -210,6 +194,15 @@ class LocalGame extends Game{
 			else if (e.key == 'ArrowUp') 
 				this.paddle2.move_up = false
 			})
+
+		this.playButton.addEventListener("click", (e) => {
+			if (!this.game_active)
+			{
+				this.initGame()
+				this.playButton.classList.add('d-none')
+			}
+			})
+				
 	}
 
 	update()
@@ -237,9 +230,9 @@ class LocalGame extends Game{
 
 	playerWonUpdate(message)
 	{
-		// this.playButton.classList.remove('d-none')
 		this.game_active = false
 		this.winnerMessage = message
+		this.playButton.classList.remove('d-none')
 	}
 
 	move()
@@ -270,16 +263,15 @@ class Paddle{
 }
 
 class LocalPaddle extends Paddle{
-    constructor(playerName, side, gameBoard)
+    constructor(playerName, side)
     {
 		super()
-		this.board = gameBoard
-		this.paddle_margin_x = board.width / 32
-		this.paddle_margin_y = board.height / 48
-		this.paddle_speed = this.board.height / 96
+		this.paddle_margin_x = 1 / 32
+		this.paddle_margin_y = 1 / 48
+		this.paddle_speed = 1 / 96
 		this.name = playerName
-        this.y = this.board.height / 2
-        this.halfPaddleHeight = this.board.height / 16
+        this.y = 1 / 2
+        this.halfPaddleHeight = 1 / 16
         this.top = this.y + this.halfPaddleHeight
         this.bottom = this.y - this.halfPaddleHeight
         this.move_up = false
@@ -287,11 +279,11 @@ class LocalPaddle extends Paddle{
         if (side == "right")//ASSUMING THERE ARE 2 PLAYERS
             this.x = this.paddle_margin_x
         else
-            this.x = this.board.width - this.paddle_margin_x
+            this.x = 1 - this.paddle_margin_x
     }
 
     move(){
-        if (this.top >= this.board.height - this.paddle_margin_y)
+        if (this.top >= 1 - this.paddle_margin_y)
             this.move_down = false
         else if (this.bottom <= this.paddle_margin_y)
             this.move_up = false
@@ -309,24 +301,23 @@ class LocalPaddle extends Paddle{
 
 class Ball{
 	constructor(){
-		this.radius = board.height / 50
+		this.radius = 1 / 50
 		this.x = 0
 		this.y = 0
 	}
 }
 
 class LocalBall extends Ball{
-    constructor(gameBoard) {
+    constructor() {
 		super()
-		this.board = gameBoard
-        this.speed = this.board.height / 120
+        this.speed = 1 / 120
 		this.reset()
 		this.in_play = false
     }
 
     reset() {
-        this.x = this.board.width / 2
-        this.y = this.board.height / 2
+        this.x = 1 / 2
+        this.y = 1 / 2
 		let dirX = Math.random() * 2 - 1
         this.dir = new Vector(Math.random() * 2 - 1, Math.random() * 2 - 1)
 		if (this.dir.x < 0)
@@ -345,7 +336,7 @@ class LocalBall extends Ball{
     }
 
     checkSideWallCollision(){
-        if (this.x >= this.board.width - this.radius)
+        if (this.x >= 1 - this.radius)
 			return "right"
         else if (this.x <= 0 + this.radius) //GOAL COLLISION
 			return "left"
@@ -354,7 +345,7 @@ class LocalBall extends Ball{
 
 	checkTopWallCollision()
 	{
-		if (this.y <= this.radius || this.y >= this.board.height - this.radius)
+		if (this.y <= this.radius || this.y >= 1 - this.radius)
 			this.dir.y *= -1
 	}
 
@@ -402,6 +393,20 @@ class graphicEngine
 {
 	constructor(mode="basic"){
 		this.ctx =  board.getContext("2d")
+		this.board = document.getElementById("board")
+
+		this.width = this.board.width
+		this.height = this.board.height
+		this.mid = board.width / 2
+		this.scoreMarginRight = this.mid + this.width / 10
+		this.scoreMarginLeft = this.mid - this.width / 10
+		this.scoreMarginTop = this.height / 10
+		this.scoreScale = this.height / 16
+		this.winnerMessageCenter = this.width / 2 - this.width / 7
+		this.winnerMessageMargin = this.height / 4.8
+		this.startTimerCenter = this.width / 2 - this.width / 48
+		this.startTimerMargin = this.height / 4
+		this.startTimerScale = this.height / 6
 	}
 
 	display(model) {
@@ -418,23 +423,21 @@ class graphicEngine
 
 	displayBall(ball_x, ball_y, ball_radius){
 		this.ctx.beginPath()
-		this.ctx.arc(ball_x, ball_y, ball_radius, 0, 2 * Math.PI)
+		this.ctx.arc(ball_x * this.width, ball_y * this.height, ball_radius * this.height, 0, 2 * Math.PI)
 	}
 
 	displayPaddle(paddle_x, paddle_top, paddle_bottom){
-		this.ctx.moveTo(paddle_x, paddle_top)
-		this.ctx.lineTo(paddle_x, paddle_bottom)
+		this.ctx.moveTo(paddle_x * this.width, paddle_top * this.height)
+		this.ctx.lineTo(paddle_x * this.width, paddle_bottom * this.height)
 	}
 
-	displayScore(player1Score, player2Score, lastScore)
+	displayScore(player1Score, player2Score)
 	{
-		const y = 50
-		const mid = board.width / 2
 		const dis1 = `${player1Score}`
 		const dis2 = `${player2Score}`
-		this.ctx.font = "30px Arial"
-		this.ctx.fillText(dis1, mid - 100, y)
-		this.ctx.fillText(dis2, mid + 100, y)
+		this.ctx.font = "".concat(`${this.scoreScale}`, "px Arial")
+		this.ctx.fillText(dis1, this.scoreMarginLeft, this.scoreMarginTop)
+		this.ctx.fillText(dis2, this.scoreMarginRight, this.scoreMarginTop)
 	}
 
 	displayWinner(winnerMessage)
@@ -442,9 +445,8 @@ class graphicEngine
 		if (winnerMessage == "")
 			return
 		const y = 50
-		const mid = board.width / 2
-		this.ctx.font = "30px Arial"
-		this.ctx.fillText(winnerMessage, mid -100, y + 100)
+		this.ctx.font = "".concat(`${this.scoreScale}`, "px Arial")
+		this.ctx.fillText(winnerMessage, this.winnerMessageCenter, this.winnerMessageMargin)
 	}
 
 	displayStartTimer(timeToWait)
@@ -452,8 +454,8 @@ class graphicEngine
 		if (timeToWait <= 0)
 			return
 		let display = `${timeToWait}`
-		this.ctx.font = "80px Arial"
-		this.ctx.fillText(display, board.width / 2 -25, board.height / 4)
+		this.ctx.font = "".concat(`${this.startTimerScale}`, "px Arial")
+		this.ctx.fillText(display, this.startTimerCenter, this.startTimerMargin)
 	}
 }
 
