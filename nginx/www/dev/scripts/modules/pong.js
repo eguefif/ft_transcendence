@@ -78,43 +78,48 @@ class remoteGame extends Game{
 		this.websocket = new WebSocket("ws://localhost:10000/")
 		this.init_event()
 		this.state = "waiting"
-
 	}
 
-	update(msg){
-		this.serverData.paddle1 = msg.paddle1
-		this.serverData.paddle2 = msg.paddle2
-		this.serverData.ball = msg.ball
-		this.serverData.player1Score = msg.score.player1
-		this.serverData.player2Score = msg.score.player2
-		this.serverData.startTimer = msg.startTimer
-		this.serverData.winnerMessage = msg.winnerMessage
-		this.serverData.game_active = false
+	update(){
+		this.paddle1 = this.serverUpdate.paddle1
+		this.paddle2 = this.serverUpdate.paddle2
+		this.ball = this.serverUpdate.ball
+		this.player1Score = this.serverUpdate.score.player1
+		this.player2Score = this.serverUpdate.score.player2
+		this.startTimer = this.serverUpdate.startTimer
+		this.winnerMessage = this.serverUpdate.winnerMessage
+		// this.game_active = false
 	}
-
 	init_event()
 	{
-		this.websocket.addEventListener("open", (e) => {
+		this.websocket.onopen = (e) => {
 				this.websocket.send("game")
-		})
+		}
 
-		this.websocket.addEventListener("message", (e) => {
-				msg = JSON.parse(e)
-				if (msg.command == "wait")
-				{
+		this.websocket.onclose = (e) => {
+			console.log(e)
+			console.log("disconnection")
+		}
+
+		this.websocket.onmessage = (e) => {
+			const msg = JSON.parse(e.data)
+			console.log(msg)
+			switch (msg.command) {
+				case "waiting":
 					this.state = "waiting"
-					this.game_active = true
-				}
-				if (msg.command == "getready")
+					break;
+				case "getready":
 					this.state = "getready"
-				if (msg.command == "data")
-						this.serverData = msg// this.update(msg)
-				if (msg.command == "end")
-				{
-					this.state == "over"
-					this.game_active = false
-				}
-		})
+					console.log("getready received")
+					break;
+				case "data":
+					 this.serverUpdate = msg
+						break;
+				case "ending":
+						this.state == "over"
+						break
+			}
+		}
 
 		document.addEventListener("keydown", (e) => {
 			if (this.state == "running") {
@@ -123,18 +128,20 @@ class remoteGame extends Game{
 				else if (e.key == 'ArrowUp') 
 					this.websocket.send("up")
 			}
-			if (e.key == 'space' && this.state == "getready")
-				this.websocket.send("ready")
-				this.state = "running"
 			})
 
 		document.addEventListener("keyup", (e) => {
-			if (this.state == "running")
+			console.log(this.state)
+			if (this.state == "running" && this.state == "running")
 				this.websocket.send("stop")
-			})
-		}
-
-	}
+			if (e.code == 'Space' && this.state == "getready"){
+				this.websocket.send("ready")
+				console.log("sending ready")
+				this.state = "running"
+				}
+		})
+	}	
+}
 
 
 
