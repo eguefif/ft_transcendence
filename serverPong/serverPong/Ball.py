@@ -1,3 +1,19 @@
+from math import sqrt
+from random import random
+
+
+class Vector:
+    def __init__(self, x, y):
+        self.x = x
+        self.y = y
+
+    def norm(self):
+        magnitude = sqrt(self.x**2 + self.y**2)
+        if magnitude != 0:
+            self.x /= magnitude
+            self.y /= magnitude
+
+
 class Ball:
     def __init__(self):
         self.init()
@@ -5,55 +21,61 @@ class Ball:
     def init(self):
         self.x = 0.5
         self.y = 0.5
-        self.dirX = 0.3
-        self.dirY = 0.4
+        self.resetPosition()
         self.speed = 1 / 170
-        self.radius = 0.05
+        self.radius = 1 / 40
+        
+    def resetPosition(self):
+        self.dir = Vector(random() * 2 - 1, random() * 2 - 1)
+        if self.dir.x < 0:
+            self.dir.x = min(-0.5, self.dir.x)
+        else:
+            self.dir.x = max(0.5, self.dir.x)
 
     def move(self, paddle1, paddle2):
-        if self.walltopBottomCollision():
-            self.dirY *= -1
-        elif self.paddleCollision(paddle1, paddle2):
-            self.dirX *= -1
-        elif self.sideWallCollision():
-            if self.x <= 0.1:
-                return "left"
-            else:
-                return "right"
+        self.y += self.speed * self.dir.y
+        self.x += self.speed * self.dir.x
 
-        self.y += self.speed * self.dirY
-        self.x += self.speed * self.dirX
-        return None
+        self.wallTopBottomCollision()
+        self.paddleCollision(paddle1, paddle2)
+        return self.sideWallCollision()
 
-    def walltopBottomCollision(self):
-        if self.radius - self.y <= 0:
-            return True
-        if self.radius + self.y >= 1:
-            return True
+    def wallTopBottomCollision(self):
+        if self.y <= self.radius or self.y >= 1 - self.radius:
+            self.dir.y *= -1
 
     def sideWallCollision(self):
-        if self.x + self.speed - self.radius <= 0:
-            return True
-        if self.x + self.speed + self.radius >= 1:
-            return True
+        if self.x - self.radius <= 0:
+            return "left"
+        if self.x + self.radius >= 1:
+            return "right"
         return None
 
     def paddleCollision(self, paddle1, paddle2):
-        return self.isLeftPaddleCollision(paddle1) or self.isRightPaddleCollision(
-            paddle2
-        )
+         if self.isLeftPaddleCollision(paddle1):
+            print("left")
+            self.dir.x = 0.5
+            diff = self.y - paddle1.y
+            self.dir.y = diff * 0.866025403784439  / paddle1.height
+            self.dir.norm()
+
+         if self.isRightPaddleCollision(paddle2):
+            print("left")
+            self.dir.x = -0.5
+            diff = self.y - paddle2.y
+            self.dir.y = diff * 0.866025403784439  / paddle2.height
+            self.dir.norm()
+        
 
     def isRightPaddleCollision(self, paddle):
-        return (self.x + self.radius) >= paddle.x and (
-            (self.y - self.radius ) >= paddle.Y
-            and (self.y + self.radius) <= (paddle.y + paddle.height)
-        )
+        return (self.x + self.radius >= paddle.x and
+                self.y <= paddle.y and self.y >= paddle.y + paddle.height and
+                self.dir.x > 0)
 
     def isLeftPaddleCollision(self, paddle):
-        return (self.radius - self.x + self.speed) <= paddle.x and (
-            (self.radius - self.y + self.speed) >= paddle.y
-            and (self.radius + self.y + self.speed) <= (paddle.y + paddle.height)
-        )
+        return (self.x - self.radius >= paddle.x and
+                self.y <= paddle.y and self.y >= paddle.y + paddle.height and
+                self.dir.x < 0)
 
     def getPosition(self):
-        return {"x": self.x, "y": self.y}
+        return {"x": self.x, "y": self.y, "radius": self.radius}

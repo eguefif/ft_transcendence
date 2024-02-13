@@ -73,7 +73,6 @@ class serverPong:
 
     async def consumer_handler(self, websocket, gameid, player):
         async for message in websocket:
-            print("message ", message)
             self.games[gameid].update(message, player)
 
     async def producer_handler(self, websocket, gameid):

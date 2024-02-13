@@ -31,11 +31,10 @@ class Game:
         if self.state == "ending":
             return
         if self.state == "running":
-            print("running")
             if player == "player1":
                 self.paddle1.update(message)
             elif player == "player2":
-                self.paddle1.update(message)
+                self.paddle2.update(message)
 
     def isReady(self):
         return self.p1_ready and self.p2_ready
@@ -60,7 +59,6 @@ class Game:
                 }
             )
         if self.isEndGame() is True:
-            print(self.isEndGame())
             self.state = "ending"
         return retval
 

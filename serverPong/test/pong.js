@@ -296,7 +296,7 @@ class LocalPaddle extends Paddle{
 
 class Ball{
 	constructor(){
-		this.radius = 1 / 50
+		this.radius = 1 / 80
 		this.x = 0
 		this.y = 0
 	}
@@ -396,7 +396,7 @@ class graphicEngine
 	display(model) {
 		this.ctx.clearRect(0, 0, board.width, board.height)
 		this.displayStartTimer(model.startTimer)
-		this.displayBall(model.ball.x, model.ball.y, 0.05)
+		this.displayBall(model.ball.x, model.ball.y, model.ball.radius)
 		this.displayPaddle(model.paddle1.x, model.paddle1.y, model.paddle1.height)
 		this.displayPaddle(model.paddle2.x, model.paddle2.y, model.paddle2.height)
 		this.displayScore(model.player1Score, model.player2Score)
