@@ -48,7 +48,7 @@ class serverPong:
     async def runPlayer(self, gameId, websocket, player):
         print(player, " joining ", gameId)
         while self.games[gameId].state != "getready":
-            await asyncio.sleep(0.1)
+            await asyncio.sleep(0.5)
         try:
             await websocket.send(json.dumps({"command": "getready"}))
         except websockets.ConnectionClosedOK:
@@ -78,7 +78,7 @@ class serverPong:
 
     async def producer_handler(self, websocket, gameid):
         while self.games[gameid].state != "ending":
-            await asyncio.sleep(0.1)
+            await asyncio.sleep(1/30)
             message = self.games[gameid].run()
             if len(message):
                 await websocket.send(message)

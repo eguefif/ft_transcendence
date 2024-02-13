@@ -4,14 +4,14 @@ class Paddle:
         self.height = 0.1
         self.init()
         self.speed = 0
-
-    def init(self):
-        self.y = 0.5 - self.height / 2
-        self.speed = 0.03
-        if self.side == 1:
+        if side == 1:
             self.x = 0.1
         else:
             self.x = 0.9
+        self.y = 0.5 - self.height / 2
+
+    def init(self):
+        self.speed = 0
 
     def update(self, direction):
         print("direction ", direction)

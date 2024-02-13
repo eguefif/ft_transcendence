@@ -5,17 +5,17 @@ class Ball:
     def init(self):
         self.x = 0.5
         self.y = 0.5
-        self.dirX = 1
-        self.dirY = 1
-        self.speed = 0.03
+        self.dirX = 0.3
+        self.dirY = 0.4
+        self.speed = 1 / 170
         self.radius = 0.05
 
     def move(self, paddle1, paddle2):
         if self.walltopBottomCollision():
             self.dirY *= -1
-        if self.paddleCollision(paddle1, paddle2):
+        elif self.paddleCollision(paddle1, paddle2):
             self.dirX *= -1
-        if self.sideWallCollision():
+        elif self.sideWallCollision():
             if self.x <= 0.1:
                 return "left"
             else:
@@ -44,9 +44,9 @@ class Ball:
         )
 
     def isRightPaddleCollision(self, paddle):
-        return (self.radius - self.x + self.speed) >= paddle.x and (
-            (self.radius - self.y + self.speed) >= paddle.Y
-            and (self.radius + self.y + self.speed) <= (paddle.y + paddle.height)
+        return (self.x + self.radius) >= paddle.x and (
+            (self.y - self.radius ) >= paddle.Y
+            and (self.y + self.radius) <= (paddle.y + paddle.height)
         )
 
     def isLeftPaddleCollision(self, paddle):
