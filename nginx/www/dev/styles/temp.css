@@ -46,6 +46,13 @@
     transform: translate(-50%, -50%);
 }
 
+#mainMenuButton{
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+}
+
   
   #player1_score {
     margin-left: 20%;
