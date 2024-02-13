@@ -21,3 +21,24 @@
     padding: 10px; /* Adjust as needed */
     font-size: 20px; /* Adjust as needed */
 } 
+
+#choose2PlayerButton{
+    position: absolute;
+    top: 30%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+}
+
+#chooseRemoteButton{
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+}
+
+#chooseTouramentButton{
+    position: absolute;
+    top: 70%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+}
