@@ -26,7 +26,7 @@ class Ball:
         self.radius = 1 / 40
         
     def resetPosition(self):
-        self.dir = Vector(random() * 2 - 1, random() * 2 - 1)
+        self.dir = Vector(random() * 2 - 1, 0)
         if self.dir.x < 0:
             self.dir.x = min(-0.5, self.dir.x)
         else:
@@ -52,6 +52,7 @@ class Ball:
         return None
 
     def paddleCollision(self, paddle1, paddle2):
+        
          if self.isLeftPaddleCollision(paddle1):
             print("left")
             self.dir.x = 0.5
