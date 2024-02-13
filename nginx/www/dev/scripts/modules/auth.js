@@ -1,3 +1,5 @@
+import { accessToken } from "./tokenManager.js"
+
 function authLogout()
 {
 	const logoutBtn = document.querySelector("#logoutButton")
@@ -6,8 +8,8 @@ function authLogout()
 			const csrf = localStorage.getItem('csrf')
 
 			try {
-					const res = await fetch("/api/logout/", {
-						method: "DELETE",
+					const res = await fetch("/api/auth/logout", {
+						method: "POST",
 						credentials: "same-origin",
 						headers: {"Content-Type": "application/json", 'Authorization': 'Token ' + csrf},
 						body: body
@@ -136,6 +138,7 @@ async function sendLoginRequest(url, body, method)
 		{
 			localStorage.setItem('csrf', data.token)
 			localStorage.setItem('user', JSON.stringify(data.user))
+
 			validation.innerHTML = ""
 			document.querySelector("#modalLogin").classList.remove("show")
 			document.querySelector(".modal-backdrop").classList.remove("show")
@@ -227,17 +230,15 @@ function showLogin()
 		profileButton.classList.add('d-none')
 }
 
-function isAuthenticated()
-{
-	let token = localStorage.getItem('csrf')
-	return (token && (token != undefined))
-}
-
-export function initAuth() {
-	if (isAuthenticated() == true)
+export async function initAuth() {
+	const access = accessToken();
+	if (await access.refresh() == true) {
 		showLobby()
+	}
 	else
+	{
 		showLogin()
+	}
 
 	authRegister();
 	authLogin();

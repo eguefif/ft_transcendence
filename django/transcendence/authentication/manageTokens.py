@@ -4,15 +4,21 @@ from datetime import datetime, timedelta
 
 secret = environ.get('JWT_SECRET')
 
-def getAccessKey(username):
+def get_access_token(username):
     payload = {"username": username,
                "exp": datetime.now() + timedelta(minutes=5)
                }
     return encode(payload, secret, algorithm="HS256")
 
-def getRefreshKey(username):
+def get_refresh_token(username):
     payload = {"username": username,
                "exp": datetime.now() + timedelta(days=3)
                }
     return encode(payload, secret, algorithm="HS256")
 
+def get_token_user(token):
+    try:
+        username = decode(token, secret, algorithms="HS256")["username"]
+        return username
+    except:
+        return None
