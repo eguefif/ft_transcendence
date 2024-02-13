@@ -22,7 +22,7 @@ class Ball:
         self.x = 0.5
         self.y = 0.5
         self.resetPosition()
-        self.speed = 1 / 370
+        self.speed = 1 / 120
         self.radius = 1 / 40
         
     def resetPosition(self):

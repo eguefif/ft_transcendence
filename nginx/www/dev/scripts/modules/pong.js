@@ -17,8 +17,9 @@ class Controller{
 	run()
 	{
 		const update = () => {
-			this.model.update();
-			this.view.display(this.model);
+			//this.model.update();
+			if (this.model.state == "running")
+				this.view.display(this.model);
 			requestAnimationFrame(update);
 		};
 		update();
@@ -75,20 +76,32 @@ class remoteGame extends Game{
 		this.paddle1 = new Paddle()
 		this.paddle2 = new Paddle()
 		this.ball = new Ball()
-		this.websocket = new WebSocket("ws://localhost:10000/")
+		let address = window.location.hostname
+		this.websocket = new WebSocket(`wss://${address}/game/`)
 		this.init_event()
 		this.state = "waiting"
 	}
 
-	update(){
-		this.paddle1 = this.serverUpdate.paddle1
-		this.paddle2 = this.serverUpdate.paddle2
-		this.ball = this.serverUpdate.ball
-		this.player1Score = this.serverUpdate.score.player1
-		this.player2Score = this.serverUpdate.score.player2
-		this.startTimer = this.serverUpdate.startTimer
-		this.winnerMessage = this.serverUpdate.winnerMessage
-		// this.game_active = false
+	update(msg){
+		if (this.serverUpdate != null) {
+			/*
+			this.paddle1 = this.serverUpdate.paddle1
+			this.paddle2 = this.serverUpdate.paddle2
+			this.ball = this.serverUpdate.ball
+			this.player1Score = this.serverUpdate.score.player1
+			this.player2Score = this.serverUpdate.score.player2
+			this.startTimer = this.serverUpdate.startTimer
+			this.winnerMessage = this.serverUpdate.winnerMessage
+			*/
+			// this.game_active = false
+		}
+		this.paddle1 = msg.paddle1
+		this.paddle2 = msg.paddle2
+		this.ball = msg.ball
+		this.player1Score = msg.score.player1
+		this.player2Score = msg.score.player2
+		this.startTimer = msg.startTimer
+		this.winnerMessage = msg.winnerMessage
 	}
 	init_event()
 	{
@@ -103,7 +116,6 @@ class remoteGame extends Game{
 
 		this.websocket.onmessage = (e) => {
 			const msg = JSON.parse(e.data)
-			console.log(msg)
 			switch (msg.command) {
 				case "waiting":
 					this.state = "waiting"
@@ -113,7 +125,9 @@ class remoteGame extends Game{
 					console.log("getready received")
 					break;
 				case "data":
-					 this.serverUpdate = msg
+					 console.log("message", msg)
+					 this.update(msg)
+					 //this.serverUpdate = msg
 						break;
 				case "ending":
 						this.state == "over"
@@ -431,8 +445,8 @@ class graphicEngine
 		this.ctx.clearRect(0, 0, board.width, board.height)
 		this.displayStartTimer(model.startTimer)
 		this.displayBall(model.ball.x, model.ball.y, model.ball.radius)
-		this.displayPaddle(model.paddle1.x, model.paddle1.y, model.paddle.height)
-		this.displayPaddle(model.paddle2.x, model.paddle2.y, model.paddle.height)
+		this.displayPaddle(model.paddle1.x, model.paddle1.y, model.paddle1.height)
+		this.displayPaddle(model.paddle2.x, model.paddle2.y, model.paddle2.height)
 		this.displayScore(model.player1Score, model.player2Score)
 		this.displayWinner(model.winnerMessage)
 
@@ -445,7 +459,7 @@ class graphicEngine
 	}
 
 	displayPaddle(paddle_x, paddle_y, paddle_height){
-		console.log(paddle_x, " ", paddle_y)
+		console.log("salut: ", paddle_x, " ", paddle_y)
 		this.ctx.moveTo(paddle_x * this.width, paddle_y * this.height)
 		this.ctx.lineTo(paddle_x * this.width, (paddle_y + paddle_height) * this.height)
 	}
