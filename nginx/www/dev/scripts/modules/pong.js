@@ -34,9 +34,17 @@ class Controller{
 		})
 
 		this.playRemoteButton.addEventListener("click", (e) => {
-			this.model = new remoteGame("player1", "player2")
-			this.HideMenu()
-			this.run()
+			let token = localStorage.getItem('csrf')
+			if (token && (token != undefined)) {
+				let user = localStorage.getItem("user")
+				user = JSON.parse(user)
+				let username = user["username"]
+				this.model = new remoteGame(username)
+				this.HideMenu()
+				this.run()
+			}
+			else 
+				console.log("You need to be connected")
 		})
 
 		this.playTournamentButton.addEventListener("click", (e) => {
@@ -71,8 +79,9 @@ class Game{
 }
 
 class remoteGame extends Game{
-	constructor(){
+	constructor(username){
 		super()
+		this.username = username
 		this.paddle1 = new Paddle()
 		this.paddle2 = new Paddle()
 		this.ball = new Ball()
@@ -106,7 +115,11 @@ class remoteGame extends Game{
 	init_event()
 	{
 		this.websocket.onopen = (e) => {
-				this.websocket.send("game")
+			let gameMsg = {}
+			console.log(this.username)
+			gameMsg["command"] = "game"
+			gameMsg["username"] = this.username
+			this.websocket.send(JSON.stringify(gameMsg))
 		}
 
 		this.websocket.onclose = (e) => {
@@ -127,7 +140,6 @@ class remoteGame extends Game{
 				case "data":
 					 console.log("message", msg)
 					 this.update(msg)
-					 //this.serverUpdate = msg
 						break;
 				case "ending":
 						this.state == "over"
@@ -156,14 +168,6 @@ class remoteGame extends Game{
 		})
 	}	
 }
-
-
-
-
-
-
-
-
 
 class LocalGame extends Game{
 	constructor(player1, player2)

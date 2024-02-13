@@ -12,6 +12,7 @@ class Game:
         self.score = {"player1": 0, "player2": 0}
         self.state = "waiting"
         self.player1 = player1
+        self.player2 = ""
         self.p1_ready = False
         self.p2_ready = False
 
@@ -21,7 +22,7 @@ class Game:
 
     def update(self, message, player):
         if message == "ready" and self.state == "getready":
-            if player == "player1":
+            if player == self.player1:
                 self.p1_ready = True
             if player == "player2":
                 self.p2_ready = True
@@ -31,13 +32,18 @@ class Game:
         if self.state == "ending":
             return
         if self.state == "running":
-            if player == "player1":
+            if player == self.player1:
                 self.paddle1.update(message)
-            elif player == "player2":
+            elif player == self.player2:
                 self.paddle2.update(message)
 
     def isReady(self):
         return self.p1_ready and self.p2_ready
+
+    def isPlayerInGame(self, username):
+        if not self.player2:
+            return self.player1 == username
+        return self.player1 == username or self.player2 == username
 
     def run(self):
         retval = {}
@@ -67,9 +73,9 @@ class Game:
 
     def getEndingMsg(self):
         if self.score["player1"] > self.score["player2"]:
-            return "The winner is player1"
+            return "The winner is " + self.player1
         elif self.score["player1"] < self.score["player2"]:
-            return "The winner is player2"
+            return "The winner is " + self.player2
         return "It's a tie"
 
     def init_game(self):

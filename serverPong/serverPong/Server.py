@@ -30,38 +30,57 @@ class serverPong:
     async def handler(self, websocket):
         print("New player: ", websocket)
         msg = await websocket.recv()
+        msg = json.loads(msg)
+        if msg["command"] != "game":
+            return
+        if self.isUserInGame(msg["username"]):
+            gameId = self.getGamebyUsername(msg["username"])
+            if gameId == -1:
+                return
+            self.games[gameId].state = "ending"
+            self.games.pop(gameId)
+            return
         if not self.isWaitingGame:
             print("New game: ", self.currentId)
-            self.games.append(Game("player1"))
+            self.games.append(Game(msg["username"]))
             cmd = json.dumps({"command": "wait"})
             try:
                 await websocket.send(cmd)
             except websockets.ConnectionClosedOK:
                 print("disconnection")
             self.isWaitingGame = True
-            await self.runPlayer(self.currentId, websocket, "player1")
+            await self.runPlayer(self.currentId, websocket, msg["username"])
         else:
-            self.games[self.currentId].state = "getready"
+            self.games[self.currentId].addPlayer(msg["username"])
+            print(self.games[self.currentId].state)
             self.currentId += 1
             self.isWaitingGame = False
-            await self.runPlayer(self.currentId - 1, websocket, "player2")
+            await self.runPlayer(self.currentId - 1, websocket, msg["username"])
+
+    def getGamebyUsername(self, username):
+        for i, game in enumerate(self.games):
+            if game.isPlayerInGame(username):
+                return i
+        return -1
+
+    def isUserInGame(self, username):
+        for game in self.games:
+            if game.isPlayerInGame(username):
+                return True
+        return False
 
     async def runPlayer(self, gameId, websocket, player):
         print(player, " joining ", gameId)
-        try:
-            _ = self.games[gameId]
-        except exceptIndexError:
-                websocket.close()
-                await websocket.wait_closed()
         while self.games[gameId].state != "getready":
             try:
-                await websocket.pong()
-            except websockets.ConnectionClosedOK:
+                _ = self.games[gameId]
+            except exceptIndexError:
+                print("Game does not exist in runPlayer: ", gameId)
                 websocket.close()
                 await websocket.wait_closed()
-                self.games.pop(gameId)
                 return
             await asyncio.sleep(0.1)
+
         try:
             await websocket.send(json.dumps({"command": "getready"}))
         except websockets.ConnectionClosedOK:
