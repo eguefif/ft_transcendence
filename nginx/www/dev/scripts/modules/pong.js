@@ -21,7 +21,6 @@ class Controller{
 			this.view.display(this.model);
 			requestAnimationFrame(update);
 		};
-	
 		update();
 	}
 
@@ -29,9 +28,31 @@ class Controller{
 	{
 		this.play2PlayerButton.addEventListener("click", (e) => {
 				this.model = new LocalGame("player1", "player2")
-				this.play2PlayerButton.classList.add('d-none')
+				this.HideMenu()
 				this.run()
 		})
+
+		this.playRemoteButton.addEventListener("click", (e) => {
+			this.model = new remoteGame("player1", "player2")
+			this.HideMenu()
+			this.run()
+		})
+
+		this.playTournamentButton.addEventListener("click", (e) => {
+			this.model = new remoteGame("player1", "player2")
+			this.HideMenu()
+			this.run()
+		})
+	}
+	HideMenu(){
+		this.playRemoteButton.classList.add('d-none')
+		this.play2PlayerButton.classList.add('d-none')
+		this.playTournamentButton.classList.add('d-none')
+	}
+	ShowMenu(){
+		this.playRemoteButton.classList.remove('d-none')
+		this.play2PlayerButton.classList.remove('d-none')
+		this.playTournamentButton.classList.remove('d-none')
 	}
 }
 
@@ -41,8 +62,6 @@ class Game{
 		this.player2Score = 0
 		this.startTimer = 0
 		this.winnerMessage = ""
-
-
 		
 		if (this.constructor == Game) {//abstract class
 			throw new Error("Abstract classes can't be instantiated.");
@@ -61,40 +80,46 @@ class remoteGame extends Game{
 		this.state = "waiting"
 	}
 
-	update(msg){
-		this.paddle1 = msg.paddle1
-		this.paddle2 = msg.paddle2
-		this.ball = msg.ball
-		this.player1Score = msg.score.player1
-		this.player2Score = msg.score.player2
-		this.startTimer = msg.startTimer
-		this.winnerMessage = msg.winnerMessage
-		this.game_active = false
+	update(){
+		this.paddle1 = this.serverUpdate.paddle1
+		this.paddle2 = this.serverUpdate.paddle2
+		this.ball = this.serverUpdate.ball
+		this.player1Score = this.serverUpdate.score.player1
+		this.player2Score = this.serverUpdate.score.player2
+		this.startTimer = this.serverUpdate.startTimer
+		this.winnerMessage = this.serverUpdate.winnerMessage
+		// this.game_active = false
 	}
-
 	init_event()
 	{
-		this.websocket.addEventListener("open", (e) => {
+		this.websocket.onopen = (e) => {
 				this.websocket.send("game")
-		})
+		}
 
-		this.websocket.addEventListener("message", (e) => {
-				msg = JSON.parse(e)
-				if (msg.command == "wait")
-				{
+		this.websocket.onclose = (e) => {
+			console.log(e)
+			console.log("disconnection")
+		}
+
+		this.websocket.onmessage = (e) => {
+			const msg = JSON.parse(e.data)
+			console.log(msg)
+			switch (msg.command) {
+				case "waiting":
 					this.state = "waiting"
-					this.game_active = true
-				}
-				if (msg.command == "getready")
+					break;
+				case "getready":
 					this.state = "getready"
-				if (msg.command == "data")
-						this.update(msg)
-				if (msg.command == "end")
-				{
-					this.state == "over"
-					this.game_active = false
-				}
-		})
+					console.log("getready received")
+					break;
+				case "data":
+					 this.serverUpdate = msg
+						break;
+				case "ending":
+						this.state == "over"
+						break
+			}
+		}
 
 		document.addEventListener("keydown", (e) => {
 			if (this.state == "running") {
@@ -103,18 +128,20 @@ class remoteGame extends Game{
 				else if (e.key == 'ArrowUp') 
 					this.websocket.send("up")
 			}
-			if (e.key == 'space' && this.state == "getready")
-				this.websocket.send("ready")
-				this.state = "running"
 			})
 
 		document.addEventListener("keyup", (e) => {
-			if (this.state == "running")
+			console.log(this.state)
+			if (this.state == "running" && this.state == "running")
 				this.websocket.send("stop")
-			})
-		}
-
-	}
+			if (e.code == 'Space' && this.state == "getready"){
+				this.websocket.send("ready")
+				console.log("sending ready")
+				this.state = "running"
+				}
+		})
+	}	
+}
 
 
 
@@ -202,7 +229,6 @@ class LocalGame extends Game{
 				this.playButton.classList.add('d-none')
 			}
 			})
-				
 	}
 
 	update()
@@ -259,7 +285,7 @@ class Paddle{
 		this.x = 0
 		this.top = 0
 		this.bottom = 0
-		this.height = 0.1
+		// this.height = 0.1
 	}
 }
 
