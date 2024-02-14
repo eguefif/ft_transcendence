@@ -7,6 +7,7 @@ from datetime import timedelta
 
 from authentication.serializers import UserSerializer
 from authentication.manageTokens import get_access_token, get_refresh_token, get_token_user
+from authentication.decorator import require_authorization
 
 @api_view(['POST'])
 def authenticate(request):
@@ -17,7 +18,7 @@ def authenticate(request):
     return Response("invalid request", status=status.HTTP_400_BAD_REQUEST)
 
 @api_view(['POST'])
-def refresh(request, format=None):
+def refresh(request):
     try:
         token = request.COOKIES["refreshToken"]
     except:
@@ -25,7 +26,7 @@ def refresh(request, format=None):
     username = get_token_user(token)
     if not username:
         return Response({'info': 'invalid token provided'}, status=status.HTTP_401_UNAUTHORIZED)
-    try :
+    try:
         user = User.objects.get(username=username)
     except:
         return Response({'info': 'user does not exist'}, status=status.HTTP_401_UNAUTHORIZED)
@@ -48,6 +49,7 @@ def login(request):
     return get_authenticated_response(user, status.HTTP_200_OK)
 
 @api_view(['POST'])
+@require_authorization
 def logout(request):
     return get_logout_response()
 

@@ -1,34 +1,19 @@
-import { accessToken } from "./tokenManager.js"
+import { fetcher } from "./fetcher.js"
 
 function authLogout()
 {
 	const logoutBtn = document.querySelector("#logoutButton")
 	logoutBtn.addEventListener("click", async function(e){
-			const body = localStorage.getItem('user')
-			const csrf = localStorage.getItem('csrf')
-
-			try {
-					const res = await fetch("/api/auth/logout", {
-						method: "POST",
-						credentials: "same-origin",
-						headers: {"Content-Type": "application/json", 'Authorization': 'Token ' + csrf},
-						body: body
-					})
-					if (res.status == 204){
-						localStorage.removeItem('csrf')
-						showLogin()
-					}
-					else{
-						console.log("Logout failed")
-					}
-			}
-			catch (error) {
-					console.log("Logout error: " + error)
-			}
-			}
-		)
+		const result = await fetcher.post("/api/auth/logout", {})
+		if (result.status >= 200 && result.status < 300) {
+			localStorage.removeItem("refreshExpiry")
+			showLogin()
+		}
+		else {
+			console.log("Logout failed")
+		}
+	});
 }
-
 
 function validateInput(textBox, validationBox, errorMessage) {
     textBox.addEventListener('focusout', (event) => {
@@ -124,42 +109,28 @@ function profileInfo()
 
 async function sendLoginRequest(url, body, method)
 {
-	const bodyJSON = JSON.stringify(body);
-	try
+	const refreshExpiry = Date.now() + fetcher.refreshDuration;
+	const result = await fetcher.post(url, body);
+	const validation = document.getElementById("loginValidation")
+	if (result.status >= 200 && result.status < 300)
 	{
-		const res = await fetch(url, {
-			method: "POST",
-			headers: {"Content-Type": "application/json"},
-			body: bodyJSON
-		})
-		const data = await res.json()
-		const validation = document.getElementById("loginValidation")
-		if (res.status == 201)
-		{
-			localStorage.setItem('csrf', data.token)
-			localStorage.setItem('user', JSON.stringify(data.user))
-
-			validation.innerHTML = ""
-			document.querySelector("#modalLogin").classList.remove("show")
-			document.querySelector(".modal-backdrop").classList.remove("show")
-			showLobby()
-
-		}
-		else
-		{
-			document.getElementById("loginPassword").value = ""
-			validation.innerHTML = "Wrong credentials"
-		}
+		localStorage.setItem("refreshExpiry", `${refreshExpiry}`)
+		fetcher.setAccess(result.data.accessToken);
+		validation.innerHTML = ""
+		document.querySelector("#modalLogin").classList.remove("show")
+		document.querySelector(".modal-backdrop").classList.remove("show")
+		showLobby()
 	}
-	catch (error) {
-			console.log("Error registration: " + error)
+	else
+	{
+		document.getElementById("loginPassword").value = ""
+		validation.innerHTML = "Wrong credentials"
 	}
 	return ;
 }
 
 async function sendRegistrationRequest(url, body, method)
 {
-	const bodyJSON = JSON.stringify(body);
 
 	// TODO faire fonctions reset inputs a valid
 	const form = document.getElementById("registrationForm")
@@ -169,41 +140,28 @@ async function sendRegistrationRequest(url, body, method)
 		input.classList.add("is-valid")
 	})
 
-	try
+	const refreshExpiry = Date.now() + fetcher.refreshDuration;
+	const result = await fetcher.post(url, body);
+	if (result.status >= 400 && result.status < 500)
 	{
-		const res = await fetch(url, {
-			method: "POST",
-			headers: {"Content-Type": "application/json"},
-			body: bodyJSON
-		})
-		const data = await res.json()
-		console.log(data)
-		if (res.status == 400)
+		for (const obj in result.data)
 		{
-			for (const obj in data)
-			{
-				const textbox = document.getElementById(`${obj}`)
-				const validation = document.getElementById(`${obj}Validation`) // depend de l'id des div validation
-				textbox.classList.add("is-invalid")
-				validation.classList.add("invalid-feedback")
-				validation.innerHTML = data[obj]
-			}
-		}
-		else if (res.status == 201)
-		{
-			localStorage.setItem('csrf', data.token)
-			localStorage.setItem('user', JSON.stringify(data.user))
-			// $('#modalRegistration').modal('hide')
-			document.querySelector("#modalRegistration").classList.remove("show")
-			document.querySelector(".modal-backdrop").classList.remove("show")
-			showLobby()
-			return true
+			const textbox = document.getElementById(`${obj}`)
+			const validation = document.getElementById(`${obj}Validation`)
+			textbox.classList.add("is-invalid")
+			validation.classList.add("invalid-feedback")
+			validation.innerHTML = result.data[obj]
 		}
 	}
-	catch (error) {
-			console.log("Error registration: " + error)
+	else if (result.status >= 200 && result.status < 300)
+	{
+		localStorage.setItem("refreshExpiry", `${refreshExpiry}`)
+		fetcher.setAccess(result.data.accessToken);
+		document.querySelector("#modalRegistration").classList.remove("show")
+		document.querySelector(".modal-backdrop").classList.remove("show")
+		showLobby()
+		return true
 	}
-	return ;
 }
 
 function showLobby()
@@ -231,8 +189,7 @@ function showLogin()
 }
 
 export async function initAuth() {
-	const access = accessToken();
-	if (await access.refresh() == true) {
+	if (await fetcher.isAuthenticated()) {
 		showLobby()
 	}
 	else
