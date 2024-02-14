@@ -30,7 +30,11 @@ class serverPong:
         return stop
 
     async def handler(self, websocket):
-        msg = await websocket.recv()
+        try:
+            msg = await websocket.recv()
+        except websockets.ConnectionClosedOK:
+            print("Disconnection on the first message")
+            return
         msg = json.loads(msg)
         print("New player:", msg["username"])
         if msg["command"]:
@@ -93,6 +97,16 @@ class serverPong:
                 await self.close_websocket(websocket, gameid, player)
                 self.is_waiting_game = False
                 return False
+            try:
+                msg = await websocket.recv()
+            except websockets.ConnectionClosedOK:
+                print(f"Client {player} is disconnected")
+                await self.close_websocket(websocket, gameid, player)
+                return False
+            if msg != "wait":
+                print(f"Client {player} is disconnected")
+                await self.close_websocket(websocket, gameid, player)
+                return False
             await asyncio.sleep(0.5)
         return True
 
@@ -108,14 +122,14 @@ class serverPong:
     async def consumer_handler(self, websocket, gameid, player):
         async for message in websocket:
             self.games[gameid].update(message, player)
-            await asyncio.sleep(0.1)
+            await asyncio.sleep(0)
 
     async def producer_handler(self, websocket, gameid, player):
         while self.games[gameid].state != "ending":
             message = self.games[gameid].run()
             if len(message):
                 await self.send_msg(websocket, gameid, message)
-            await asyncio.sleep(0.1)
+            await asyncio.sleep(1/30)
         print(f"game {gameid} ending")
         ending_msg = self.games[gameid].get_ending_message()
         await self.send_msg(websocket, gameid, ending_msg)

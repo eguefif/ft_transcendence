@@ -1,5 +1,6 @@
 from Paddle import Paddle
 from Ball import Ball
+import time
 
 
 class Game:
@@ -18,6 +19,7 @@ class Game:
         self.p1_disconnected = False
         self.p2_disconnected = True
         self.winner = None
+        self.time = None
 
     def add_player(self, player, websocket):
         self.player2 = player
@@ -47,9 +49,10 @@ class Game:
                 self.p1_ready = True
             if player == self.player2:
                 self.p2_ready = True
-            if self.is_ready():
+            if self.is_ready() and self.state != "running":
                 print("Game is starting")
                 self.state = "running"
+                self.time = time.time()
             return
         if self.state == "running":
             if player == self.player1:
@@ -62,9 +65,7 @@ class Game:
 
     def run(self):
         retval = {}
-        print("state:", self.state)
         if self.state == "running" and not self.is_end_game():
-            print("game running")
             result = self.move()
             if result is not None:
                 self.init_game()
@@ -76,7 +77,8 @@ class Game:
                     "paddle1": self.paddle1.getPosition(),
                     "paddle2": self.paddle2.getPosition(),
                     "score": self.score,
-                    "winnerMessage", ""
+                    "winnerMessage": "",
+                    "timer": time.time() - self.time
                 }
         if self.is_end_game() is True:
             self.state = "ending"

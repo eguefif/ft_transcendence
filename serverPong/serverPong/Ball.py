@@ -31,6 +31,7 @@ class Ball:
             self.dir.x = min(-0.5, self.dir.x)
         else:
             self.dir.x = max(0.5, self.dir.x)
+        self.dir.norm()
 
     def move(self, paddle1, paddle2):
         self.y += self.speed * self.dir.y
@@ -43,6 +44,7 @@ class Ball:
     def wallTopBottomCollision(self):
         if self.y <= self.radius or self.y >= 1 - self.radius:
             self.dir.y *= -1
+            self.dir.norm()
 
     def sideWallCollision(self):
         if self.x - self.radius <= 0:
@@ -64,7 +66,6 @@ class Ball:
             diff = self.y - paddle2.height / 2 - paddle2.y
             self.dir.y = diff * 0.866025403784439  / paddle2.height
             self.dir.norm()
-        
 
     def isRightPaddleCollision(self, paddle):
         return (self.x + self.radius >= paddle.x and
