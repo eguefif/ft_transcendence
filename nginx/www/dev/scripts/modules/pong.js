@@ -129,13 +129,13 @@ class remoteGame extends Game{
 
 		this.websocket.onmessage = (e) => {
 			const msg = JSON.parse(e.data)
+			console.log(msg)
 			switch (msg.command) {
 				case "waiting":
 					this.state = "waiting"
 					break;
 				case "getready":
 					this.state = "getready"
-					console.log("getready received")
 					break;
 				case "data":
 					 console.log("message", msg)
@@ -445,7 +445,6 @@ class graphicEngine
 	}
 
 	display(model) {
-		console.log("display")
 		this.ctx.clearRect(0, 0, board.width, board.height)
 		this.displayStartTimer(model.startTimer)
 		this.displayBall(model.ball.x, model.ball.y, model.ball.radius)
@@ -463,7 +462,6 @@ class graphicEngine
 	}
 
 	displayPaddle(paddle_x, paddle_y, paddle_height){
-		console.log("salut: ", paddle_x, " ", paddle_y)
 		this.ctx.moveTo(paddle_x * this.width, paddle_y * this.height)
 		this.ctx.lineTo(paddle_x * this.width, (paddle_y + paddle_height) * this.height)
 	}
