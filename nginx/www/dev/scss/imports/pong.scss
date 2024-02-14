@@ -1,28 +1,31 @@
-#board { 
+#playButton{
+    position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+  }
+  
+  #board {
     /* background-image: linear-gradient( 
             to right, #8a2727ef, #cb0202);  */
     border-radius: 14px;
-    margin-left: 20%; 
-    margin-top: 20%;
-    border:0.2em solid #ff0202;
-}
-
-#player1_score { 
-    margin-left: 20%; 
-    color: rgb(0, 0, 0); 
-    display: inline-block;
-    padding: 10px; /* Adjust as needed */
-    font-size: 20px; /* Adjust as needed */
-} 
-
-#player2_score { 
-    color: rgb(0, 0, 0); 
-    display: inline-block;
-    padding: 10px; /* Adjust as needed */
-    font-size: 20px; /* Adjust as needed */
-} 
-
-#choose2PlayerButton{
+    border: 0.2em solid #000000;
+  }
+  
+  #gameBoard {
+    /* background-image: linear-gradient( 
+            to right, #8a2727ef, #cb0202);  */
+    border-radius: 14px;
+    position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+    /* border: 0.2em solid #ff0000; */
+    display: flex;
+    justify-content: center;
+    align-items: center;
+  }
+  #choose2PlayerButton{
     position: absolute;
     top: 30%;
     left: 50%;
@@ -42,3 +45,26 @@
     left: 50%;
     transform: translate(-50%, -50%);
 }
+
+#mainMenuButton{
+  position: absolute;
+  top: 10%;
+  left: 90%;
+  transform: translate(-50%, -50%);
+}
+
+  
+  #player1_score {
+    margin-left: 20%;
+    color: rgb(0, 0, 0);
+    display: inline-block;
+    padding: 10px; /* Adjust as needed */
+    font-size: 20px; /* Adjust as needed */
+  }
+  
+  #player2_score {
+    color: rgb(0, 0, 0);
+    display: inline-block;
+    padding: 10px; /* Adjust as needed */
+    font-size: 20px; /* Adjust as needed */
+  }

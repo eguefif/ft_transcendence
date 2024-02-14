@@ -350,18 +350,18 @@ class LocalBall extends Ball{
 
 	checkPaddleCollision(paddle1, paddle2)
 	{
-		if (this.isCollidingRightPaddle(paddle2))
-		{
-			this.dir.x = -0.5
-			let diff = this.y - paddle2.y
-			this.dir.y = diff * 0.866025403784439 / (paddle2.halfPaddleHeight * 2)//voir cercle trigo: 0.866025403784439
-			this.dir.norm();
-		}
 		if (this.isCollidingLeftPaddle(paddle1))
 		{
 			this.dir.x = 0.5
 			let diff = this.y - paddle1.y
 			this.dir.y = diff * 0.866025403784439 / (paddle2.halfPaddleHeight * 2)
+			this.dir.norm();
+		}
+		if (this.isCollidingRightPaddle(paddle2))
+		{
+			this.dir.x = -0.5
+			let diff = this.y - paddle2.y
+			this.dir.y = diff * 0.866025403784439 / (paddle2.halfPaddleHeight * 2)//voir cercle trigo: 0.866025403784439
 			this.dir.norm();
 		}
 	}

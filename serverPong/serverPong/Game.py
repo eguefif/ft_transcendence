@@ -76,14 +76,21 @@ class Game:
                     "paddle1": self.paddle1.getPosition(),
                     "paddle2": self.paddle2.getPosition(),
                     "score": self.score,
+                    "winnerMessage", ""
                 }
         if self.is_end_game() is True:
             self.state = "ending"
         return retval
 
     def get_ending_message(self):
-        msg = {}
-        msg["command"] = "ending"
+        msg =  {
+                "command": "data",
+                "startTimer": 0,
+                "ball": self.ball.getPosition(),
+                "paddle1": self.paddle1.getPosition(),
+                "paddle2": self.paddle2.getPosition(),
+                "score": self.score,
+            }
         if self.score["player1"] > self.score["player2"]:
             self.winner = self.player1
         elif self.score["player1"] < self.score["player2"]:
@@ -91,7 +98,7 @@ class Game:
         if self.winner:
             msg["winnerMessage"] =  "The winner is " + self.winner
         else:
-            msg["winnerMessage"] = "It's a tie"
+            msg["winnerMessage"] = "Your opponent was disconnected "
         return msg
 
     def init_game(self):
