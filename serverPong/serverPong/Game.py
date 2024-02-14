@@ -5,7 +5,8 @@ from Ball import Ball
 
 
 class Game:
-    def __init__(self, player1):
+    def __init__(self, player1, gameid):
+        self.gameid = gameid
         self.ball = Ball()
         self.paddle1 = Paddle(1)
         self.paddle2 = Paddle(2)
@@ -15,9 +16,12 @@ class Game:
         self.player2 = ""
         self.p1_ready = False
         self.p2_ready = False
+        self.p1_socket = websocket
+        self.winner = None
 
-    def addPlayer(self, player):
+    def addPlayer(self, player, websocket):
         self.player2 = player
+        self.p2_socket = websocket
         self.state = "getready"
 
     def update(self, message, player):
@@ -67,16 +71,19 @@ class Game:
             )
         if self.isEndGame() is True:
             self.state = "ending"
-            msg = self.getEndingMsg()
-            retval = json.dumps({"command": "ending", "winnerMessage": msg})
         return retval
 
-    def getEndingMsg(self):
+    def get_ending_message(self):
+        msg = None
         if self.score["player1"] > self.score["player2"]:
-            return "The winner is " + self.player1
+            self.winner = self.player1
         elif self.score["player1"] < self.score["player2"]:
-            return "The winner is " + self.player2
-        return "It's a tie"
+            self.winner = self.player2
+        if self.winner:
+            msg =  "The winner is " + self.winner
+        else:
+            msg = "It's a tie"
+        return json.dumps(msg)
 
     def init_game(self):
         self.ball.init()
@@ -96,6 +103,12 @@ class Game:
 
     def isEndGame(self):
         return self.score["player1"] == 3 or self.score["player2"] == 3
+
+    def set_looser(self, websocket):
+        if self.p1_websocket == websocket:
+            self.winner = self.player1
+        else:
+            self.winner = self.player2
 
     def __repr__(self):
         retval = f"Game: {self.player1}, {self.player2}"
