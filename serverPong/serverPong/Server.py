@@ -37,9 +37,10 @@ class serverPong:
             return
         msg = json.loads(msg)
         print("New player:", msg["username"])
-        if msg["command"]:
+        if msg["command"] == "game":
             if self.is_user_in_game(msg["username"]):
                 self.end_game(msg["username"])
+                #CLOSE SOCKET
                 return
             if not self.is_waiting_game:
                 await self.create_game(websocket, msg["username"], self.current_id)
