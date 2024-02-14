@@ -9,10 +9,10 @@ from rest_framework.authtoken.models import Token
 from rest_framework.decorators import authentication_classes, permission_classes
 from rest_framework.authentication import SessionAuthentication, TokenAuthentication
 from rest_framework.permissions import IsAuthenticated
+import os
 
 from userprofile.serializers import UserProfileSerializer
 
-# Create your views here.
 @api_view(['GET'])
 @authentication_classes([SessionAuthentication, TokenAuthentication])
 @permission_classes([IsAuthenticated])
@@ -31,3 +31,21 @@ def update_profile(request):
         serializer.save()
         return Response({"user": serializer.data}, status=status.HTTP_201_CREATED)
     return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+@api_view(['POST'])
+@authentication_classes([SessionAuthentication, TokenAuthentication])
+@permission_classes([IsAuthenticated])
+def upload_image(request):
+    user = request.user
+    profile = user.profile
+    # os.makedirs(f'profiles/{user.id}', exist_ok=True)
+    # save_path = f'profiles/{user.id}/image.jpg'
+    if request.FILES.get('image'):
+        recieved_image = request.FILES['image']
+        # with open(save_path, 'wb+') as destination:
+        #     for chunk in recieved_image.chunks():
+        #         destination.write(chunk)
+        profile.profile_picture = recieved_image
+        profile.save()
+        return Response({'message': 'Image uploaded successfully'}, status=status.HTTP_201_CREATED)
+    return Response({'error': 'Could not upload image'}, status=status.HTTP_400_BAD_REQUEST)

@@ -105,8 +105,15 @@
 					<h1 class="modal-title fs-5" id="profileLabel">Profile</h1>
 					<div class="btn-close" data-bs-dismiss="modal"></div>
 				</div>
+				<div id="profilePictureContainer">
+					<img id="profilePicture" class="rounded-circle border" alt="profilePicture" width="150" height="150" src="images/default-user-picture.png"/>
+				</div>
 				<div class="modal-body">
 					<form id="profileForm" action="api/updateprofile/" method="PATCH">
+						<div class="mb-3">
+							<label for="formFile" class="form-label">Upload image</label>
+  							<input class="form-control" type="file" id="profileImageField">
+						</div>
 						<div class="mb-3">
 							<label for="username" class="col-md-3 col-form-label">Username</label>
 							<input type="username" name="username" id="profileUsername" class="form-control" placeholder="username" disabled>
