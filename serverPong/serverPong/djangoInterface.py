@@ -3,17 +3,11 @@ def isAuth(token):
     return True
 
 
-def createGame(player1, player2):
+def createGame(player1, player2, creationtime):
+    djangoId = 0
     print(f"Creating game with: {player1}, {player2}")
+    return djangoId
 
 
-def changeState(player1, player2):
-    print("Changing state")
-
-
-def endGame(winner):
+def endGame(djangoId, winner):
     print(f"Game is over. {winner} won")
-
-
-def dropGame(player1, player2):
-    print("Game is cancelled")
