@@ -107,7 +107,6 @@ class remoteGame extends Game{
 		this.player2Score = this.serverUpdate.score.player2
 		this.startTimer = this.serverUpdate.startTimer
 		this.winnerMessage = this.serverUpdate.winnerMessage
-		// this.game_active = false
 	}
 	init_event()
 	{
@@ -303,8 +302,6 @@ class LocalGame extends Game{
 class Paddle{
 	constructor(){
 		this.x = 0
-		// this.top = 0
-		// this.bottom = 0
 		this.height = 0.1
 	}
 }
@@ -424,16 +421,6 @@ class LocalBall extends Ball{
 		return this.x + this.radius >= paddle.x && this.y >= paddle.y && this.y <= paddle.y + paddle.paddleHeight && this.dir.x > 0
 	}
 }
-
-
-
-
-
-
-
-
-
-
 
 
 class graphicEngine
