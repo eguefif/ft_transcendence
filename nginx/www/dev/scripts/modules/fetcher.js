@@ -108,6 +108,8 @@ function createFetcher() {
 				data = await result.json();
 			} else if (type.startsWith("image")) {
 				data = await result.blob();
+			} else {
+				data = undefined;
 			}
 		} catch {
 			data = undefined;
