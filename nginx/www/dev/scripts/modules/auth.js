@@ -131,50 +131,67 @@ function profileInfo()
 		document.querySelector("#profileImageContainer").classList.add("d-none")
 		document.querySelector("#modifyProfile").classList.remove("d-none")
 		const imgElement = document.getElementById("profilePicture")
-		const csrf = localStorage.getItem('csrf')
 
 		imgElement.src = "images/default-user-picture.png"
 
-		fetch("/api/userpicture/", {
-			method: "GET",
-			credentials: "same-origin",
-			headers: {'Authorization': 'Token ' + csrf}
-		})
-			.then(response => {
-				if (!response.ok) {
-					throw new Error('No image')
-				}
-				return response.blob()
-			})
-			.then(blob => {
-				console.log(blob)
-				const imageURL = URL.createObjectURL(blob)
-				imgElement.src = imageURL
-				imgElement.onload = () => {
-					URL.revokeObjectURL(blob)
-				}
-			})
-			.catch(function (err) { console.error(err) })
+		// fetch("/api/userpicture/", {
+		// 	method: "GET",
+		// 	credentials: "same-origin",
+		// 	headers: {'Authorization': 'Token ' + csrf}
+		// })
+		// 	.then(response => {
+		// 		if (!response.ok) {
+		// 			throw new Error('No image')
+		// 		}
+		// 		return response.blob()
+		// 	})
+		// 	.then(blob => {
+		// 		console.log(blob)
+		// 		const imageURL = URL.createObjectURL(blob)
+		// 		imgElement.src = imageURL
+		// 		imgElement.onload = () => {
+		// 			URL.revokeObjectURL(blob)
+		// 		}
+		// 	})
+		// 	.catch(function (err) { console.error(err) })
 
-		try {
-			const res = await fetch("/api/userinfo/", {
-				method: "GET",
-				credentials: "same-origin",
-				headers: {"Content-Type": "application/json", 'Authorization': 'Token ' + csrf}
-			})
-			const data = await res.json()
-			if (res.status == 200)
-			{
-				document.querySelector("#profileUsername").value = data['username']
-				document.querySelector("#profileEmail").value = data['email']
+		const imageReply = await fetcher.get("api/userpicture/")
+		console.log(imageReply)
+		if (imageReply.status == 200) {
+			const imageURL = URL.createObjectURL(imageReply.data)
+			imgElement.src = imageURL
+			imgElement.onload = () => {
+				URL.revokeObjectURL(imageReply.data)
 			}
-			else if (res.status == 403) //forbidden, retour a la page de connection
-			{
-
-			}
-		} catch (error) {
-			console.log("Profile: could not get user info")
 		}
+
+		const res = await fetcher.get("api/userinfo/")
+		console.log(res)
+		if (res.status == 200) {
+			
+			document.querySelector("#profileUsername").value = res.data['username']
+			document.querySelector("#profileEmail").value = res.data['email']
+		}
+
+		// try {
+		// 	const res = await fetch("/api/userinfo/", {
+		// 		method: "GET",
+		// 		credentials: "same-origin",
+		// 		headers: {"Content-Type": "application/json", 'Authorization': 'Token ' + csrf}
+		// 	})
+		// 	const data = await res.json()
+		// 	if (res.status == 200)
+		// 	{
+		// 		document.querySelector("#profileUsername").value = data['username']
+		// 		document.querySelector("#profileEmail").value = data['email']
+		// 	}
+		// 	else if (res.status == 403) //forbidden, retour a la page de connection
+		// 	{
+
+		// 	}
+		// } catch (error) {
+		// 	console.log("Profile: could not get user info")
+		// }
 	})
 }
 
@@ -203,8 +220,6 @@ function resetFormInput(form) {
 
 async function sendUpdateProfileRequest(url, body)
 {
-	const bodyJSON = JSON.stringify(body)
-	const csrf = localStorage.getItem('csrf')
 	const profileUsername = document.querySelector("#profileUsername")
 	const profileEmail = document.querySelector("#profileEmail")
 	const profileUsernameValidation = document.querySelector("#profileUsernameValidation")
@@ -213,46 +228,38 @@ async function sendUpdateProfileRequest(url, body)
 	const form = document.getElementById("profileForm")
 	resetFormInput(form)
 
-	try {
-		const res = await fetch(url, {
-			method: "PATCH",
-			credentials: "same-origin",
-			headers: {"Content-Type": "application/json", 'Authorization': 'Token ' + csrf},
-			body: bodyJSON
-		})
-		const data = await res.json()
-		if (res.status == 201)
+	const res = await fetcher.post(url, body)
+	if (res.status == 201)
+	{
+		document.querySelector("#profileSaveChanges").classList.add("d-none")
+		document.querySelector("#profileImageContainer").classList.add("d-none")
+		document.querySelector("#modifyProfile").classList.remove("d-none")
+		profileUsername.disabled = true
+		profileEmail.disabled = true
+		// alert test
+		document.querySelector("#modalProfile").insertAdjacentHTML("afterbegin", `
+		<div class="alert alert-success alert-dismissible fade show" role="alert">
+			<strong>Success!</strong> Your information has been saved.
+			<button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+		</div>
+		`)
+	}
+	else if (res.status == 400)
+	{
+		const data = res.data
+
+		if (data['username'])
 		{
-			document.querySelector("#profileSaveChanges").classList.add("d-none")
-			document.querySelector("#profileImageContainer").classList.add("d-none")
-			document.querySelector("#modifyProfile").classList.remove("d-none")
-			profileUsername.disabled = true
-			profileEmail.disabled = true
-			// alert test
-			document.querySelector("#modalProfile").insertAdjacentHTML("afterbegin", `
-			<div class="alert alert-success alert-dismissible fade show" role="alert">
-				<strong>Success!</strong> Your information has been saved.
-				<button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-			</div>
-			`)
+			profileUsername.classList.add("is-invalid")
+			profileUsernameValidation.classList.add("invalid-feedback")
+			profileUsernameValidation.innerHTML = data['username']
 		}
-		else if (res.status == 400)
+		if (data['email'])
 		{
-			if (data['username'])
-			{
-				profileUsername.classList.add("is-invalid")
-				profileUsernameValidation.classList.add("invalid-feedback")
-				profileUsernameValidation.innerHTML = data['username']
-			}
-			if (data['email'])
-			{
-				profileEmail.classList.add("is-invalid")
-				profileEmailValidation.classList.add("invalid-feedback")
-				profileEmailValidation.innerHTML = data['email']
-			}
+			profileEmail.classList.add("is-invalid")
+			profileEmailValidation.classList.add("invalid-feedback")
+			profileEmailValidation.innerHTML = data['email']
 		}
-	} catch (error) {
-		console.log(error)
 	}
 }
 
@@ -287,7 +294,7 @@ async function sendRegistrationRequest(url, body, method)
 		input.classList.remove("is-invalid")
 		input.classList.add("is-valid")
 	})
-	
+
 
 	const refreshExpiry = Date.now() + fetcher.refreshDuration;
 	const result = await fetcher.post(url, body);

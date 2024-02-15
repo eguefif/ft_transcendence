@@ -97,6 +97,23 @@ function createFetcher() {
 		}
 	};
 
+	const postFile = async (url, body, redo = true) => {
+		try {
+			const result = await fetch(url, {
+				method: "POST",
+				headers: { Authorization: token.get() },
+				body: body,
+			});
+			if (result.status == 401 && redo && (await token.refresh())) {
+				return await post(url, body, false);
+			}
+			return await extractData(result);
+		} catch {
+			console.log("test");
+			return { status: 418, data: { info: "fetch failed" } };
+		}
+	};
+
 	async function extractData(result) {
 		let type = result.headers.get("content-type");
 		if (!type) {
@@ -117,7 +134,7 @@ function createFetcher() {
 		return { status: result.status, data: data, type: type };
 	}
 
-	return { accessDuration, refreshDuration, setAccess, isAuthenticated, get, post };
+	return { accessDuration, refreshDuration, setAccess, isAuthenticated, get, post, postFile };
 }
 
 export const fetcher = createFetcher();
