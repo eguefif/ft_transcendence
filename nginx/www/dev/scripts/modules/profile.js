@@ -13,15 +13,18 @@ async function preview_image() {
 		headers: {'Authorization': 'Token ' + csrf},
         body: formData
     })
-    const data = await res.json()
-    console.log(data)
+    if (res.status == 201) {
+        img.src = URL.createObjectURL(file)
+        img.width = 150
+        img.height = 150
+        img.onload = () => {
+            URL.revokeObjectURL(file)
+        }
+    } else {
 
-    img.src = URL.createObjectURL(file)
-    img.width = 150
-    img.height = 150
-    img.onload = () => {
-        URL.revokeObjectURL(file)
     }
+
+    
 }
 
 export function watchProfile() {

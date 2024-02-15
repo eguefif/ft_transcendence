@@ -139,8 +139,34 @@ function profileInfo()
 		document.querySelector("#profileUsername").disabled = true
 		document.querySelector("#profileEmail").disabled = true
 		document.querySelector("#profileSaveChanges").classList.add("d-none")
+		document.querySelector("#profileImageContainer").classList.add("d-none")
 		document.querySelector("#modifyProfile").classList.remove("d-none")
+		const imgElement = document.getElementById("profilePicture")
 		const csrf = localStorage.getItem('csrf')
+
+		imgElement.src = "images/default-user-picture.png"
+
+		fetch("/api/userpicture/", {
+			method: "GET",
+			credentials: "same-origin",
+			headers: {'Authorization': 'Token ' + csrf}
+		})
+			.then(response => {
+				if (!response.ok) {
+					throw new Error('No image')
+				}
+				return response.blob()
+			})
+			.then(blob => {
+				console.log(blob)
+				const imageURL = URL.createObjectURL(blob)
+				imgElement.src = imageURL
+				imgElement.onload = () => {
+					URL.revokeObjectURL(blob)
+				}
+			})
+			.catch(function (err) { console.error(err) })
+
 		try {
 			const res = await fetch("/api/userinfo/", {
 				method: "GET",
@@ -153,7 +179,7 @@ function profileInfo()
 				document.querySelector("#profileUsername").value = data['username']
 				document.querySelector("#profileEmail").value = data['email']
 			}
-			else if (ResizeObserver.status == 403) //forbidden, retour a la page de connection
+			else if (res.status == 403) //forbidden, retour a la page de connection
 			{
 
 			}
@@ -173,6 +199,7 @@ function changeProfile()
 		emailUsername.disabled = false
 		document.querySelector("#modifyProfile").classList.add("d-none")
 		document.querySelector("#profileSaveChanges").classList.remove("d-none")
+		document.querySelector("#profileImageContainer").classList.remove("d-none")
 	})
 }
 
@@ -208,6 +235,7 @@ async function sendUpdateProfileRequest(url, body)
 		if (res.status == 201)
 		{
 			document.querySelector("#profileSaveChanges").classList.add("d-none")
+			document.querySelector("#profileImageContainer").classList.add("d-none")
 			document.querySelector("#modifyProfile").classList.remove("d-none")
 			profileUsername.disabled = true
 			profileEmail.disabled = true

@@ -1,5 +1,6 @@
 from django.shortcuts import render, get_object_or_404
 from django.contrib.auth.models import User
+from django.http import HttpResponse, FileResponse
 from rest_framework import status, permissions
 from rest_framework.decorators import api_view
 from rest_framework.views import APIView
@@ -21,6 +22,19 @@ def user_info(request):
     serializer = UserProfileSerializer(user)
     return Response(serializer.data, status=status.HTTP_200_OK)
 
+# Get l'image profile du user logged in, besoin de changer si on veux afficher l'image d'un autre user
+@api_view(['GET'])
+@authentication_classes([SessionAuthentication, TokenAuthentication])
+@permission_classes([IsAuthenticated])
+def user_picture(request):
+    user = request.user
+    try:
+        image_path = user.profile.profile_picture.path
+        return FileResponse(open(image_path, 'rb'))
+    except:
+        return Response({'error': 'No image found'}, status=status.HTTP_400_BAD_REQUEST)
+    
+
 @api_view(['PATCH'])
 @authentication_classes([SessionAuthentication, TokenAuthentication])
 @permission_classes([IsAuthenticated])
@@ -38,13 +52,11 @@ def update_profile(request):
 def upload_image(request):
     user = request.user
     profile = user.profile
-    # os.makedirs(f'profiles/{user.id}', exist_ok=True)
-    # save_path = f'profiles/{user.id}/image.jpg'
     if request.FILES.get('image'):
+        current_picture = profile.profile_picture
+        if current_picture and os.path.isfile(current_picture.path):
+            os.remove(current_picture.path)
         recieved_image = request.FILES['image']
-        # with open(save_path, 'wb+') as destination:
-        #     for chunk in recieved_image.chunks():
-        #         destination.write(chunk)
         profile.profile_picture = recieved_image
         profile.save()
         return Response({'message': 'Image uploaded successfully'}, status=status.HTTP_201_CREATED)

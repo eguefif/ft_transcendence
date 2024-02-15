@@ -13,9 +13,9 @@ def generate_image_uuid(instance, filename):
 
 class Profile(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE)
-    # file will be uploaded to MEDIA_ROOT/image
     profile_picture = models.ImageField(upload_to=generate_image_uuid)
 
+# Signals to create one to one when user is created
 @receiver(post_save, sender=User)
 def create_user_profile(sender, instance, created, **kwargs):
     if created:
