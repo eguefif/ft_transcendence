@@ -73,15 +73,9 @@ function createFetcher() {
 			if (result.status == 401 && redo && (await token.refresh())) {
 				return await get(url, false);
 			}
-			let data;
-			try {
-				data = await result.json();
-			} catch {
-				data = {};
-			}
-			return { status: result.status, data: data };
+			return await extractData(result);
 		} catch {
-			return { status: 418, data: { info: "fetch failed" } };
+			return { status: 418, data: { info: "fetch failed" }, type: undefined };
 		}
 	};
 
@@ -96,17 +90,31 @@ function createFetcher() {
 			if (result.status == 401 && redo && (await token.refresh())) {
 				return await post(url, body, false);
 			}
-			let data;
-			try {
-				data = await result.json();
-			} catch {
-				data = {};
-			}
-			return { status: result.status, data: data };
+			return await extractData(result);
 		} catch {
-			return { status: 448, data: { info: "fetch failed" } };
+			console.log("test");
+			return { status: 418, data: { info: "fetch failed" } };
 		}
 	};
+
+	async function extractData(result) {
+		let type = result.headers.get("content-type");
+		if (!type) {
+			type = undefined;
+		}
+		let data;
+		try {
+			if (type.startsWith("application")) {
+				data = await result.json();
+			} else if (type.startsWith("image")) {
+				data = await result.blob();
+			}
+		} catch {
+			data = undefined;
+		}
+		return { status: result.status, data: data, type: type };
+	}
+
 	return { accessDuration, refreshDuration, setAccess, isAuthenticated, get, post };
 }
 

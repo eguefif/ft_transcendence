@@ -17,10 +17,8 @@ def require_authorization(func):
             username = payload["username"]
             expiry = payload["exp"]
             user = User.objects.get(username=username)
-        except Exception as e:
-            print(e)
+        except:
             return Response(status=status.HTTP_401_UNAUTHORIZED)
         return func(*args, **kwargs)
 
     return wrapper_require_authorization
-
