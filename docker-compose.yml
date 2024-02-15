@@ -47,6 +47,7 @@ services:
     container_name: serverpong
     build: ./serverPong
     image: django-serverpong
+    restart: on-failure
     depends_on:
       - django
     env_file:
