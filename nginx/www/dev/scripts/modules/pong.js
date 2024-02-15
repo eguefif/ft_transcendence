@@ -1,3 +1,5 @@
+import { fetcher } from "./fetcher.js"
+
 export function initLocalPong()
 {
 	const controller = new Controller()
@@ -11,7 +13,11 @@ class Controller{
 		this.playRemoteButton = document.querySelector("#chooseRemoteButton")
 		this.playTournamentButton = document.querySelector("#chooseTouramentButton")
 		this.mainMenuButton = document.querySelector("#mainMenuButton")
+		this.logoutButton = document.querySelector("#logoutButton")
+		this.submitLogin = document.querySelector("#submitLogin")
 		this.initListener()
+		this.model = new Game()
+		this.ShowMainMenu()
 	}
 	
 	run()
@@ -50,6 +56,15 @@ class Controller{
 		this.mainMenuButton.addEventListener("click", (e) => {
 			this.ShowMainMenu()
 		})
+
+		this.logoutButton.addEventListener("click", (e) => {
+			this.ShowMainMenu()
+		})
+
+		this.submitLogin.addEventListener("click", (e) => {
+			console.log("hi")
+			this.ShowMainMenu()
+		})
 	}
 	HideMainMenu(){
 		this.playRemoteButton.classList.add('d-none')
@@ -59,12 +74,16 @@ class Controller{
 		this.game_active = true
 
 	}
-	ShowMainMenu(){
-		this.playRemoteButton.classList.remove('d-none')
+	async ShowMainMenu(){
+		if (await fetcher.isAuthenticated() && this.playRemoteButton.classList.contains('d-none'))
+			this.playRemoteButton.classList.remove('d-none')
+		else if (!this.playRemoteButton.classList.contains('d-none'))
+			this.playRemoteButton.classList.add('d-none')
+
 		this.play2PlayerButton.classList.remove('d-none')
 		this.playTournamentButton.classList.remove('d-none')
 		this.mainMenuButton.classList.add('d-none')
-		if (this.model.playButton)
+		if (this.model.type == "local")
 			this.model.playButton.classList.add('d-none')
 		this.game_active = false
 		this.view.clearFrame()
@@ -77,10 +96,7 @@ class Game{
 		this.player2Score = 0
 		this.startTimer = 0
 		this.winnerMessage = ""
-		
-		if (this.constructor == Game) {//abstract class
-			throw new Error("Abstract classes can't be instantiated.");
-		  }
+		this.type = "remote"
 	}
 }
 
@@ -95,7 +111,8 @@ class remoteGame extends Game{
 		this.init_event()
 		this.state = "waiting"
 		this.serverUpdate = "none"
-	}
+		this.type = "remote"
+		}
 
 	update(){
 		if (this.serverUpdate == "none")
@@ -108,6 +125,7 @@ class remoteGame extends Game{
 		this.startTimer = this.serverUpdate.startTimer
 		this.winnerMessage = this.serverUpdate.winnerMessage
 	}
+
 	init_event()
 	{
 		this.websocket.onopen = (e) => {
@@ -183,6 +201,7 @@ class LocalGame extends Game{
 		this.game_active	= false
 		this.state			= "none"
 		this.pointsToWin	= 1
+		this.type = "local"
 	}
 
 	initGame()
