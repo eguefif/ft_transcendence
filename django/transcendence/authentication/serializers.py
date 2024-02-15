@@ -10,7 +10,7 @@ class UserSerializer(serializers.ModelSerializer):
     
     def validate_username(self, value):
         # Requirements: 4-24 characters, only letters and numbers
-        username_regex = r"^[a-z\d]{4,24}$"
+        username_regex = r"^[a-zA-Z\d]{4,24}$"
         if not re.fullmatch(username_regex, value):
             raise serializers.ValidationError("Nickname does not meet requirements")
         return value
