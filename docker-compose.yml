@@ -48,7 +48,7 @@ services:
     build: ./serverPong
     image: django-serverpong
     depends_on:
-      -django
+      - django
     env_file:
       - .env
     expose:

@@ -1,5 +1,7 @@
+import { fetcher } from "../modules/fetcher.js";
+
 export class remoteGame {
-	constructor(username){
+	constructor(){
 		this.player1Score = 0
 		this.player2Score = 0
 		this.startTimer = 0
@@ -9,7 +11,7 @@ export class remoteGame {
 		this.paddle2 = new Paddle("player2", 2)
 		this.ball = new Ball()
 		let address = window.location.hostname
-		this.websocket = new WebSocket(`wss://${address}/game/`)
+		this.websocket = fetcher.getWebSocket(`wss://${address}/game/`)
 		this.init_event()
 		this.state = "waiting"
 		this.serverUpdate = "none"
@@ -26,6 +28,7 @@ export class remoteGame {
 		this.startTimer = this.serverUpdate.startTimer
 		this.winnerMessage = this.serverUpdate.winnerMessage
 	}
+
 	init_event() {
         let mainMenuButton = document.getElementById("mainMenuButton")        
         mainMenuButton.addEventListener("click", (e) => {
@@ -34,12 +37,13 @@ export class remoteGame {
                 delete this.websocket
             }
         })
-
+		if (this.websocket == undefined) {
+			return
+		}
 		this.websocket.onopen = (e) => {
 			let gameMsg = {}
 			console.log(this.username)
 			gameMsg["command"] = "game"
-			gameMsg["username"] = this.username
 			this.websocket.send(JSON.stringify(gameMsg))
 		}
 
@@ -52,6 +56,8 @@ export class remoteGame {
 			const msg = JSON.parse(e.data)
 			console.log(msg)
 			switch (msg.command) {
+				case "tokenInvalid":
+
 				case "wait":
 					this.state = "waiting"
                     this.websocket.send("wait")
@@ -95,7 +101,6 @@ export class remoteGame {
 		})
     }
     isSocketConnected(){
-        if (this.websocket != undefined)
         if (this.websocket.readyState != 3)
             return true
         return false

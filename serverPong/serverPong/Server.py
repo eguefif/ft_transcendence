@@ -33,21 +33,35 @@ class serverPong:
     async def handler(self, websocket):
         try:
             msg = await websocket.recv()
+            print("new connection", msg)
         except websockets.ConnectionClosedOK:
-            print("Disconnection on the first message")
+            print("Disconnection on the token exchange message")
             return
-        msg = json.loads(msg)
-        print("New player:", msg["username"])
+        username = authenticated(msg)
+        if not username:
+            self.send_token_invalid_and_close(websocket)
+            return
+        try:
+            msg = await websocket.recv()
+        except websockets.ConnectionClosedOK:
+            print("Disconnection on the game message")
+            return
         if msg["command"] == "game":
-            if self.is_user_in_game(msg["username"]):
-                self.end_game(msg["username"])
+            if self.is_user_in_game():
+                self.end_game(username)
                 await websocket.close()
                 await websocket.wait_closed()
                 return
             if not self.is_waiting_game:
-                await self.create_game(websocket, msg["username"], self.current_id)
+                await self.create_game(websocket, username, self.current_id)
             else:
-                await self.join_game(websocket, msg["username"])
+                await self.join_game(websocket, username)
+
+    async def send_token_invalid_and_close(self, websocket):
+        msg = json.dumps({"command": "tokenInvalid"})
+        await websocket.send(msg)
+        await websocket.close()
+        await websocket.wait_closed()
 
     def is_user_in_game(self, username):
         for game in self.games.values():

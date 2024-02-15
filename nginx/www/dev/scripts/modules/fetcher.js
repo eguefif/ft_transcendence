@@ -117,7 +117,19 @@ function createFetcher() {
 		return { status: result.status, data: data, type: type };
 	}
 
-	return { accessDuration, refreshDuration, setAccess, isAuthenticated, get, post };
+	const getWebSocket = async (url) => {
+		let websocket = new Websocket(url)
+		let token
+		if (await token.refresh()) {
+			token = token.get()
+		}
+		else {
+			return undefined
+		}
+		websocket.send(JSON.stringify({"token": token}))
+		return websocket
+	}
+	return { accessDuration, refreshDuration, setAccess, isAuthenticated, get, post, getWebSocket };
 }
 
 export const fetcher = createFetcher();

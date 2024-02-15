@@ -44,10 +44,9 @@ class Controller{
 		})
 
 		this.playRemoteButton.addEventListener("click", (e) => {
-			let user = localStorage.getItem("user")
-			user = JSON.parse(user)
-			let username = user["username"]
-			this.model = new remoteGame(username)
+			this.model = new remoteGame()
+			if (this.model == undefined)
+				return undefined
 			this.HideMainMenu()
 			this.run()
 		})

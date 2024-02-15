@@ -47,10 +47,3 @@ def end_game(request, format=None):
     game.score_player2 = data["score_player2"]
     game.save()
     return Response({}, status.HTTP_200_OK)
-
-
-@api_view(["GET"])
-def get_games(request, format=None):
-    data = Game.objects.all()
-    serializer = GameSerializer(data, many=True)
-    return Response(serializer.data,  status.HTTP_200_OK)
