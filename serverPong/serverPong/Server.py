@@ -4,6 +4,7 @@ import websockets
 from websockets.server import serve
 import json
 import signal
+from authentification import authenticate
 
 from Game import Game
 
@@ -40,7 +41,8 @@ class serverPong:
         if msg["command"] == "game":
             if self.is_user_in_game(msg["username"]):
                 self.end_game(msg["username"])
-                #CLOSE SOCKET
+                await websocket.close()
+                await websocket.wait_closed()
                 return
             if not self.is_waiting_game:
                 await self.create_game(websocket, msg["username"], self.current_id)
