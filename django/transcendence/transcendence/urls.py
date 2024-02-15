@@ -18,6 +18,11 @@ from django.contrib import admin
 from django.urls import path, include
 
 urlpatterns = [
+<<<<<<< HEAD
     path('api/', include('authentication.urls')),
+=======
+    path('', include('register.urls')),
+    path('', include('gamesManager.urls')),
+>>>>>>> 54a2174650c3b191cc4c037282bfe419fca9a2e6
     path('api/admin/', admin.site.urls),
 ]

@@ -37,13 +37,20 @@ SECRET_KEY = env["SECRET"]
 
 DEBUG = env["DEBUG"]
 
-ALLOWED_HOSTS = [env["HOSTNAME"]]
+#ALLOWED_HOSTS = [env["HOSTNAME"]]
+ALLOWED_HOSTS = ["localhost", "c1r7p10.42quebec.com", "django"]
 
 
 # Application definition
 
 INSTALLED_APPS = [
+<<<<<<< HEAD
     'authentication',
+=======
+    'gamesManager',
+    'register',
+    'authentification',
+>>>>>>> 54a2174650c3b191cc4c037282bfe419fca9a2e6
     'rest_framework',
     'rest_framework.authtoken',
     'django.contrib.auth',

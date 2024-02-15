@@ -1,16 +1,22 @@
-from Game import Game
+import aiohttp
+import time
+import asyncio
 
-g = Game("player1")
+from djangoInterface import create_game, end_game
 
-g.addPlayer("player2")
 
-g.update("ready", "player1")
-g.update("ready", "player2")
-print(g.state)
-print(g.run())
-print(g.state)
-print(g.run())
+URL = "http://django:8000/api/getgames"
 
-g.update("top", "player1")
-g.update("bot", "player2")
-print(g.run())
+async def main():
+    player1 = "test123"
+    player2 = "eguefif1"
+    creationtime = time.time()
+    djangoId = await create_game(player1, player2, creationtime)
+    await end_game(djangoId, player1, 3, 1)
+    async with aiohttp.ClientSession() as session:
+        async with session.get(URL) as resp:
+            retval = await resp.text()
+        print(retval[-1])
+        print("Expected: ", player1, player2, "3", "1", creationtime)
+
+asyncio.run(main())
