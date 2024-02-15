@@ -85,7 +85,7 @@
 					<input type="password" name='password' id="loginPassword" class="form-control">
 					<span id="loginValidation" class="error text-danger"></span>
 				  </div>
-				<button type="submit" value="Login" class="btn btn-primary">Submit</button>
+				<button type="submit" id="submitLogin" value="Login" class="btn btn-primary">Submit</button>
 			  </form>
 			</div>
 		  </div>
@@ -120,9 +120,9 @@
 	  <div id="gameBoard">
 		  <button type="button" id="playButton" class="btn btn-secondary btn-lg d-none">Play!</button>
 		  <!-- <button type="button" id="choose1PlayerButton" class="btn btn-secondary btn-lg d-none">Play!</button> -->
-		  <button type="button" id="choose2PlayerButton" class="btn btn-secondary btn-lg">2 Player</button>
-		  <button type="button" id="chooseRemoteButton" class="btn btn-secondary btn-lg">Online</button>
-		  <button type="button" id="chooseTouramentButton" class="btn btn-secondary btn-lg">Online Tournament</button>
+		  <button type="button" id="choose2PlayerButton" class="btn btn-secondary btn-lg d-none">2 Player</button>
+		  <button type="button" id="chooseRemoteButton" class="btn btn-secondary btn-lg d-none">Online</button>
+		  <button type="button" id="chooseTouramentButton" class="btn btn-secondary btn-lg d-none">Tournament</button>
 		  <button type="button" id="mainMenuButton" class="btn btn-secondary btn-lg d-none">Menu</button>
 		  <canvas id="board" width="640" height="480"></canvas>
 		</div>

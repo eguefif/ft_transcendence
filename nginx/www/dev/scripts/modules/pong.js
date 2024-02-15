@@ -2,6 +2,8 @@ import { remoteGame } from "./pong-remote.js"
 import { localGame } from "./pong-local.js"
 import { graphicEngine } from "./graphic-engine.js"
 
+import { fetcher } from "./fetcher.js"
+
 export function initLocalPong()
 {
 	const controller = new Controller()
@@ -19,7 +21,11 @@ class Controller{
 		if (!(token && (token != undefined))) {
 			this.HideRemoteItemsInMenu()
 		}
+		this.logoutButton = document.querySelector("#logoutButton")
+		this.submitLogin = document.querySelector("#submitLogin")
 		this.initListener()
+		this.model = new Game()
+		this.ShowMainMenu()
 	}
 	
 	run()
@@ -64,6 +70,28 @@ class Controller{
 				this.HideRemoteItemsInMenu()
 			}
 		})
+
+		this.logoutButton.addEventListener("click", (e) => {
+			this.ShowMainMenu()
+		})
+	
+
+		this.submitLogin.addEventListener("click", (e) => {
+			console.log("hi")
+			this.ShowMainMenu()
+			if (!(token && (token != undefined))) {
+				this.HideRemoteItemsInMenu()
+			}
+		})
+
+		this.logoutButton.addEventListener("click", (e) => {
+			this.ShowMainMenu()
+		})
+
+		this.submitLogin.addEventListener("click", (e) => {
+			console.log("hi")
+			this.ShowMainMenu()
+		})
 	}
 	HideMainMenu(){
 		this.playRemoteButton.classList.add('d-none')
@@ -80,12 +108,24 @@ class Controller{
 		this.game_active = true
 
 	}
-	ShowMainMenu(){
-		this.playRemoteButton.classList.remove('d-none')
+	
+	HideRemoteItemsInMenu(){
+		this.playRemoteButton.classList.add('d-none')
+		this.playTournamentButton.classList.add('d-none')
+		this.mainMenuButton.classList.remove('d-none')
+		this.game_active = true
+
+	}
+	async ShowMainMenu(){
+		if (await fetcher.isAuthenticated() && this.playRemoteButton.classList.contains('d-none'))
+			this.playRemoteButton.classList.remove('d-none')
+		else if (!this.playRemoteButton.classList.contains('d-none'))
+			this.playRemoteButton.classList.add('d-none')
+
 		this.play2PlayerButton.classList.remove('d-none')
 		this.playTournamentButton.classList.remove('d-none')
 		this.mainMenuButton.classList.add('d-none')
-		if (this.model.playButton)
+		if (this.model.type == "local")
 			this.model.playButton.classList.add('d-none')
 		this.game_active = false
 		this.view.clearFrame()
