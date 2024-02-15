@@ -43,8 +43,7 @@ ALLOWED_HOSTS = [env["HOSTNAME"]]
 # Application definition
 
 INSTALLED_APPS = [
-    'register',
-    'authentification',
+    'authentication',
     'rest_framework',
     'rest_framework.authtoken',
     'django.contrib.auth',
