@@ -18,6 +18,15 @@ def authenticate(request):
     return Response("invalid request", status=status.HTTP_400_BAD_REQUEST)
 
 @api_view(['POST'])
+@require_authorization
+def logout(request):
+    response = Response(status=status.HTTP_204_NO_CONTENT)
+    Response.delete_cookie(self=response,
+                           key='refreshToken',
+                           path='/api/auth/refresh')
+    return response
+
+@api_view(['POST'])
 def refresh(request):
     try:
         token = request.COOKIES["refreshToken"]
@@ -48,10 +57,6 @@ def login(request):
         return Response({'info': 'Not found'}, status=status.HTTP_404_NOT_FOUND)
     return get_authenticated_response(user, status.HTTP_200_OK)
 
-@api_view(['POST'])
-@require_authorization
-def logout(request):
-    return get_logout_response()
 
 def get_authenticated_response(user, status):
     response = Response({"accessToken": get_access_token(user.get_username())},
@@ -64,11 +69,4 @@ def get_authenticated_response(user, status):
                         httponly=True,
                         samesite='Strict',
                         path='/api/auth/refresh')
-    return response
-
-def get_logout_response():
-    response = Response(status=status.HTTP_204_NO_CONTENT)
-    Response.delete_cookie(self=response,
-                           key='refreshToken',
-                           path='/api/auth/refresh')
     return response
