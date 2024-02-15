@@ -1,7 +1,7 @@
 from Paddle import Paddle
 from Ball import Ball
 import time
-from djangoInterface import createGame, endGame
+from djangoInterface import create_game, end_game
 
 
 class Game:
@@ -29,7 +29,7 @@ class Game:
         self.p2_websocket = websocket
         self.state = "getready"
         self.time = time.time()
-        self.djangoId = createGame(self.player1, self.player2, self.time)
+        self.djangoId = create_game(self.player1, self.player2, self.time)
         print(f"game {self.id} changing state to", self.state)
 
     def is_ready_to_be_remove(self):
@@ -103,7 +103,8 @@ class Game:
             msg["winnerMessage"] =  "The winner is " + self.winner
         else:
             msg["winnerMessage"] = "Your opponent was disconnected "
-        endGame(self.djangoId, self.winner)
+        end_game(self.djangoId, self.winner, self.score["player1"],
+                self.score["player2"])
         return msg
 
     def init_game(self):

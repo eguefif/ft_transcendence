@@ -47,10 +47,12 @@ services:
     container_name: serverpong
     build: ./serverPong
     image: django-serverpong
+    depends_on:
+      -django
     env_file:
       - .env
     expose:
-      - "10000:10000"
+      - 10000
     networks:
       - transcendence-net
     volumes:
