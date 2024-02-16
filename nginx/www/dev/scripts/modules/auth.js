@@ -30,6 +30,7 @@ function validateInput(textBox, validationBox, errorMessage) {
     });
 }
 
+/*
 function validatePassword(textBox, validationBox) {
 	textBox.addEventListener('focusout', (e) => {
 		e.preventDefault()
@@ -57,6 +58,7 @@ function validatePasswordCheck(passTextBox, confirmTextBox, confirmValidationBox
 		}
 	})
 }
+*/
 
 const textBoxName = document.getElementById('username');
 const textBoxEmail = document.getElementById('email');
@@ -70,8 +72,8 @@ const passwordCheckValidationBox = document.getElementById('password-checkValida
 
 validateInput(textBoxName, usernameValidationBox, "This field is the wrong size.");
 validateInput(textBoxEmail, emailValidationBox, "This field is the wrong size.");
-validatePassword(textBoxPassword, passwordValidationBox);
-validatePasswordCheck(textBoxPassword, textBoxPasswordCheck, passwordCheckValidationBox);
+// validatePassword(textBoxPassword, passwordValidationBox);
+// validatePasswordCheck(textBoxPassword, textBoxPasswordCheck, passwordCheckValidationBox);
 
 function authRegister()
 {
