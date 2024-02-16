@@ -67,6 +67,6 @@ def get_authenticated_response(user, status):
                         max_age=timedelta(days=3),
                         secure=True,
                         httponly=True,
-                        samesite='Strict',
+                        samesite='Lax',
                         path='/api/auth/refresh')
     return response
