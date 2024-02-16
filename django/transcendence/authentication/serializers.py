@@ -21,13 +21,3 @@ class UserSerializer(serializers.ModelSerializer):
         if not re.fullmatch(password_regex, value):
             raise serializers.ValidationError("Password does not meet requirements")
         return value
-
-class UserNoPasswordSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = User
-        fields = ['id', 'username', 'email']
-
-class UserProfileSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = User
-        fields = ['id', 'username', 'email']

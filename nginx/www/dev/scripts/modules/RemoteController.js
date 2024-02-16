@@ -71,10 +71,7 @@ export class RemoteController {
 
 		this.websocket.onmessage = (e) => {
 			const msg = JSON.parse(e.data)
-			console.log(msg)
 			switch (msg.command) {
-				case "tokenInvalid":
-
 				case "wait":
                     this.websocket.send("wait")
 					this.message = "Wait for another player"

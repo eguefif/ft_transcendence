@@ -73,11 +73,12 @@ function createFetcher() {
 	};
 
 	const get = async (url, redo = true) => {
+		const header = {"Content-Type": "application/json", Authorization: token.get()};
 		try {
 			const result = await fetch(url, {
 				method: "GET",
 				credentials: "same-origin",
-				headers: { "Content-Type": "application/json", Authorization: token.get() },
+				headers: header,
 			});
 			if (result.status == 401 && redo && (await token.refresh())) {
 				return await get(url, false);
@@ -89,11 +90,18 @@ function createFetcher() {
 	};
 
 	const post = async (url, body = {}, redo = true) => {
-		const bodyJSON = JSON.stringify(body);
+		let bodyJSON;
+		let header = {"Content-Type": "application/json", Authorization: token.get()};
+		if (body instanceof FormData) {
+			delete header["Content-Type"];
+			bodyJSON = body
+		} else {
+			bodyJSON = JSON.stringify(body);
+		}
 		try {
 			const result = await fetch(url, {
 				method: "POST",
-				headers: { "Content-Type": "application/json", Authorization: token.get() },
+				headers: header,
 				body: bodyJSON,
 			});
 			if (result.status == 401 && redo && (await token.refresh())) {
