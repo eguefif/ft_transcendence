@@ -9,7 +9,8 @@ export class graphicEngine
 		this.mid = board.width / 2
 		this.scoreMarginRight = this.mid + this.width / 10
 		this.scoreMarginLeft = this.mid - this.width / 10
-		this.scoreMarginTop = this.height / 10
+		this.scoreMarginTop = this.height / 6
+		this.NameMarginTop = this.height / 14
 		this.scoreScale = this.height / 16
 		this.winnerMessageCenter = this.width / 2 - this.width / 7
 		this.winnerMessageMargin = this.height / 4.8
@@ -30,6 +31,7 @@ export class graphicEngine
 		this.displayPaddle(model.paddle2.x, model.paddle2.y)
 		this.displayScore(model.player1Score, model.player2Score)
 		this.displayWinner(model.message)
+		this.displayNames(model.player1, model.player2)
 
 		this.ctx.stroke()
 	}
@@ -55,6 +57,17 @@ export class graphicEngine
 		this.ctx.font = "".concat(`${this.scoreScale}`, "px Arial")
 		this.ctx.fillText(dis1, this.scoreMarginLeft, this.scoreMarginTop)
 		this.ctx.fillText(dis2, this.scoreMarginRight, this.scoreMarginTop)
+	}
+
+	displayNames(player1Name, player2Name)
+	{
+		if (player1Name == undefined || player1Name == "")
+			player1Name = "player1"
+		if (player2Name == undefined || player1Name == "")
+			player2Name = "player2"
+		this.ctx.font = "".concat(`${this.scoreScale}`, "px Arial")
+		this.ctx.fillText(player1Name, this.scoreMarginLeft - 50, this.NameMarginTop)
+		this.ctx.fillText(player2Name, this.scoreMarginRight  - 50, this.NameMarginTop)
 	}
 
 	displayWinner(winnerMessage)
