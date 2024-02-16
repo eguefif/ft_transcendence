@@ -42,13 +42,15 @@ export class RemoteController {
 	 
 	async initSocket() {
 		this.websocket= await fetcher.getWebSocket(`wss://${this.address}/game/`)
-		if (this.websocket != undefined) {
-			let gameMsg = {}
-			gameMsg["command"] = "game"
-			this.websocket.send(JSON.stringify(gameMsg))
-		}
-		else
-			console.log("Error while creating the websocket")
+		this.websocket.addEventListener("open", (e) => {
+			if (this.websocket != undefined) {
+				let gameMsg = {}
+				gameMsg["command"] = "game"
+				this.websocket.send(JSON.stringify(gameMsg))
+			}
+			else
+				console.log("Error while creating the websocket")
+		})
 	}
 
 	init_event() {

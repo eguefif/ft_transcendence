@@ -138,7 +138,9 @@ function createFetcher() {
 		let websocket = new WebSocket(url)
 		if (await token.refresh()) {
 			let rettoken = token.get()
-			await websocket.send(JSON.stringify({"token": rettoken}))
+			websocket.addEventListener("open", (e) => {
+				websocket.send(JSON.stringify({"token": rettoken}))
+			})
 			return websocket
 		}
 		else {
