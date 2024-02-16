@@ -263,19 +263,29 @@ async function sendUpdateProfileRequest(url, body)
 	}
 }
 
-async function sendLoginRequest(url, body, method)
+async function sendLoginRequest(url, body)
 {
 	const refreshExpiry = Date.now() + fetcher.refreshDuration;
 	const result = await fetcher.post(url, body);
 	const validation = document.getElementById("loginValidation")
 	if (result.status >= 200 && result.status < 300)
 	{
-		localStorage.setItem("refreshExpiry", `${refreshExpiry}`)
-		fetcher.setAccess(result.data.accessToken);
-		validation.innerHTML = ""
-		document.querySelector("#modalLogin").classList.remove("show")
-		document.querySelector(".modal-backdrop").classList.remove("show")
-		showLobby()
+		if (result.data.otpToken) {
+			fetcher.setAccess(result.data.otpToken);
+			await requireOtp();
+			return;
+		}
+		else if (result.data.accessToken) {
+			localStorage.setItem("refreshExpiry", `${refreshExpiry}`)
+			fetcher.setAccess(result.data.accessToken);
+			validation.innerHTML = ""
+			document.querySelector("#modalLogin").classList.remove("show")
+			document.querySelector(".modal-backdrop").classList.remove("show")
+			showLobby()
+		}
+		else {
+			validation.innerHTML = "Something went wrong";
+		}
 	}
 	else
 	{
@@ -285,9 +295,27 @@ async function sendLoginRequest(url, body, method)
 	return ;
 }
 
-async function sendRegistrationRequest(url, body, method)
-{
+async function requireOtp() {
+	let code;
+	while (!code) {
+		code = prompt("Please enter one time password");
+	}
+	const refreshExpiry = Date.now() + fetcher.refreshDuration;
+	const result = await fetcher.post("/api/auth/otp/login", {"code": code});
+	if (result.status >= 200 && result.status < 300){
+		localStorage.setItem("refreshExpiry", `${refreshExpiry}`)
+		fetcher.setAccess(result.data.accessToken);
+		document.querySelector("#modalLogin").classList.remove("show")
+		document.querySelector(".modal-backdrop").classList.remove("show")
+		showLobby()
+	}
+	else {
+		await requireOtp()
+	}
+}
 
+async function sendRegistrationRequest(url, body)
+{
 	const form = document.getElementById("registrationForm")
 	const inputs = form.querySelectorAll("input")
 	inputs.forEach(input => {
@@ -344,9 +372,25 @@ function showLogin()
 		profileButton.classList.add('d-none')
 }
 
+function activateOtp() {
+	const button = document.createElement("button");
+	button.innerText = "Activate 2FA";
+	document.querySelector("body").appendChild(button);
+	button.addEventListener("click", async function() {
+		let result = await fetcher.post("/api/auth/otp/activate");
+		console.log(result);
+	})
+	const otherButton = document.createElement("button");
+	otherButton.innerText = "Deactivate 2FA";
+	document.querySelector("body").appendChild(otherButton);
+	otherButton.addEventListener("click", async function() {
+		let result = await fetcher.post("/api/auth/otp/deactivate");
+	})
+}
 export async function initAuth() {
 	if (await fetcher.isAuthenticated()) {
 		showLobby()
+		activateOtp()
 	}
 	else
 	{

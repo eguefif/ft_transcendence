@@ -6,12 +6,21 @@ secret = environ.get('JWT_SECRET')
 
 def get_access_token(username):
     payload = {"username": username,
+               "type": "access",
                "exp": datetime.now(tz=timezone.utc) + timedelta(minutes=5)
+               }
+    return encode(payload, secret, algorithm="HS256")
+
+def get_otp_token(username):
+    payload = {"username": username,
+               "type": "otp",
+               "exp": datetime.now(tz=timezone.utc) + timedelta(minutes=2)
                }
     return encode(payload, secret, algorithm="HS256")
 
 def get_refresh_token(username):
     payload = {"username": username,
+               "type": "refresh",
                "exp": datetime.now(tz=timezone.utc) + timedelta(days=3)
                }
     return encode(payload, secret, algorithm="HS256")
