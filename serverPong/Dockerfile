@@ -15,5 +15,5 @@ RUN chmod +x /entry-point.sh
 
 expose 8000
 
-#CMD ["./entry-point.sh"]
-CMD ["tail", "-f", "/dev/null"]
+CMD ["./entry-point.sh"]
+#CMD ["tail", "-f", "/dev/null"]

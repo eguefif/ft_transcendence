@@ -58,7 +58,6 @@ class Game:
             if self.is_ready() and self.state != "running":
                 print("Game is starting")
                 self.state = "running"
-            return
         if self.state == "running":
             if player == self.player1:
                 self.paddle1.update(message)

@@ -73,6 +73,7 @@ export class RemoteController {
 
 		this.websocket.onmessage = (e) => {
 			const msg = JSON.parse(e.data)
+			console.log(msg)
 			switch (msg.command) {
 				case "wait":
                     this.websocket.send("wait")
@@ -80,7 +81,10 @@ export class RemoteController {
 					this.msg = msg
 					break;
 				case "getready":
-					this.state = "getready"
+					if (this.state != "running"){
+						this.websocket.send("getready")
+						this.state = "getready"
+					}
 					this.message = "Press space to start the game"
 					this.msg = msg
 					break;

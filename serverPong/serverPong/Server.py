@@ -105,14 +105,43 @@ class serverPong:
         if not await self.wait_for_player(gameid, websocket, player):
             await self.close_websocket(websocket, gameid, player)
             return
-        msg = {"command": "getready"}
-        await self.send_msg(websocket, gameid, msg)
+        if not await self.wait_for_ready(gameid, websocket, player):
+            await self.close_websocket(websocket, gameid, player)
+            return
+
+        print("out of the loop")
         if self.games[gameid].state != "ending":
             print(player, "join game", gameid)
             tasks = self.create_tasks(websocket, gameid, player)
             await asyncio.gather(*tasks)
         else:
             await self.close_websocket(websocket, gameid, player)
+
+    async def wait_for_ready(self, gameid, websocket, player):
+        msg = json.dumps({"command": "getready"})
+        await self.send_msg(websocket, gameid, msg)
+        try:
+            _ = self.games[gameid]
+        except KeyError:
+            print("error in wait for ready")
+            return False
+        while self.games[gameid].state == "getready":
+            msg = {"command": "getready"}
+            if not await self.send_msg(websocket, gameid, msg):
+                return False
+            try:
+                retval = await websocket.recv()
+            except websockets.ConnectionClosedOK:
+                return False
+            if retval == "ready":
+                try:
+                    self.games[gameid].update(retval, player)
+                except KeyError:
+                    print("error in wait for ready")
+                    return False
+                return True
+            await asyncio.sleep(0)
+        return True
 
     async def wait_for_player(self, gameid, websocket, player):
         try:
@@ -151,6 +180,7 @@ class serverPong:
 
     async def consumer_handler(self, websocket, gameid, player):
         async for message in websocket:
+            print(message)
             try:
                 self.games[gameid].update(message, player)
             except KeyError:
@@ -173,7 +203,6 @@ class serverPong:
             await asyncio.sleep(1/30)
         print(f"game {gameid} ending")
         ending_msg = await self.games[gameid].get_ending_message()
-        print("in producer", ending_msg)
         await self.send_msg(websocket, gameid, ending_msg)
         await self.close_websocket(websocket, gameid, player)
 
@@ -187,7 +216,6 @@ class serverPong:
 
     async def send_msg(self, websocket, gameid, msg):
         try:
-            print("in send message", msg)
             await websocket.send(json.dumps(msg))
         except websockets.ConnectionClosedOK:
             print("disconnection of :", websocket)
