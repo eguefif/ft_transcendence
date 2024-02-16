@@ -38,18 +38,18 @@ class serverPong:
             print("Disconnection on the token exchange message")
             return
         username = authenticate(json.loads(msg))
-        print(username)
         if username is None:
             await self.send_token_invalid_and_close(websocket)
             return
-        print(username, " has join the server and his token is valid")
+        print(username, "has join the server and his token is valid")
         try:
             msg = await websocket.recv()
+            msg = json.loads(msg)
         except websockets.ConnectionClosedOK:
             print("Disconnection on the game message")
             return
         if msg["command"] == "game":
-            if self.is_user_in_game():
+            if self.is_user_in_game(username):
                 self.end_game(username)
                 await websocket.close()
                 await websocket.wait_closed()
@@ -91,7 +91,12 @@ class serverPong:
 
     async def join_game(self, websocket, username):
         print(username, "join game", self.current_id)
-        self.games[self.current_id].add_player(username, websocket)
+        try:
+            await self.games[self.current_id].add_player(username, websocket)
+        except KeyError:
+            await websocket.close()
+            await websocket.wait_closed()
+            return 
         self.current_id += 1
         self.is_waiting_game = False
         await self.run_game(self.current_id - 1, websocket, username)
@@ -110,6 +115,13 @@ class serverPong:
             await self.close_websocket(websocket, gameid, player)
 
     async def wait_for_player(self, gameid, websocket, player):
+        try:
+            _ = self.games[gameid]
+        except KeyError:
+            print("error in wait_for_player")
+            await websocket.close()
+            await websocket.wait_closed()
+            return 
         while self.games[gameid].state == "waiting":
             msg = {"command": "wait"}
             if not await self.send_msg(websocket, gameid, msg):
@@ -119,7 +131,6 @@ class serverPong:
             try:
                 msg = await websocket.recv()
             except websockets.ConnectionClosedOK:
-                print(f"Client {player} is disconnected")
                 await self.close_websocket(websocket, gameid, player)
                 return False
             if msg != "wait":
@@ -140,17 +151,29 @@ class serverPong:
 
     async def consumer_handler(self, websocket, gameid, player):
         async for message in websocket:
-            self.games[gameid].update(message, player)
+            try:
+                self.games[gameid].update(message, player)
+            except KeyError:
+                await websocket.close()
+                await websocket.wait_closed()
+                return 
             await asyncio.sleep(0)
 
     async def producer_handler(self, websocket, gameid, player):
+        try:
+            _ = self.games[gameid]
+        except KeyError:
+            await websocket.close()
+            await websocket.wait_closed()
+            return 
         while self.games[gameid].state != "ending":
-            message = self.games[gameid].run()
-            if len(message):
+            message = await self.games[gameid].run(player)
+            if message is not None:
                 await self.send_msg(websocket, gameid, message)
             await asyncio.sleep(1/30)
         print(f"game {gameid} ending")
-        ending_msg = self.games[gameid].get_ending_message()
+        ending_msg = await self.games[gameid].get_ending_message()
+        print("in producer", ending_msg)
         await self.send_msg(websocket, gameid, ending_msg)
         await self.close_websocket(websocket, gameid, player)
 
@@ -164,6 +187,7 @@ class serverPong:
 
     async def send_msg(self, websocket, gameid, msg):
         try:
+            print("in send message", msg)
             await websocket.send(json.dumps(msg))
         except websockets.ConnectionClosedOK:
             print("disconnection of :", websocket)
@@ -176,6 +200,5 @@ class serverPong:
             self.games[gameid].disconnect_player(player)
             self.remove_game(gameid)
         except KeyError:
-            print(f"game {gameid} does not exist in close_websocket")
-        await websocket.close()
-        await websocket.wait_closed()
+            await websocket.close()
+            await websocket.wait_closed()

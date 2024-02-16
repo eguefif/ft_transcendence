@@ -21,13 +21,15 @@ export class graphicEngine
 	}
 
 	display(model) {
+		if (model == "none")
+			return
 		this.clearFrame()
-		//this.displayStartTimer(model.startTimer)
+		this.displayStartTimer(model.startTimer)
 		this.displayBall(model.ball.x, model.ball.y, model.ball.radius)
 		this.displayPaddle(model.paddle1.x, model.paddle1.y)
 		this.displayPaddle(model.paddle2.x, model.paddle2.y)
 		this.displayScore(model.player1Score, model.player2Score)
-		//this.displayWinner(model.winnerMessage)
+		this.displayWinner(model.message)
 
 		this.ctx.stroke()
 	}

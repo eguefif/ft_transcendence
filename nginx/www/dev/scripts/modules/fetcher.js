@@ -19,6 +19,11 @@ function createFetcher() {
 			return !(value.length == 0 || expires <= Date.now());
 		};
 
+		const reset = () => {
+			value = "";
+			expires = 0;
+		}
+
 		const refresh = async () => {
 			if (
 				!localStorage.getItem("refreshExpiry") ||
@@ -52,8 +57,12 @@ function createFetcher() {
 			}
 		};
 
-		return { get, set, isValid, refresh };
+		return { get, set, isValid, refresh, reset };
 	})();
+
+	const reset = () => {
+		token.reset();
+	}
 
 	const isAuthenticated = async () => {
 		return token.isValid() ? true : await token.refresh();
@@ -128,7 +137,7 @@ function createFetcher() {
 			return undefined
 		}
 	}
-	return { accessDuration, refreshDuration, setAccess, isAuthenticated, get, post, getWebSocket };
+	return { accessDuration, refreshDuration, setAccess, isAuthenticated, get, post, getWebSocket, reset };
 }
 
 export const fetcher = createFetcher();

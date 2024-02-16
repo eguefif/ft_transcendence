@@ -6,15 +6,35 @@ export class Game {
 	constructor(controller) {
 		this.controller = controller
 		this.graphicEngine = new graphicEngine
+		this.init_event()
+	}
+
+	init_event() {
+		let previous = document.querySelector("#previousbtn")
+		previous.addEventListener("click", (e) => {
+			e.preventDefault()
+			previous.classList.add('d-none')
+			history.go(-2)
+		})
 	}
 
 	run() {
 		const update = () => {
 			let data = this.controller.update()
 			this.graphicEngine.display(data)
+			if (!this.controller.running)
+			{
+				this.showPreviousBtn()
+				return
+			}
 			requestAnimationFrame(update)
 		}
 		update();
+	}
+
+	showPreviousBtn() {
+		let previous = document.querySelector("#previousbtn")
+		previous.classList.remove("d-none")
 	}
 }
 

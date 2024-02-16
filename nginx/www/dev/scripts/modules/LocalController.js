@@ -2,12 +2,15 @@ export class LocalController {
 	constructor(player1="player1", player2="player2") {
 		this.paddle1 = new Paddle(player1, "right")
 		this.paddle2 = new Paddle(player2, "left")
+		this.player1 = player1
+		this.player2 = player2
 		this.ball = new Ball()
 		this.player1Score = 0
 		this.player2Score = 0
 		this.message = ""
 		this.startTimer = 3
 		this.reset()
+		this.running = true
 	}
 
 	init() {
@@ -20,8 +23,6 @@ export class LocalController {
 				this.paddle1.move_down = true
 			else if (e.code == 'KeyW') 
 				this.paddle1.move_up = true	
-			else if (e.code == 'Escape')
-				WebSocket.close()
 			})
 
 		document.addEventListener("keyup", (e) => {
@@ -53,29 +54,36 @@ export class LocalController {
 	reset()
 	{
 		this.startTimer = 3
-		this.ball_in_play = true
+		this.ball_in_play = false
 		this.ball.reset()
-		//this.countdown()
+		this.countdown()
 	}
 
 
 	update () {
-		let retval = "None"
-		//if (this.ball.in_player)
-		retval = this.ball.move(this.paddle1, this.paddle2)
-		console.log(this.ball)
-		if (retval !== "None") {
-			if (retval == "right")
-				this.player2score++
-			else
-				this.player1score++
-			if (this.player1score == 3)
-				this.message = "The winner is " + this.player1
-			else if (this.player2score == 3)
-				this.message = "The winner is " + this.player2
-			this.ball.reset()
+		let retval = "none"
+		if (this.ball.in_play) {
+			this.paddle1.move()
+			this.paddle2.move()
+			retval = this.ball.move(this.paddle1, this.paddle2)
+			if (retval != "none") {
+				if (retval == "right")
+					this.player2Score++
+				else
+					this.player1Score++
+				if (this.player1Score == 3) {
+					this.message = "The winner is " + this.player1
+					this.ball.in_play = false
+					this.running = false
+				}
+				else if (this.player2Score == 3) {
+					this.message = "The winner is " + this.player2
+					this.ball.in_play = false
+					this.running = false
+				}
+				this.ball.reset()
+			}
 		}
-
 		return {
 			ball: this.ball,
 			paddle1: this.paddle1,
@@ -83,7 +91,7 @@ export class LocalController {
 			player1Score: this.player1Score,
 			player2Score: this.player2Score,
 			message: this.message,
-			starTimer: this.startTimer
+			startTimer: this.startTimer
 		}
 	}
 }
@@ -191,7 +199,7 @@ class Paddle {
         this.bottom = this.y - this.paddleHeight
         this.move_up = false
         this.move_down = false
-        if (side == "right")//ASSUMING THERE ARE 2 PLAYERS
+        if (side == "right")
             this.x = this.paddle_margin_x
         else
             this.x = 1 - this.paddle_margin_x

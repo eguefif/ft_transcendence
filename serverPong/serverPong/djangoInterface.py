@@ -4,7 +4,7 @@ import json
 
 URL = "http://serverpong:8000"
 
-async def create_game(player1, player2, creationtime):
+async def create_game_db_django(player1, player2, creationtime):
     print(f"Creating game with: {player1}, {player2} and {creationtime}")
     djangoId = -1
     data = json.dumps(  {"player1": player1,
@@ -24,13 +24,11 @@ async def create_game(player1, player2, creationtime):
             else:
                 print(f"Error while creating db game ({creationtime}) response status: ",
                         resp.status)
-                print(body)
-                print(djangoId)
                 return False
     return djangoId
 
 
-async def end_game(djangoId, winner, score1, score2):
+async def end_game_db_django(djangoId, winner, score1, score2):
     print(f"Game is over. {winner} won")
     data = json.dumps(  {"gameid": djangoId,
                         "winner": winner,

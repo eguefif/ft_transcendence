@@ -54,7 +54,6 @@ class Ball:
         return None
 
     def paddleCollision(self, paddle1, paddle2):
-        
          if self.isLeftPaddleCollision(paddle1):
             self.dir.x = 0.5
             diff = self.y - paddle1.height / 2 - paddle1.y
