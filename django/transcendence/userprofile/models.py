@@ -14,6 +14,9 @@ def generate_image_uuid(instance, filename):
 class Profile(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE)
     profile_picture = models.ImageField(upload_to=generate_image_uuid)
+    otp_active = models.BooleanField(default=False)
+    otp_key = models.CharField(max_length=32, default="", blank=True)
+    otp_previous = models.CharField(max_length=6, default="", blank=True)
 
 # Signals to create one to one when user is created
 @receiver(post_save, sender=User)
