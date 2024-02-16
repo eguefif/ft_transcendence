@@ -10,11 +10,11 @@ export class Game {
 	}
 
 	init_event() {
-		let previous = document.querySelector("#previousbtn")
-		previous.addEventListener("click", (e) => {
+		let menu = document.querySelector("#menubtn")
+		menu.addEventListener("click", (e) => {
 			e.preventDefault()
-			previous.classList.add('d-none')
-			history.go(-2)
+			menu.classList.add('d-none')
+			history.back()
 		})
 	}
 
@@ -24,7 +24,7 @@ export class Game {
 			this.graphicEngine.display(data)
 			if (!this.controller.running)
 			{
-				this.showPreviousBtn()
+				this.showmenuBtn()
 				return
 			}
 			requestAnimationFrame(update)
@@ -32,9 +32,9 @@ export class Game {
 		update();
 	}
 
-	showPreviousBtn() {
-		let previous = document.querySelector("#previousbtn")
-		previous.classList.remove("d-none")
+	showmenuBtn() {
+		let menu = document.querySelector("#menubtn")
+		menu.classList.remove("d-none")
 	}
 }
 

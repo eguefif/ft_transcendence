@@ -52,10 +52,10 @@ export function initLocalPong()
 export async function pongMenu() {
 	let remoteGameBtn = document.querySelector("#remotegamebtn")
 	let localGameBtn= document.querySelector("#localgamebtn")
-	let previous = document.querySelector("#previousbtn")
+	let menu = document.querySelector("#menubtn")
 
 	console.log("menu")
-	previous.classList.add('d-none')
+	menu.classList.add('d-none')
 	if (await fetcher.isAuthenticated())
 		remoteGameBtn.classList.remove('d-none')
 	console.log(await fetcher.isAuthenticated())
@@ -90,9 +90,9 @@ function initLocalGame() {
 function hideMainMenu(){
 	let remoteGameBtn = document.querySelector("#remotegamebtn")
 	let localGameBtn= document.querySelector("#localgamebtn")
-	let previous = document.querySelector("#previousbtn")
+	let menu = document.querySelector("#menubtn")
 
-	previous.classList.add('d-none')
+	menu.classList.add('d-none')
 	remoteGameBtn.classList.add('d-none')
 	localGameBtn.classList.add('d-none')
 }
