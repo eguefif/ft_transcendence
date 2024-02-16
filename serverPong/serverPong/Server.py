@@ -33,14 +33,16 @@ class serverPong:
     async def handler(self, websocket):
         try:
             msg = await websocket.recv()
-            print("new connection", msg)
+            print("new connection", json.loads(msg))
         except websockets.ConnectionClosedOK:
             print("Disconnection on the token exchange message")
             return
-        username = authenticated(msg)
-        if not username:
-            self.send_token_invalid_and_close(websocket)
+        username = authenticate(json.loads(msg))
+        print(username)
+        if username is None:
+            await self.send_token_invalid_and_close(websocket)
             return
+        print(username, " has join the server and his token is valid")
         try:
             msg = await websocket.recv()
         except websockets.ConnectionClosedOK:

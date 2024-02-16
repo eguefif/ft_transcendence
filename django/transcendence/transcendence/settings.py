@@ -45,7 +45,7 @@ ALLOWED_HOSTS = ["localhost", "c1r7p10.42quebec.com", "django"]
 
 INSTALLED_APPS = [
     'gamesManager',
-    'authentification',
+    'authentication',
     'rest_framework',
     'rest_framework.authtoken',
     'django.contrib.auth',

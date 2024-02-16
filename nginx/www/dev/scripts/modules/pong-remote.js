@@ -1,6 +1,6 @@
 import { fetcher } from "../modules/fetcher.js";
 
-export class remoteGame {
+export class remoteController {
 	constructor(){
 		this.player1Score = 0
 		this.player2Score = 0
@@ -11,10 +11,20 @@ export class remoteGame {
 		this.paddle2 = new Paddle("player2", 2)
 		this.ball = new Ball()
 		let address = window.location.hostname
-		this.websocket = fetcher.getWebSocket(`wss://${address}/game/`)
 		this.init_event()
 		this.state = "waiting"
 		this.serverUpdate = "none"
+	}
+	 
+	async initSocket() {
+		this.websocket= await fetcher.getWebSocket(`wss://${address}/game/`)
+		if (this.websocket != undefined) {
+			let gameMsg = {}
+			gameMsg["command"] = "game"
+			this.websocket.send(JSON.stringify(gameMsg))
+		}
+		else
+			console.log("Error while creating the websocket")
 	}
 
 	update(){
@@ -33,18 +43,16 @@ export class remoteGame {
         let mainMenuButton = document.getElementById("mainMenuButton")        
         mainMenuButton.addEventListener("click", (e) => {
             if (this.isSocketConnected()){
+				console.log("Websoccket closing")
                 this.websocket.close()
                 delete this.websocket
             }
         })
 		if (this.websocket == undefined) {
+			console.log("Websocket is undefined")
 			return
 		}
 		this.websocket.onopen = (e) => {
-			let gameMsg = {}
-			console.log(this.username)
-			gameMsg["command"] = "game"
-			this.websocket.send(JSON.stringify(gameMsg))
 		}
 
 		this.websocket.onclose = (e) => {

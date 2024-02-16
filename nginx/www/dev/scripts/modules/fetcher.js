@@ -118,16 +118,15 @@ function createFetcher() {
 	}
 
 	const getWebSocket = async (url) => {
-		let websocket = new Websocket(url)
-		let token
+		let websocket = new WebSocket(url)
 		if (await token.refresh()) {
-			token = token.get()
+			let rettoken = token.get()
+			websocket.send(JSON.stringify({"token": rettoken}))
+			return websocket
 		}
 		else {
 			return undefined
 		}
-		websocket.send(JSON.stringify({"token": token}))
-		return websocket
 	}
 	return { accessDuration, refreshDuration, setAccess, isAuthenticated, get, post, getWebSocket };
 }
