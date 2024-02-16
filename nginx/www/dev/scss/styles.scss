@@ -2,6 +2,13 @@ li {
 	margin: 2rem;
 }
 
+#profilePictureContainer {
+	display: block;
+	margin-left: auto;
+	margin-right: auto;
+	margin-top: 15px;
+  }
+
 @import './imports/pong.scss';
 @import './imports/bootstrap.scss';
 @import './imports/auth.scss';

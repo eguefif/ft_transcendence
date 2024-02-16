@@ -86,8 +86,8 @@ class Game{
 
 	move()
 	{
-		// this.paddle_1.move()
-		// this.paddle_2.move()
+		this.paddle_1.move()
+		this.paddle_2.move()
 		return this.ball.move(this.paddle_1, this.paddle_2)
 	}
 
