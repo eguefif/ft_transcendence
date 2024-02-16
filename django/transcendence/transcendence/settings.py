@@ -10,6 +10,7 @@ For the full list of settings and their values, see
 https://docs.djangoproject.com/en/5.0/ref/settings/
 """
 
+import os
 from pathlib import Path
 
 env = {}
@@ -44,6 +45,7 @@ ALLOWED_HOSTS = [env["HOSTNAME"]]
 
 INSTALLED_APPS = [
     'authentication',
+    'userprofile',
     'rest_framework',
     'rest_framework.authtoken',
     'django.contrib.auth',
@@ -149,3 +151,6 @@ STATIC_URL = 'static/'
 # https://docs.djangoproject.com/en/5.0/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
+
+MEDIA_ROOT = os.path.join(BASE_DIR, 'static/media/')
+MEDIA_URL = '/media/'
