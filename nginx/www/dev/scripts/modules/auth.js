@@ -1,4 +1,5 @@
 import { fetcher } from "./fetcher.js"
+import { closeModal } from "./test.js";
 
 function authLogout()
 {
@@ -168,7 +169,7 @@ function profileInfo()
 
 		const res = await fetcher.get("api/userinfo/")
 		if (res.status == 200) {
-			
+
 			document.querySelector("#profileUsername").value = res.data['username']
 			document.querySelector("#profileEmail").value = res.data['email']
 		}
@@ -273,8 +274,9 @@ async function sendLoginRequest(url, body, method)
 		localStorage.setItem("refreshExpiry", `${refreshExpiry}`)
 		fetcher.setAccess(result.data.accessToken);
 		validation.innerHTML = ""
-		document.querySelector("#modalLogin").classList.remove("show")
-		document.querySelector(".modal-backdrop").classList.remove("show")
+		closeModal('modalLogin')
+		// document.querySelector("#modalLogin").classList.remove("show")
+		// document.querySelector(".modal-backdrop").classList.remove("show")
 		showLobby()
 	}
 	else
@@ -313,8 +315,9 @@ async function sendRegistrationRequest(url, body, method)
 	{
 		localStorage.setItem("refreshExpiry", `${refreshExpiry}`)
 		fetcher.setAccess(result.data.accessToken);
-		document.querySelector("#modalRegistration").classList.remove("show")
-		document.querySelector(".modal-backdrop").classList.remove("show")
+		closeModal('modalRegistration')
+		// document.querySelector("#modalRegistration").classList.remove("show")
+		// document.querySelector(".modal-backdrop").classList.remove("show")
 		showLobby()
 		return true
 	}

@@ -1,6 +1,6 @@
 FROM nginx:1.25.3-bookworm
 
-RUN apt-get update && apt-get upgrade
+RUN apt-get update && apt-get upgrade -y
 RUN apt-get install -y openssl
 
 ADD ./conf/default.conf /etc/nginx/nginx.conf
