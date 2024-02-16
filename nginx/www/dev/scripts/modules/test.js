@@ -18,7 +18,7 @@ const test = `
 	`
 
 	const test1 = `
-	<li class="nav-item btn btn-secondary d-none shadow-none border-0"" id="logoutButton">
+	<li class="nav-item btn btn-secondary d-none shadow-none border-0"" id="logoutButton" data-link>
 	${logout}
 	</li>
 	<li class="nav-item btn btn-secondary d-none shadow-none border-0" id="profileButton"
