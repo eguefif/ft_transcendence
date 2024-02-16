@@ -156,7 +156,6 @@ function profileInfo()
 		// 	.catch(function (err) { console.error(err) })
 
 		const imageReply = await fetcher.get("api/userpicture/")
-		console.log(imageReply)
 		if (imageReply.status == 200) {
 			const imageURL = URL.createObjectURL(imageReply.data)
 			imgElement.src = imageURL
@@ -166,7 +165,6 @@ function profileInfo()
 		}
 
 		const res = await fetcher.get("api/userinfo/")
-		console.log(res)
 		if (res.status == 200) {
 			
 			document.querySelector("#profileUsername").value = res.data['username']

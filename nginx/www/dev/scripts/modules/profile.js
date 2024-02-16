@@ -10,7 +10,7 @@ async function preview_image() {
 
     formData.append('image', file)
 
-    const res = await fetcher.postFile("api/uploadimage/", formData)
+    const res = await fetcher.post("api/uploadimage/", formData)
     if (res.status == 201) {
         img.src = URL.createObjectURL(file)
         img.width = 150

@@ -51,6 +51,8 @@ def update_profile(request):
 @api_view(['POST'])
 @require_authorization
 def upload_image(request):
+    print(request.headers)
+    
     username = get_token_user(request.headers["Authorization"])
     user = User.objects.get(username=username)
     profile = user.profile
