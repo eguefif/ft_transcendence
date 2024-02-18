@@ -15,17 +15,15 @@ export class RemoteController {
 		this.running = true
 		this.msg = "none"
 		this.message = ""
-	}
-
-	async init() {
-		await this.initSocket()
-		this.init_event()
+		this.stop = false
 	}
 
 	update (){
+		if (this.stop == true)
+			this.websocket.close()
 		if (this.msg.command == "data" || this.msg.command == "ending")
 			return this.msg
-		if (this.msg.scorePlayer1 == 3 || this.msg.scorePlayer2 == 3){
+		if (this.msg.scorePlayer0 == 3 || this.msg.scorePlayer2 == 3){
 			this.running = false
 			return
 		}
@@ -40,6 +38,10 @@ export class RemoteController {
 		}
 	}
 	 
+	async init() {
+		await this.initSocket()
+		this.init_event()
+	}
 	async initSocket() {
 		this.websocket= await fetcher.getWebSocket(`wss://${this.address}/game/`)
 	}
@@ -68,37 +70,37 @@ export class RemoteController {
 			switch (msg.command) {
 				case "authsucess":
 					console.log("authentification success")
+					this.running = "authenticated"
 					break
 				case "serverfull":
 					this.message = "Server full, retry later"
+					this.state = "ending"
 					break
 				case "wait":
                     this.websocket.send("wait")
 					this.message = "Wait for another player"
+					this.state = "waiting"
 					this.msg = msg
-					this.running = false
 					break;
 				case "getready":
 					if (this.state != "running"){
 						this.websocket.send("getready")
 						this.state = "getready"
 					}
-					this.message = "Press space to start the game"
+					this.message = "Press space to space the game"
 					this.msg = msg
 					break;
 				case "data":
                      this.msg = msg
 					break;
 				case "ending":
-					this.running = false
+					this.state = "ending"
 					this.msg = msg
 					break
 			}
 		}
 
 		document.addEventListener("keydown", (e) => {
-            if (!this.isSocketConnected())
-                return
 			if (this.state == "running") {
 				if (e.key == 'ArrowDown')
 					this.websocket.send("down")
@@ -108,10 +110,7 @@ export class RemoteController {
 			})
 
 		document.addEventListener("keyup", (e) => {
-            if (!this.isSocketConnected())
-                return
-			console.log(this.state)
-			if (this.state == "running" && this.state == "running")
+			if (this.state == "running")
 				this.websocket.send("stop")
 			if (e.code == 'Space' && this.state == "getready"){
 				this.websocket.send("ready")

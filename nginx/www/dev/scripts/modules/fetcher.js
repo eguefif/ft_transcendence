@@ -136,11 +136,16 @@ function createFetcher() {
 
 	const getWebSocket = async (url) => {
 		let websocket = new WebSocket(url)
+		console.log("creating websocket")
 		if (await token.refresh()) {
 			let rettoken = token.get()
 			websocket.addEventListener("open", (e) => {
 				websocket.send(JSON.stringify({"token": rettoken}))
+				console.log("sending token websocket")
 			})
+			console.log(navigator.userAgent)
+			if (navigator.userAgent.includes("Firefox"))
+				websocket.send(JSON.stringify({"token": rettoken}))
 			return websocket
 		}
 		else {

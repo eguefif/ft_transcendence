@@ -7,7 +7,7 @@ from gamesManager import views
 
 
 urlpatterns = [
-        path('game//creategame', views.create_game),
+        path('game/creategame', views.create_game),
         path('game/endgame', views.end_game),
         ]
 

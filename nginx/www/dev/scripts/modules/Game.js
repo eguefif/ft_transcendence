@@ -8,6 +8,7 @@ export class Game {
 		this.running = true
 		menu.addEventListener("click", (e) => {
 			this.running = false
+			this.controller.stop = true
 			})
 	}
 

@@ -1,8 +1,6 @@
 import aiohttp
 import json
 
-URL = "http://serverpong:8000"
-
 
 async def create_game_db_django(player1, player2, creationtime):
     print(f"Creating game with: {player1}, {player2} and {creationtime}")
@@ -16,7 +14,7 @@ async def create_game_db_django(player1, player2, creationtime):
     )
     async with aiohttp.ClientSession() as session:
         async with session.post(
-            "http://django:8000/api/creategame/",
+            "http://django:8000/api/game/creategame/",
             json=data,
             # ssl=None,
             # verify_ssl=False,
@@ -47,7 +45,7 @@ async def end_game_db_django(djangoId, winner, score1, score2):
     )
     async with aiohttp.ClientSession() as session:
         async with session.post(
-            "http://django:8000/api/endgame/",
+            "http://django:8000/api/game/endgame/",
             json=data,
             # ssl=None,
             # verify_ssl=False,

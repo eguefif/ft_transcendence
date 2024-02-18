@@ -32,7 +32,6 @@ class Game:
         self.p2_disconnected = False
         self.p2_websocket = websocket
         self.state = "getready"
-        self.time = time.time()
         self.time = 3
         #self.djangoId = await create_game_db_django(self.player1, self.player2, self.time)
 
@@ -52,13 +51,13 @@ class Game:
 
     def update(self, message, player):
         if message == "ready" and self.state == "getready":
-            logging.info(player, "is ready")
+            logging.info(f"{player} is ready")
             if player == self.player1:
                 self.p1_ready = True
             if player == self.player2:
                 self.p2_ready = True
             if self.is_ready() and self.state != "running":
-                logging.info(f"Game {self.gameid} is starting")
+                logging.info(f"Game {self.id} is starting")
                 self.state = "running"
         if self.state == "running":
             if player == self.player1:

@@ -9,6 +9,9 @@ li {
 	margin-top: 15px;
   }
 
+#primary: red;
+#secondary: blue;
+
 @import './imports/pong.scss';
 @import './imports/bootstrap.scss';
 @import './imports/auth.scss';
