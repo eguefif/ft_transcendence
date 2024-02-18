@@ -38,7 +38,6 @@ export function initLocalPong()
 	window.addEventListener("popstate", router)
 
 	document.addEventListener("DOMContentLoaded", () => {
-		//history.pushState(null, null, "/")
 		document.body.addEventListener("click", e => {
 			if (e.target.matches("[data-link]")) {
 				e.preventDefault()
@@ -64,12 +63,22 @@ export async function pongMenu() {
 	localGameBtn.classList.remove('d-none')
 }
 
+function show_and_init_event_for_menu_button() {
+	let menu = document.querySelector("#menubtn")
+	menu.classList.remove("d-none")
+	menu.addEventListener("click", (e) => {
+		e.preventDefault()
+		history.back()
+		})
+}
+
 async function initRemoteGame() {
 	if (!await fetcher.isAuthenticated()) {
 		let remoteGameBtn = document.querySelector("#remotegamebtn")
 		remoteGameBtn.classList.remove('d-none')
 		return
 	}
+	show_and_init_event_for_menu_button()
 	console.log("remote")	
 	hideMainMenu()
 	let controller = new RemoteController()
@@ -79,6 +88,7 @@ async function initRemoteGame() {
 }
 
 function initLocalGame() {
+	show_and_init_event_for_menu_button()
 	console.log("local")	
 	hideMainMenu()
 	let controller = new LocalController()
@@ -92,7 +102,6 @@ function hideMainMenu(){
 	let localGameBtn= document.querySelector("#localgamebtn")
 	let menu = document.querySelector("#menubtn")
 
-	menu.classList.add('d-none')
 	remoteGameBtn.classList.add('d-none')
 	localGameBtn.classList.add('d-none')
 }

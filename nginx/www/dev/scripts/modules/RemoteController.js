@@ -42,15 +42,6 @@ export class RemoteController {
 	 
 	async initSocket() {
 		this.websocket= await fetcher.getWebSocket(`wss://${this.address}/game/`)
-		this.websocket.addEventListener("open", (e) => {
-			if (this.websocket != undefined) {
-				let gameMsg = {}
-				gameMsg["command"] = "game"
-				this.websocket.send(JSON.stringify(gameMsg))
-			}
-			else
-				console.log("Error while creating the websocket")
-		})
 	}
 
 	init_event() {
@@ -75,10 +66,17 @@ export class RemoteController {
 			const msg = JSON.parse(e.data)
 			console.log(msg)
 			switch (msg.command) {
+				case "authsucess":
+					console.log("authentification success")
+					break
+				case "serverfull":
+					this.message = "Server full, retry later"
+					break
 				case "wait":
                     this.websocket.send("wait")
 					this.message = "Wait for another player"
 					this.msg = msg
+					this.running = false
 					break;
 				case "getready":
 					if (this.state != "running"){
