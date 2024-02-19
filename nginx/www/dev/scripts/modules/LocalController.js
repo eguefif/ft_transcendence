@@ -76,14 +76,13 @@ export class LocalController {
 					this.player2Score++
 				if (this.player1Score == 3) {
 					this.message = "The winner is " + this.player1
-					this.ball.in_play = false
 					this.running = false
 				}
 				else if (this.player2Score == 3) {
 					this.message = "The winner is " + this.player2
-					this.ball.in_play = false
 					this.running = false
 				}
+				this.ball.in_play = false
 				this.ball.reset()
 			}
 		}
@@ -109,15 +108,16 @@ class Ball {
     }
 
     reset() {
-        this.x = 1 / 2
-        this.y = 1 / 2
+		this.x = 1 / 2
+		this.y = 1 / 2
 		let dirX = Math.random() * 2 - 1
-        this.dir = new Vector(Math.random() * 2 - 1, 0)
+		this.dir = new Vector(Math.random() * 2 - 1, 0)
 		if (this.dir.x < 0)
 			this.dir.x = Math.min(-0.5)
 		else 
 			this.dir.x = Math.max(0.5)
-        this.dir.norm()
+		this.dir.norm()
+		this.in_play = true
 	}
 
     move(paddle1, paddle2){

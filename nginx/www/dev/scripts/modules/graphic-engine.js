@@ -93,7 +93,7 @@ const greenGlowMat = new THREE.MeshStandardMaterial({ color: 0x0FFF50, emissive:
 const calizStella_mat = new THREE.MeshLambertMaterial({
 	color: 0x2BC20E,
 	transparent: true,
-	opacity: 0.12,
+	opacity: 0.2,
 });
 		
 
@@ -192,11 +192,10 @@ const ambLight = new THREE.AmbientLight(0x2BC20E)
 const pointLight = new THREE.PointLight( 0xebfde7, 10 )
 const pointLight2 = new THREE.PointLight( 0xe9fde5, 10 )
 const pointLight3 = new THREE.PointLight( 0xffffff, 10 )
-const pointLightHelper = new THREE.PointLightHelper( pointLight2 )
 pointLight.position.set(2, 2, 2)
 pointLight2.position.set(0, 0, 100)
 pointLight3.position.set(0, 0, 19)
-ambLight.intensity = 0.2
+ambLight.intensity = 0
 pointLight.intensity = 1
 pointLight2.intensity = 0
 pointLight3.intensity = 100
@@ -220,18 +219,21 @@ function render() {
 	sun.translateY(0.0002)
     scene.traverse(nonBloomed)
 	pointLight.intensity = (Math.sin(Date.now() / 1000) + 1.2) * 0.025
+	sunLight.intensity = 8000 * (Math.sin(Date.now() / 5000) + 3)
     composer.render()
 	
     
     scene.traverse(restoreMaterial)
     finalComposer.render()
-};    
+};
+renderer.setAnimationLoop(render)
+
 
 window.addEventListener("resize", function(){
 	camera.aspect = window.innerWidth / window.innerHeight;
 	camera.updateProjectionMatrix();
 	renderer.setSize(window.innerWidth, window.innerHeight);
-	renderer.updateProjectionMatrix()
+	// renderer.updateProjectionMatrix()
 	render();
 })
 
@@ -277,7 +279,7 @@ export class graphicEngine
 		this.textColor = "rgb(43, 194, 14)"
 		this.paddleHeigt = 1 / 8
 		
-		render()
+		// render()
 	}
 
 	display(model) {
@@ -291,7 +293,7 @@ export class graphicEngine
 			this.displayScore(model.player1Score, model.player2Score)
 			this.displayWinner(model.winnerMessage)
 		}
-		render()
+		// render()
 		this.ctx.stroke()
 	}
 
@@ -327,9 +329,10 @@ export class graphicEngine
 		if (winnerMessage == "" || winnerMessage == undefined)
 			return
 		const y = 50
+		let len = winnerMessage.lenght
 		this.ctx.font = "".concat(`${this.scoreScale}`, "px Impact, fantasy")
 		this.ctx.fillStyle = this.textColor;
-		this.ctx.fillText(winnerMessage, this.winnerMessageCenter, this.winnerMessageMargin)
+		this.ctx.fillText(winnerMessage, this.winnerMessageCenter - this.scoreScale, this.winnerMessageMargin)
 	}
 
 	displayStartTimer(timeToWait)
