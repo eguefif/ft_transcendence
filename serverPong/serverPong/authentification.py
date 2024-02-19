@@ -10,8 +10,8 @@ DEBUG = environ.get('DEBUG')
 def authenticate(msg):
     username = None
     if DEBUG:
-        if msg == "debug":
-            return "debug"
+        if msg.find("debug") != -1:
+            return msg
     try:
         msg = json.loads(msg)
     except Exception as e:

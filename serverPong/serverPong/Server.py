@@ -37,34 +37,64 @@ class serverPong:
         return stop
 
     async def handler(self, websocket):
-        if len(self.games) == MAX_GAMES and self.is_waiting_game == False:
-            await self.send_msg(websocket, {"command": "serverfull"})
-            return
-        logging.info(f"New connection {websocket}")
-        msg = await self.recv_msg(websocket, "unknown")
-        if not msg:
-            logging.error(f"Error while receiving first message from {websocket}")
+        username = await self.authenticate_user(websocket)
+        if not username:
             await self.close_websocket(websocket)
             return
+        if not await self.check_server_capacity(websocket, username):
+            await self.close_websocket(websocket)
+            return
+        if await self.is_user_in_game(websocket, username):
+            self.close_websocket(websocket)
+        else:
+            if not self.is_waiting_game:
+                await self.create_game(websocket, username, self.current_id)
+            else:
+                await self.join_game(websocket, username)
+
+    async def authenticate_user(self, websocket):
+        msg = await self.recv_msg(websocket, "unknown")
+        if not msg:
+            await self.close_websocket(websocket)
+            return False
         username = authenticate(msg)
         if username is None:
             logging.error(f"Error while authenticating {websocket}")
             await self.send_token_invalid_and_close(websocket)
-            return
+            return False
         if not await self.send_msg(websocket, {"command": "authsuccess"}, username):
-            logging.error(f"Error while sending auth success to {websocket} disconnected")
-            return
+            return False
         logging.info(f"{username} has join the server. Token is valid")
-        if self.is_user_in_game(username):
+        return username
+
+    async def send_token_invalid_and_close(self, websocket):
+        msg = {"command": "tokenInvalid"}
+        await self.send_msg(websocket, msg)
+        await self.close_websocket(websocket)
+
+    async def check_server_capacity(self, websocket, username):
+        if len(self.games) == MAX_GAMES and not self.is_waiting_game:
+            await self.send_msg(websocket, {"command": "serverfull"})
+            return False
+        return True
+
+    async def is_user_in_game(self, websocket, username):
+        if self.check_games_for_username(username):
             self.end_game(username)
             await self.close_websocket(websocket, username)
-            return
-        if not self.is_waiting_game:
-            await self.create_game(websocket, username, self.current_id)
-        else:
-            await self.join_game(websocket, username)
+            return True
+        return False
+
+    def check_games_for_username(self, username):
+        for game in self.games.values():
+            if game.isPlayerInGame(username):
+                return True
+        return False
 
     async def send_msg(self, websocket, msg, player="unknown"):
+        if type(msg) is not dict:
+            logging.error(f"Trying to json.dumps that is not a dict: {msg}")
+            return False
         try:
             await websocket.send(json.dumps(msg))
         except Exception as e:
@@ -78,20 +108,27 @@ class serverPong:
         except Exception as e:
             logging.error(f"Exception while receiving message to {player} on websocket {websocket}. Exception: {e}")
             return None
-        logging.info(f"new message: {msg}")
         return msg
 
     async def close_websocket_and_remove_game(self, websocket, gameid, player):
         try:
             self.games[gameid].set_looser(websocket)
             self.games[gameid].set_player_to_disconnected(player)
-        except KeyError:
-            logging.error(f"Game {gameid} does not exist anymore")
+        except Exception as e:
+            logging.error(f"Game {gameid} does not exist anymore. Exception {e}")
         else:
             self.remove_game(gameid)
         finally:
             logging.info(f"Game {gameid} has been removed")
             await self.close_websocket(websocket, player)
+
+    def remove_game(self, gameid):
+        try:
+            if self.games[gameid].is_ready_to_be_remove():
+                logging.info(f"removing game {gameid}")
+                self.games.pop(gameid)
+        except KeyError:
+            logging.error(f"Game {gameid} does not exist while removing game")
 
     def is_game(self, gameid):
         if gameid in self.games.keys():
@@ -102,17 +139,6 @@ class serverPong:
         logging.info(f"Terminating connection with {player} on {websocket}")
         await websocket.close()
         await websocket.wait_closed()
-
-    async def send_token_invalid_and_close(self, websocket):
-        msg = {"command": "tokenInvalid"}
-        await self.send_msg(msg)
-        await self.close_websocket(websocket)
-
-    def is_user_in_game(self, username):
-        for game in self.games.values():
-            if game.isPlayerInGame(username):
-                return True
-        return False
 
     def end_game(self, username):
         gameid = self.get_game_by_username(username)
@@ -134,7 +160,7 @@ class serverPong:
         logging.info(f"{username} join game {self.current_id}")
         try:
             await self.games[self.current_id].add_player(username, websocket)
-        except KeyError as e:
+        except Exception as e:
             logging.error(f"{username} tried to join game {self.current_id} but {e} was raised. Game does not exist anymore.")
             await self.close_websocket(websocket, username)
             return False
@@ -148,12 +174,10 @@ class serverPong:
             self.is_waiting_game = False
             await self.close_websocket_and_remove_game(websocket, gameid, player)
             return
-        logging.info(f"{player} out of get waiting")
         if not await self.wait_for_ready(gameid, websocket, player):
             await self.close_websocket_and_remove_game(websocket, gameid, player)
             return
 
-        logging.info(f"{player} out of get ready")
         if self.games[gameid].state != "ending":
             tasks = self.create_tasks(websocket, gameid, player)
             await asyncio.gather(*tasks)
@@ -161,26 +185,23 @@ class serverPong:
             await self.close_websocket_and_remove_game(websocket, gameid, player)
 
     async def wait_for_ready(self, gameid, websocket, player):
-        msg = {"command": "getready"}
-        if not await self.send_msg(websocket, msg, player):
-            logging.info(f"Disconnection with: {player} on {websocket}")
+        if not await self.send_getready(websocket, player):
             return False
         timeout = 20
         if self.is_game(gameid):
-            while self.games[gameid].state == "getready":
-                msg = {"command": "getready"}
-                if not await self.send_msg(websocket, msg, player):
-                    logging.error(f"Disconnection with: {player} on {websocket}")
+            while True:
+                state = self.get_game_state(gameid)
+                if not state or state == "ending":
+                    return False
+                if state == "running":
+                    return True
+                if not await self.send_getready(websocket, player):
                     return False
                 retval = await self.recv_msg(websocket, player)
                 if not retval:
-                    logging.error(f"Disconnection with: {player} on {websocket}")
                     return False
                 if retval == "ready":
-                    try:
-                        self.games[gameid].update(retval, player)
-                    except KeyError:
-                        logging.error(f"Game {gameid} does not exist anymore in wait_for_ready")
+                    if not self.update_player_state(gameid, retval, player):
                         return False
                     return True
                 timeout -= 1
@@ -191,25 +212,49 @@ class serverPong:
             else:
                 logging.error(f"Game {gameid} does not exist anymore, closing connection with {player} on {websocket}")
                 return False
+        return False
+
+    def update_player_state(self, gameid, retval, player):
+        try:
+            self.games[gameid].update(retval, player)
+        except Exception:
+            logging.error(f"Game {gameid} does not exist anymore in wait_for_ready")
+            return False
+        return True
+
+    async def send_getready(self, websocket, player):
+        msg = {"command": "getready"}
+        if not await self.send_msg(websocket, msg, player):
+            return False
         return True
 
     async def wait_for_player(self, gameid, websocket, player):
         if self.is_game(gameid):
-            while self.games[gameid].state == "waiting":
-                msg = {"command": "wait"}
-                if not await self.send_msg(websocket, msg, player):
-                    logging.error(f"Disconnection while sending wait with {player} on {websocket}")
-                    self.is_waiting_game = False
+            state = "waiting"
+            while state == "waiting":
+                state = self.get_game_state(gameid)
+                if state == "ending" or not state:
+                    return False
+                if state == "getready":
+                    return True
+                if not await self.send_msg(websocket, {"command": "wait"}, player):
                     return False
                 msg = await self.recv_msg(websocket, player)
                 if not msg or msg != "wait":
-                    logging.error(f"Disconnection with: {player} ({websocket})")
                     return False
                 await asyncio.sleep(1)
         else:
             logging.error(f"Game {gameid} does not exist anymore, closing connection with {player} on {websocket}")
             return False
-        return True
+        return False
+
+    def get_game_state(self, gameid):
+        try:
+            state = self.games[gameid].state
+        except Exception:
+            logging.error(f"Game {gameid} does not exist anymore")
+            return False
+        return state
 
     def create_tasks(self, websocket, gameid, player):
         consumer_task = asyncio.create_task(
@@ -222,36 +267,20 @@ class serverPong:
 
     async def consumer_handler(self, websocket, gameid, player):
         async for message in websocket:
-            if (self.is_game_ending(gameid)):
+            if self.get_game_state(gameid) == "ending":
                 break
             else:
-                self.games[gameid].update(message, player)
+                if not self.update_player_state(gameid, message, player):
+                    break
             await asyncio.sleep(0)
 
     async def producer_handler(self, websocket, gameid, player):
-        while not self.is_game_ending(gameid):
+        while self.get_game_state(gameid) != "ending":
             message = await self.games[gameid].run(player)
             if message is not None:
                 if not await self.send_msg(websocket, message, player):
-                    logging.error(f"Disconnection with: {player} ({websocket})")
                     break
             await asyncio.sleep(1/30)
         ending_msg = await self.games[gameid].get_ending_message()
         await self.send_msg(websocket, ending_msg, player)
         await self.close_websocket_and_remove_game(websocket, gameid, player)
-
-    def is_game_ending(self, gameid):
-        if not self.is_game(gameid):
-            return True
-        else:
-            if self.games[gameid].state == "ending":
-                return True
-        return False
-
-    def remove_game(self, gameid):
-        try:
-            if self.games[gameid].is_ready_to_be_remove():
-                logging.info(f"removing game {gameid}")
-                self.games.pop(gameid)
-        except KeyError:
-            logging.error(f"Game {gameid} does not exist while removing game")

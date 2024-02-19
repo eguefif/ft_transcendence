@@ -59,6 +59,7 @@ class Game:
             if self.is_ready() and self.state != "running":
                 logging.info(f"Game {self.id} is starting")
                 self.state = "running"
+        logging.info(f"In update: {message} player {player}")
         if self.state == "running":
             if player == self.player1:
                 self.paddle1.update(message)
@@ -118,16 +119,16 @@ class Game:
                 "player2Score": self.score["player2"],
                 "startTimer": 0,
             }
-        if self.score["player1"] > self.score["player2"]:
-            self.winner = self.player1
-        else:
-            self.winner = self.player2
+        if not self.winner:
+            if self.score["player1"] > self.score["player2"]:
+                self.winner = self.player1
+            else:
+                self.winner = self.player2
         if self.winner:
             msg["message"] = "The winner is " + self.winner
         else:
             msg["message"] = "Your opponent was disconnected "
-        #await end_game_db_django(self.djangoId, self.winner, self.score["player1"],
-        #self.score["player2"])
+        #await end_game_db_django(self.djangoId, self.winner, self.score["player1"], self.score["player2"])
         return msg
 
     def init_game(self):

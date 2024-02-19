@@ -67,7 +67,7 @@ export class RemoteController {
 
 		this.websocket.onmessage = (e) => {
 			const msg = JSON.parse(e.data)
-			console.log(msg)
+			//console.log(msg)
 			switch (msg.command) {
 				case "authsucess":
 					console.log("authentification success")
@@ -92,7 +92,8 @@ export class RemoteController {
 					this.msg = msg
 					break;
 				case "data":
-                     this.msg = msg
+					this.state = "running"
+                    this.msg = msg
 					break;
 				case "ending":
 					this.state = "ending"
@@ -102,7 +103,9 @@ export class RemoteController {
 		}
 
 		document.addEventListener("keydown", (e) => {
+			console.log(this.state)
 			if (this.state == "running") {
+				console.log("sending arrow direction")
 				if (e.key == 'ArrowDown')
 					this.websocket.send("down")
 				else if (e.key == 'ArrowUp') 
@@ -111,8 +114,10 @@ export class RemoteController {
 			})
 
 		document.addEventListener("keyup", (e) => {
-			if (this.state == "running")
+			if (this.state == "running") {
+				console.log("sending stop")
 				this.websocket.send("stop")
+			}
 			if (e.code == 'Space' && this.state == "getready"){
 				this.websocket.send("ready")
 				console.log("sending ready")

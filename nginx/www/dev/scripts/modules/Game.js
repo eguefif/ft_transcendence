@@ -10,6 +10,10 @@ export class Game {
 			this.running = false
 			this.controller.stop = true
 			})
+		window.addEventListener("popstate", (e) => {
+			this.running = false
+			this.controller.stop = true
+			})
 	}
 
 	run() {
