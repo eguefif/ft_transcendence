@@ -1,5 +1,5 @@
 import { fetcher } from "./fetcher.js"
-import { closeModal } from "./test.js";
+import { closeModal } from "./modal.js";
 
 function authLogout()
 {
@@ -16,20 +16,20 @@ function authLogout()
 	});
 }
 
-function validateInput(textBox, validationBox, errorMessage) {
-    textBox.addEventListener('focusout', (event) => {
-		event.preventDefault()
-        const value = textBox.value;
-        if ( value.length < 4) {
-            validationBox.classList.add("error");
-            validationBox.innerHTML = errorMessage;
-        }
-		else {
-			validationBox.classList.remove("error");
-            validationBox.innerHTML = "";
-		}
-    });
-}
+// function validateInput(textBox, validationBox, errorMessage) {
+//     textBox.addEventListener('focusout', (event) => {
+// 		event.preventDefault()
+//         const value = textBox.value;
+//         if ( value.length < 4) {
+//             validationBox.classList.add("error");
+//             validationBox.innerHTML = errorMessage;
+//         }
+// 		else {
+// 			validationBox.classList.remove("error");
+//             validationBox.innerHTML = "";
+// 		}
+//     });
+// }
 
 /*
 function validatePassword(textBox, validationBox) {
@@ -61,18 +61,18 @@ function validatePasswordCheck(passTextBox, confirmTextBox, confirmValidationBox
 }
 */
 
-const textBoxName = document.getElementById('username');
-const textBoxEmail = document.getElementById('email');
-const textBoxPassword = document.getElementById('password');
-const textBoxPasswordCheck = document.getElementById('password-check');
+// const textBoxName = document.getElementById('username');
+// const textBoxEmail = document.getElementById('email');
+// const textBoxPassword = document.getElementById('password');
+// const textBoxPasswordCheck = document.getElementById('password-check');
 
-const usernameValidationBox = document.getElementById('usernameValidation');
-const emailValidationBox = document.getElementById('emailValidation');
-const passwordValidationBox = document.getElementById('passwordValidation');
-const passwordCheckValidationBox = document.getElementById('password-checkValidation');
+// const usernameValidationBox = document.getElementById('usernameValidation');
+// const emailValidationBox = document.getElementById('emailValidation');
+// const passwordValidationBox = document.getElementById('passwordValidation');
+// const passwordCheckValidationBox = document.getElementById('password-checkValidation');
 
-validateInput(textBoxName, usernameValidationBox, "This field is the wrong size.");
-validateInput(textBoxEmail, emailValidationBox, "This field is the wrong size.");
+// validateInput(textBoxName, usernameValidationBox, "This field is the wrong size.");
+// validateInput(textBoxEmail, emailValidationBox, "This field is the wrong size.");
 // validatePassword(textBoxPassword, passwordValidationBox);
 // validatePasswordCheck(textBoxPassword, textBoxPasswordCheck, passwordCheckValidationBox);
 
@@ -238,7 +238,7 @@ async function sendUpdateProfileRequest(url, body)
 		profileUsername.disabled = true
 		profileEmail.disabled = true
 		// alert test
-		document.querySelector("#modalProfile").insertAdjacentHTML("afterbegin", `
+		document.querySelector("#profileModal").insertAdjacentHTML("afterbegin", `
 		<div class="alert alert-success alert-dismissible fade show" role="alert">
 			<strong>Success!</strong> Your information has been saved.
 			<button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
@@ -274,9 +274,7 @@ async function sendLoginRequest(url, body, method)
 		localStorage.setItem("refreshExpiry", `${refreshExpiry}`)
 		fetcher.setAccess(result.data.accessToken);
 		validation.innerHTML = ""
-		closeModal('modalLogin')
-		// document.querySelector("#modalLogin").classList.remove("show")
-		// document.querySelector(".modal-backdrop").classList.remove("show")
+		closeModal('loginModal')
 		showLobby()
 	}
 	else
@@ -315,9 +313,7 @@ async function sendRegistrationRequest(url, body, method)
 	{
 		localStorage.setItem("refreshExpiry", `${refreshExpiry}`)
 		fetcher.setAccess(result.data.accessToken);
-		closeModal('modalRegistration')
-		// document.querySelector("#modalRegistration").classList.remove("show")
-		// document.querySelector(".modal-backdrop").classList.remove("show")
+		closeModal('registerModal')
 		showLobby()
 		return true
 	}

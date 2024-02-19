@@ -1,9 +1,9 @@
 FROM python:latest
 
-RUN apt-get update && apt-get upgrade
+RUN apt-get update && apt-get upgrade -y
 
 COPY ./requirements.txt /
-RUN pip install --upgrade pip 
+RUN pip install --upgrade pip
 RUN pip install -r requirements.txt
 RUN rm /requirements.txt
 
@@ -13,6 +13,6 @@ COPY ./tools/entry-point.sh /
 RUN chmod +x /entry-point.sh
 COPY ./transcendence /var/src/app/
 
-expose 8000
+EXPOSE 8000
 
 CMD ["./entry-point.sh"]
