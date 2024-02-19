@@ -1,6 +1,6 @@
 FROM python:latest
 
-RUN apt-get update && apt-get upgrade
+RUN apt-get update && apt-get upgrade -y
 
 COPY ./requirements.txt /
 RUN pip install --upgrade pip 

@@ -6,7 +6,7 @@
   "scripts": {
     "dev": "sass --no-source-map --watch scss/styles.scss:styles/styles.css",
     "build": "webpack --mode='production'",
-	"lint": "prettier --write"
+    "lint": "prettier --write"
   },
   "author": "PelletierM",
   "license": "ISC",
@@ -16,6 +16,7 @@
     "copy-webpack-plugin": "^12.0.2",
     "file-loader": "^6.2.0",
     "html-loader": "^5.0.0",
+    "package.json": "^2.0.1",
     "prettier": "^3.2.5",
     "sass": "^1.70.0",
     "sass-loader": "^14.1.0",

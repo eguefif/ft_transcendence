@@ -56,67 +56,67 @@ const mixPass = new ShaderPass(
     }), 'baseTexture'
     )
     
-    const finalComposer = new EffectComposer(renderer)
-    finalComposer.addPass(renderPass)
-    finalComposer.addPass(mixPass)
-    
-	
-    const outputPass = new OutputPass()//2min
-    finalComposer.addPass(outputPass)
-    
-    //SELECT BLOOM
-    
-    const BLOOM_SCENE = 1
-    const bloomLayer = new THREE.Layers()
-    bloomLayer.set(BLOOM_SCENE)
-    const darkMaterial = new THREE.MeshBasicMaterial({color: 0x000000})
-    const materials = {}
-    
-    function nonBloomed(obj){
-		if (obj.isMesh && bloomLayer.test(obj.layers) === false){
-			materials[obj.uuid] = obj.material
-			obj.material = darkMaterial
-		}
-    }
-	
-	function restoreMaterial(obj){
-		if (materials[obj.uuid]){
-			obj.material = materials[obj.uuid]
-			delete materials[obj.uuid]
-		}
+const finalComposer = new EffectComposer(renderer)
+finalComposer.addPass(renderPass)
+finalComposer.addPass(mixPass)
+
+
+const outputPass = new OutputPass()//2min
+finalComposer.addPass(outputPass)
+
+//SELECT BLOOM
+
+const BLOOM_SCENE = 1
+const bloomLayer = new THREE.Layers()
+bloomLayer.set(BLOOM_SCENE)
+const darkMaterial = new THREE.MeshBasicMaterial({color: 0x000000})
+const materials = {}
+
+function nonBloomed(obj){
+	if (obj.isMesh && bloomLayer.test(obj.layers) === false){
+		materials[obj.uuid] = obj.material
+		obj.material = darkMaterial
 	}
+}
+
+function restoreMaterial(obj){
+	if (materials[obj.uuid]){
+		obj.material = materials[obj.uuid]
+		delete materials[obj.uuid]
+	}
+}
 	
 	
 	
 const greenGlowMat = new THREE.MeshStandardMaterial({ color: 0x0FFF50, emissive: 0x2BC20E });
 
-		const calizStella_mat = new THREE.MeshLambertMaterial({
-			color: 0x2BC20E,
-			transparent: true,
-			opacity: 0.12,
-		});
+const calizStella_mat = new THREE.MeshLambertMaterial({
+	color: 0x2BC20E,
+	transparent: true,
+	opacity: 0.12,
+});
 		
 
-	//STARS
-	var stars = new Array(0);
-	for ( var i = 0; i < 20000; i ++ ) {
-		let x = THREE.MathUtils.randFloatSpread( 1500 );
-		let y = THREE.MathUtils.randFloatSpread( 1500 );
-		let z = THREE.MathUtils.randFloat( -2000, 2000 );
-		if (!(x > -100 && x < 100 && y < 100 && y > -100 && z > -100 && z <100))
-			stars.push(x, y, z);
-	}
-	var starsGeometry = new THREE.BufferGeometry();
-	starsGeometry.setAttribute(
-		"position", new THREE.Float32BufferAttribute(stars, 3)
-		);
-		var starsMaterial = new THREE.PointsMaterial( { color: 0xbbf9af } );//0x888888
-		var starField = new THREE.Points( starsGeometry, starsMaterial );
-		scene.add( starField );
+//STARS
+var stars = new Array(0);
+for ( var i = 0; i < 20000; i ++ ) {
+	let x = THREE.MathUtils.randFloatSpread( 1500 );
+	let y = THREE.MathUtils.randFloatSpread( 1500 );
+	let z = THREE.MathUtils.randFloat( -2000, 2000 );
+	if (!(x > -100 && x < 100 && y < 100 && y > -100 && z > -100 && z <100))
+		stars.push(x, y, z);
+}
+var starsGeometry = new THREE.BufferGeometry();
+starsGeometry.setAttribute(
+	"position", new THREE.Float32BufferAttribute(stars, 3)
+	);
+	var starsMaterial = new THREE.PointsMaterial( { color: 0xbbf9af } );//0x888888
+	var starField = new THREE.Points( starsGeometry, starsMaterial );
+	scene.add( starField );
 
 			
 			
-			//TOP-BOTTOM lip
+//TOP-BOTTOM lip
 function initGameBoard()
 {
 	const boardGeometry = new THREE.BoxGeometry(boardWidth, boardHeight, 0.05)
@@ -219,6 +219,7 @@ function render() {
 	sun.translateX(0.003)
 	sun.translateY(0.0002)
     scene.traverse(nonBloomed)
+	pointLight.intensity = (Math.sin(Date.now() / 1000) + 1.2) * 0.025
     composer.render()
 	
     
@@ -253,7 +254,7 @@ window.addEventListener("resize", function(){
 
 
 initGameBoard()
-
+render()
 
 export class graphicEngine
 {
@@ -280,13 +281,16 @@ export class graphicEngine
 	}
 
 	display(model) {
-		this.clearFrame()
-		this.displayStartTimer(model.startTimer)
-		this.displayBall(model.ball.x, model.ball.y, model.ball.radius)
-		this.displayPaddle1(model.paddle1.x, model.paddle1.y)
-		this.displayPaddle2(model.paddle2.x, model.paddle2.y)
-		this.displayScore(model.player1Score, model.player2Score)
-		this.displayWinner(model.winnerMessage)
+		if (model != "none" && model != undefined)
+		{
+			this.clearFrame()
+			this.displayStartTimer(model.startTimer)
+			this.displayBall(model.ball.x, model.ball.y, model.ball.radius)
+			this.displayPaddle1(model.paddle1.x, model.paddle1.y)
+			this.displayPaddle2(model.paddle2.x, model.paddle2.y)
+			this.displayScore(model.player1Score, model.player2Score)
+			this.displayWinner(model.winnerMessage)
+		}
 		render()
 		this.ctx.stroke()
 	}
@@ -298,7 +302,6 @@ export class graphicEngine
 	displayBall(ball_x, ball_y, ball_radius){
 		ball.position.set(boardStartX + ball_x * boardWidth, boardStartY - (ball_y * boardHeight) , 0.1)
 		pointLight.position.set(boardStartX + ball_x * boardWidth, boardStartY - (ball_y * boardHeight) , 0.2)
-		pointLight.intensity = (Math.sin(Date.now() / 1000) + 1.2) * 0.025
 	}
 
 	displayPaddle1(paddle_x, paddle_y){
