@@ -4,12 +4,12 @@ let logout = "logout"
 
 const test = `
 <ul class="navbar-nav ms-auto">
-	<li class="nav-item btn btn-secondary" id="registerButton"
+	<li class="nav-item btn btn-primary" id="registerButton"
 	data-bs-toggle="modal"
 	data-bs-target="#modalRegistration">
 		${register}
 	</li>
-	<li class="nav-item btn btn-secondary" id="loginButton"
+	<li class="nav-item btn btn-primary" id="loginButton"
 	data-bs-toggle="modal"
 	data-bs-target="#modalLogin">
 		${login}
@@ -18,10 +18,10 @@ const test = `
 	`
 
 	const test1 = `
-	<li class="nav-item btn btn-secondary d-none shadow-none border-0"" id="logoutButton" data-link>
+	<li class="nav-item btn btn-primary d-none shadow-none border-0"" id="logoutButton" data-link>
 	${logout}
 	</li>
-	<li class="nav-item btn btn-secondary d-none shadow-none border-0" id="profileButton"
+	<li class="nav-item btn btn-primary d-none shadow-none border-0" id="profileButton"
 	data-bs-toggle="modal"
 	data-bs-target="#modalProfile">
 	Profile
