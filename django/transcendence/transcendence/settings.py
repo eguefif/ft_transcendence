@@ -38,12 +38,14 @@ SECRET_KEY = env["SECRET"]
 
 DEBUG = env["DEBUG"]
 
-ALLOWED_HOSTS = [env["HOSTNAME"]]
+#ALLOWED_HOSTS = [env["HOSTNAME"]]
+ALLOWED_HOSTS = ["localhost", "c1r7p10.42quebec.com", "django"]
 
 
 # Application definition
 
 INSTALLED_APPS = [
+    'gamesManager',
     'authentication',
     'userprofile',
     'rest_framework',
