@@ -5,6 +5,14 @@
 	<meta name="viewport" content="width=device-width, initial-scale=1.0">
 	<title>ft-Transcendence</title>
 	<link rel="stylesheet" href="styles/styles.css">
+	<script type="importmap">
+        {
+            "imports": {
+                "three": "https://unpkg.com/three@0.161.0/build/three.module.js",
+				"three/addons/": "https://unpkg.com/three@0.161.0/examples/jsm/"
+            }
+        }
+	</script>	
 	<script type="module" src="scripts/main.js" defer></script>
 	<link rel="icon" href="/images/favicon.ico" type="image/x-icon"/>
 </head>
@@ -153,7 +161,6 @@
 				<div class="col">
 					<canvas id="board" width="640" height="480"></canvas>
 					<canvas width="640" height="480" id="background">hi</canvas>
-				  
 					  <script type="vertex" id="vertexshader">
 				  
 						  varying vec2 vUv;
@@ -165,7 +172,6 @@
 							  gl_Position = projectionMatrix * modelViewMatrix * vec4( position, 1.0 );
 				  
 						  }
-				  
 					  </script>
 					  <script type="fragment" id="fragmentshader">
 				  
@@ -179,11 +185,9 @@
 							  gl_FragColor = ( texture2D( baseTexture, vUv ) + vec4( 1.0 ) * texture2D( bloomTexture, vUv ) );
 				  
 						  }
-				  
 					  </script>
 				</div>
 			</div>
 		</div>
 	</body>
 	</html>
-	

@@ -2,11 +2,18 @@ import { fetcher } from "./fetcher.js"
 import { Game } from "./Game.js"
 import { LocalController } from "./LocalController.js"
 import { RemoteController } from "./RemoteController.js"
+import { PassiveController } from "./PassiveController.js"
 
 export async function pongMenu() {
 	let remoteGameBtn = document.querySelector("#remotegamebtn")
 	let localGameBtn= document.querySelector("#localgamebtn")
 	let menu = document.querySelector("#menubtn")
+	let controller = new PassiveController()
+	let game = new Game(controller)
+	menu.addEventListener("click", (e) => {
+		e.preventDefault()
+		history.back()
+		})
 
 	menu.classList.add('d-none')
 	if (await fetcher.isAuthenticated())
@@ -14,6 +21,7 @@ export async function pongMenu() {
 	if (!await fetcher.isAuthenticated())
 		remoteGameBtn.classList.add('d-none')
 	localGameBtn.classList.remove('d-none')
+	game.run()
 }
 
 export async function initRemoteGame() {
@@ -51,8 +59,4 @@ function hideMainMenu(){
 function show_and_init_event_for_menu_button() {
 	let menu = document.querySelector("#menubtn")
 	menu.classList.remove("d-none")
-	menu.addEventListener("click", (e) => {
-		e.preventDefault()
-		history.back()
-		})
 }

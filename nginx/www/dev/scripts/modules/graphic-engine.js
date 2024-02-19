@@ -1,10 +1,11 @@
 import * as THREE from 'three';
+
 import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
-import { RenderPass } from 'three/examples/jsm/postprocessing/RenderPass';
-import { EffectComposer } from 'three/examples/jsm/postprocessing/EffectComposer';
-import { UnrealBloomPass } from 'three/examples/jsm/postprocessing/UnrealBloomPass';
-import {OutputPass} from 'three/examples/jsm/postprocessing/OutputPass'
-import {ShaderPass} from 'three/examples/jsm/postprocessing/ShaderPass.js'
+import { RenderPass } from 'three/addons/postprocessing/RenderPass.js';
+import { EffectComposer } from 'three/addons/postprocessing/EffectComposer.js';
+import { UnrealBloomPass } from 'three/addons/postprocessing/UnrealBloomPass.js';
+import { OutputPass } from 'three/addons/postprocessing/OutputPass.js'
+import { ShaderPass } from 'three/addons/postprocessing/ShaderPass.js'
 import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
 import { DRACOLoader } from 'three/addons/loaders/DRACOLoader.js';
 import { TextGeometry } from 'three/addons/geometries/TextGeometry.js';
@@ -210,7 +211,7 @@ const controls = new OrbitControls( camera, renderer.domElement );
 
 controls.maxPolarAngle = Math.PI
 // Render loop
-function render() {
+export function render() {
 	controls.update()
 	starField.translateX(0.01)
 	starField.translateY(0.005)
@@ -231,30 +232,9 @@ window.addEventListener("resize", function(){
 	camera.aspect = window.innerWidth / window.innerHeight;
 	camera.updateProjectionMatrix();
 	renderer.setSize(window.innerWidth, window.innerHeight);
-	renderer.updateProjectionMatrix()
+	renderer.updateProjectionMatrix();
 	render();
 })
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-initGameBoard()
-render()
 
 export class graphicEngine
 {
@@ -276,7 +256,7 @@ export class graphicEngine
 		this.startTimerScale = this.height / 6
 		this.textColor = "rgb(43, 194, 14)"
 		this.paddleHeigt = 1 / 8
-		
+		initGameBoard()
 		render()
 	}
 
@@ -289,7 +269,7 @@ export class graphicEngine
 			this.displayPaddle1(model.paddle1.x, model.paddle1.y)
 			this.displayPaddle2(model.paddle2.x, model.paddle2.y)
 			this.displayScore(model.player1Score, model.player2Score)
-			this.displayWinner(model.winnerMessage)
+			this.displayWinner(model.message)
 		}
 		render()
 		this.ctx.stroke()
