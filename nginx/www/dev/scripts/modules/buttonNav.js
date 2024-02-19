@@ -1,9 +1,11 @@
-export function createPage () {
-	let status = false;
+import { fetcher } from "./fetcher.js";
+
+
+export async function createButton () {
 	document.querySelector('#navbarNavDropdown').insertAdjacentHTML("afterbegin", createUl("navbar-nav ms-auto"));
 	const element = document.querySelector('.navbar-nav');
 
-	if (status === true) {
+	if (await fetcher.isAuthenticated()) {
 		element.innerHTML = createModalBtn("nav-item btn btn-secondary", "profile", "navbar-brand test", "images/Person-Icon.svg");
 		element.insertAdjacentHTML("beforeend", createActionBtn("nav-item btn btn-secondary", "logout", "navbar-brand test", "images/logout-Icon.svg"));
 	}

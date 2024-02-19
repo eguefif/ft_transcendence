@@ -79,6 +79,9 @@ function validatePasswordCheck(passTextBox, confirmTextBox, confirmValidationBox
 function authRegister()
 {
 	const registrationForm = document.querySelector("#registrationForm")
+	if (!registrationForm) {
+		return
+	}
 	registrationForm.addEventListener("submit", function(e){
 		e.preventDefault()
 			const data = new FormData(e.target);
@@ -96,6 +99,9 @@ function authRegister()
 function authLogin()
 {
 	const registrationForm = document.querySelector("#loginForm")
+	if(!registrationForm) {
+		return
+	}
 	registrationForm.addEventListener("submit", function(e){
 		e.preventDefault()
 		const data = new FormData(e.target);
@@ -275,7 +281,7 @@ async function sendLoginRequest(url, body, method)
 		fetcher.setAccess(result.data.accessToken);
 		validation.innerHTML = ""
 		closeModal('loginModal')
-		showLobby()
+		// showLobby()
 	}
 	else
 	{
@@ -319,43 +325,41 @@ async function sendRegistrationRequest(url, body, method)
 	}
 }
 
-function showLobby()
-{
-		let loginButton = document.getElementById("loginButton")
-		let logoutButton = document.getElementById("logoutButton")
-		let registerButton = document.getElementById("registerButton")
-		let profileButton = document.getElementById("profileButton")
-		loginButton.classList.add('d-none')
-		registerButton.classList.add('d-none')
-		logoutButton.classList.remove('d-none')
-		profileButton.classList.remove('d-none')
-}
+// function showLobby()
+// {
+// 		let loginButton = document.getElementById("loginButton")
+// 		let logoutButton = document.getElementById("logoutButton")
+// 		let registerButton = document.getElementById("registerButton")
+// 		let profileButton = document.getElementById("profileButton")
+// 		loginButton.classList.add('d-none')
+// 		registerButton.classList.add('d-none')
+// 		logoutButton.classList.remove('d-none')
+// 		profileButton.classList.remove('d-none')
+// }
 
-function showLogin()
-{
-		let loginButton = document.getElementById("loginButton")
-		let logoutButton = document.getElementById("logoutButton")
-		let registerButton = document.getElementById("registerButton")
-		let profileButton = document.getElementById("profileButton")
-		loginButton.classList.remove('d-none')
-		registerButton.classList.remove('d-none')
-		logoutButton.classList.add('d-none')
-		profileButton.classList.add('d-none')
-}
+// function showLogin()
+// {
+// 		let loginButton = document.getElementById("loginButton")
+// 		let logoutButton = document.getElementById("logoutButton")
+// 		let registerButton = document.getElementById("registerButton")
+// 		let profileButton = document.getElementById("profileButton")
+// 		loginButton.classList.remove('d-none')
+// 		registerButton.classList.remove('d-none')
+// 		logoutButton.classList.add('d-none')
+// 		profileButton.classList.add('d-none')
+// }
 
 export async function initAuth() {
 	if (await fetcher.isAuthenticated()) {
-		showLobby()
+		authLogout();
+		profileInfo();
+		changeProfile();
+		authUpdateProfile();
 	}
 	else
 	{
-		showLogin()
+		authLogin();
+		authRegister();
 	}
 
-	authRegister();
-	authLogin();
-	authLogout();
-	authUpdateProfile();
-	profileInfo();
-	changeProfile();
 }
