@@ -26,7 +26,7 @@ export class RemoteController {
 			this.websocket.close()
 		if (this.msg.command == "data" || this.msg.command == "ending")
 			return this.msg
-		if (this.msg.scorePlayer0 == 3 || this.msg.scorePlayer2 == 3){
+		if (this.msg.scorePlayer1 == 3 || this.msg.scorePlayer2 == 3){
 			this.running = false
 			return
 		}
