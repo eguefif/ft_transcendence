@@ -3,21 +3,20 @@ import { initRemoteGame } from "./pong.js"
 import { initLocalGame } from "./pong.js"
 import { pongMenu } from "./pong.js"
 
-export function router()
-{
+export function initRouter() {
 	const navigateTo = url => {
 		history.pushState(null, null, url)
 		router()
 	}
 
-	const router = async () => {
+	async function router() {
 		const routes = [
 			{path: "/", view: () => pongMenu()},
 			{path: "/remotegame", view: () => initRemoteGame()},
 			{path: "/localgame", view: () => initLocalGame()},
 		]
 		
-		const potentialMatches = routes.map(route => {
+		const potentialMatches = routes.map((route) => {
 			return {
 				route: route,
 				isMatch: location.pathname === route.path
