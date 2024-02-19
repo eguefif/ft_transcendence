@@ -43,7 +43,7 @@ export class RemoteController {
 		this.init_event()
 	}
 	async initSocket() {
-		this.websocket= await fetcher.getWebSocket(`wss://${this.address}/game/`)
+		this.websocket = new WebSocket(`wss://${this.address}/game/`)
 	}
 
 	init_event() {
@@ -51,10 +51,11 @@ export class RemoteController {
 			console.log("Websocket is undefined")
 			return
 		}
+			
+			this.websocket.addEventListener("open", async (e) => {
+				fetcher.sendToken(this.websocket)
+			})
 
-		this.websocket.onopen = (e) => {
-			console.log("opening websocket")
-		}
 		this.websocket.error = (e) => {
 			console.log("Error: ", e)
 		}

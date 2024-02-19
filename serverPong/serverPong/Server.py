@@ -232,7 +232,9 @@ class serverPong:
         while not self.is_game_ending(gameid):
             message = await self.games[gameid].run(player)
             if message is not None:
-                await self.send_msg(websocket, message, player)
+                if not await self.send_msg(websocket, message, player):
+                    logging.error(f"Disconnection with: {player} ({websocket})")
+                    break
             await asyncio.sleep(1/30)
         ending_msg = await self.games[gameid].get_ending_message()
         await self.send_msg(websocket, ending_msg, player)

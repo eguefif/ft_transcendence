@@ -134,25 +134,19 @@ function createFetcher() {
 		return { status: result.status, data: data, type: type };
 	}
 
-	const getWebSocket = async (url) => {
-		let websocket = new WebSocket(url)
+	const sendToken = async (websocket) => {
 		console.log("creating websocket")
 		if (await token.refresh()) {
 			let rettoken = token.get()
-			websocket.addEventListener("open", (e) => {
 				websocket.send(JSON.stringify({"token": rettoken}))
 				console.log("sending token websocket")
-			})
-			console.log(navigator.userAgent)
-			if (navigator.userAgent.includes("Firefox"))
-				websocket.send(JSON.stringify({"token": rettoken}))
-			return websocket
+				return true
 		}
 		else {
-			return undefined
+			return false
 		}
 	}
-	return { accessDuration, refreshDuration, setAccess, isAuthenticated, get, post, getWebSocket, reset };
+	return { accessDuration, refreshDuration, setAccess, isAuthenticated, get, post, sendToken, reset };
 }
 
 export const fetcher = createFetcher();
