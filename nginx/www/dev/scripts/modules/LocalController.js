@@ -14,6 +14,8 @@ export class LocalController {
 		this.stop = false
 	}
 
+	cleanup(){}
+
 	init() {
 		document.addEventListener("keydown", (e) => {
 			if (e.key == 'ArrowDown')

@@ -56,4 +56,3 @@ function show_and_init_event_for_menu_button() {
 		history.back()
 		})
 }
-

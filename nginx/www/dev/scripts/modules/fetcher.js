@@ -109,7 +109,6 @@ function createFetcher() {
 			}
 			return await extractData(result);
 		} catch {
-			console.log("test");
 			return { status: 418, data: { info: "fetch failed" } };
 		}
 	};
@@ -135,11 +134,9 @@ function createFetcher() {
 	}
 
 	const sendToken = async (websocket) => {
-		console.log("creating websocket")
 		if (await token.refresh()) {
 			let rettoken = token.get()
 				websocket.send(JSON.stringify({"token": rettoken}))
-				console.log("sending token websocket")
 				return true
 		}
 		else {

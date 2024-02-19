@@ -45,7 +45,8 @@ class serverPong:
             await self.close_websocket(websocket)
             return
         if await self.is_user_in_game(websocket, username):
-            self.close_websocket(websocket)
+            logging.info(f"User already in game {username}")
+            await self.close_websocket(websocket)
         else:
             if not self.is_waiting_game:
                 await self.create_game(websocket, username, self.current_id)
@@ -110,23 +111,23 @@ class serverPong:
             return None
         return msg
 
-    async def close_websocket_and_remove_game(self, websocket, gameid, player):
+    async def close_websocket_and_remove_game(self, websocket, gameid, player, disconnection=True):
         try:
             self.games[gameid].set_looser(websocket)
             self.games[gameid].set_player_to_disconnected(player)
         except Exception as e:
             logging.error(f"Game {gameid} does not exist anymore. Exception {e}")
         else:
-            self.remove_game(gameid)
+            self.remove_game(gameid, player)
         finally:
-            logging.info(f"Game {gameid} has been removed")
-            self.set_game_to_disconnected(gameid)
+            if disconnection:
+                self.set_game_to_disconnected(gameid)
             await self.close_websocket(websocket, player)
 
-    def remove_game(self, gameid):
+    def remove_game(self, gameid, player):
         try:
             if self.games[gameid].is_ready_to_be_remove():
-                logging.info(f"removing game {gameid}")
+                logging.info(f"{player} is removing game {gameid}")
                 self.games.pop(gameid)
         except KeyError:
             logging.error(f"Game {gameid} does not exist while removing game")
@@ -170,7 +171,6 @@ class serverPong:
         await self.run_game(self.current_id - 1, websocket, username)
 
     async def run_game(self, gameid, websocket, player):
-        logging.info(f"{player} entering in run_game")
         if not await self.wait_for_player(gameid, websocket, player):
             self.is_waiting_game = False
             await self.close_websocket_and_remove_game(websocket, gameid, player)
@@ -233,7 +233,7 @@ class serverPong:
 
     def set_game_to_disconnected(self, gameid):
         try:
-            self.games[gameid].disconnected = True
+            self.games[gameid].disconnection = True
         except Exception as e:
             logging.error(f"Game {gameid} does not exist anymore in wait_for_ready")
 
@@ -282,7 +282,6 @@ class serverPong:
                 if not self.update_player_state(gameid, message, player):
                     break
             await asyncio.sleep(0)
-        await self.close_websocket_and_remove_game(websocket, gameid, player)
 
     async def producer_handler(self, websocket, gameid, player):
         while self.get_game_state(gameid) != "ending":
@@ -290,7 +289,8 @@ class serverPong:
                 message = await self.games[gameid].run(player)
             except Exception as e:
                 logging.error(f"Game does not exist anymore: {gameid}, Exception: {e}")
-                break
+                await self.close_websocket_and_remove_game(websocket, gameid, player)
+                return
             if message is not None:
                 if not await self.send_msg(websocket, message, player):
                     await self.close_websocket_and_remove_game(websocket, gameid, player)
@@ -298,11 +298,14 @@ class serverPong:
             await asyncio.sleep(1/30)
 
         ending_msg = await self.get_ending_message(gameid)
-        await self.send_msg(websocket, ending_msg, player)
+        if ending_msg:
+            await self.send_msg(websocket, ending_msg, player)
+        await self.close_websocket_and_remove_game(websocket, gameid, player, disconnection=False)
 
     def get_ending_message(self, gameid):
         try:
             msg = self.games[gameid].get_ending_message()
         except Exception as e:
             logging.error(f"Exception {e}")
+            return False
         return msg

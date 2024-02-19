@@ -24,7 +24,7 @@ class Game:
         self.p1_disconnected = False
         self.p2_disconnected = True
         self.winner = None
-        self.time = 3
+        self.time = 4
         self.djangoid = -1
         self.message = ""
         self.disconnection = False
@@ -34,7 +34,7 @@ class Game:
         self.p2_disconnected = False
         self.p2_websocket = websocket
         self.state = "getready"
-        self.time = 3
+        self.time = 4
         #self.djangoId = await create_game_db_django(self.player1, self.player2, self.time)
 
     def is_ready_to_be_remove(self):
@@ -45,6 +45,7 @@ class Game:
             self.p1_disconnected = True
         else:
             self.p2_disconnected = True
+        self.disconnection = True
 
     def isPlayerInGame(self, username):
         if not self.player2:
@@ -90,7 +91,7 @@ class Game:
             if self.player1 == player:
                 await asyncio.sleep(1)
                 self.time -= 1
-            retval["startTimer"] = self.time
+            retval["startTimer"] = self.time - 1
 
         if self.state == "running" and not self.is_end_game() and self.time == 0:
             result = self.move()
@@ -108,8 +109,8 @@ class Game:
         return retval
 
     async def get_ending_message(self):
-        logging.info(f"game disconnected :{self.disconnected}")
-        if self.disconnected == True:
+        if self.disconnection == True and not self.is_end_game():
+            logging.info(f"disconnetion {self.disconnection}, and end: {self.is_end_game()}")
             msg = {"command": "ending",
                     "startTimer": 0,
                     "ball": self.ball.getPosition(),
@@ -132,13 +133,11 @@ class Game:
                 "player2Score": self.score["player2"],
                 "startTimer": 0,
             }
-        if not self.winner:
-            if self.score["player1"] > self.score["player2"]:
-                self.winner = self.player1
-            else:
-                self.winner = self.player2
-        if self.winner:
-            msg["message"] = "The winner is " + self.winner
+        if self.score["player1"] > self.score["player2"]:
+            self.winner = self.player1
+        else:
+            self.winner = self.player2
+        msg["message"] = "The winner is " + self.winner
         #await end_game_db_django(self.djangoId, self.winner, self.score["player1"], self.score["player2"])
         return msg
 
@@ -150,10 +149,10 @@ class Game:
     def update_score(self, result):
         if result == "left":
             self.score["player2"] += 1
-            self.time = 3
+            self.time = 4
         elif result == "right":
             self.score["player1"] += 1
-            self.time = 3
+            self.time = 4
         else:
             self.time = 0
 

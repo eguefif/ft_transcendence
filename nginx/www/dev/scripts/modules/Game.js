@@ -6,6 +6,7 @@ export class Game {
 		this.graphicEngine = new graphicEngine
 		let menu = document.querySelector("#menubtn")
 		this.running = true
+
 		menu.addEventListener("click", (e) => {
 			this.running = false
 			this.controller.stop = true
@@ -18,8 +19,10 @@ export class Game {
 
 	run() {
 		const update = () => {
-			if (!this.running)
+			if (!this.running) {
+				this.controller.cleanup()
 				return
+			}
 			let data = this.controller.update()
 			this.graphicEngine.display(data)
 			requestAnimationFrame(update)

@@ -18,6 +18,9 @@ export class RemoteController {
 		this.stop = false
 	}
 
+	cleanup(){
+		this.websocket.close()
+	}
 	update (){
 		if (this.stop == true)
 			this.websocket.close()
@@ -48,7 +51,6 @@ export class RemoteController {
 
 	init_event() {
 		if (this.websocket == undefined) {
-			console.log("Websocket is undefined")
 			return
 		}
 			
@@ -61,7 +63,7 @@ export class RemoteController {
 		}
 
 		this.websocket.onclose = (e) => {
-			console.log(e)
+			this.message = "Connection lost"
 			console.log("disconnection")
 		}
 
