@@ -24,7 +24,7 @@ class Ball:
         self.resetPosition()
         self.speed = 1 / 120
         self.radius = 1 / 40
-        
+
     def resetPosition(self):
         self.dir = Vector(random() * 2 - 1, 0)
         if self.dir.x < 0:
@@ -54,16 +54,16 @@ class Ball:
         return None
 
     def paddleCollision(self, paddle1, paddle2):
-         if self.isLeftPaddleCollision(paddle1):
+        if self.isLeftPaddleCollision(paddle1):
             self.dir.x = 0.5
             diff = self.y - paddle1.height / 2 - paddle1.y
-            self.dir.y = diff * 0.866025403784439  / paddle1.height
+            self.dir.y = diff * 0.866025403784439 / paddle1.height
             self.dir.norm()
 
-         if self.isRightPaddleCollision(paddle2):
+        if self.isRightPaddleCollision(paddle2):
             self.dir.x = -0.5
             diff = self.y - paddle2.height / 2 - paddle2.y
-            self.dir.y = diff * 0.866025403784439  / paddle2.height
+            self.dir.y = diff * 0.866025403784439 / paddle2.height
             self.dir.norm()
 
     def isRightPaddleCollision(self, paddle):
