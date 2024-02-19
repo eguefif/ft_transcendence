@@ -26,6 +26,8 @@ class Game:
         self.winner = None
         self.time = 3
         self.djangoid = -1
+        self.message = ""
+        self.disconnection = False
 
     async def add_player(self, player, websocket):
         self.player2 = player
@@ -59,7 +61,6 @@ class Game:
             if self.is_ready() and self.state != "running":
                 logging.info(f"Game {self.id} is starting")
                 self.state = "running"
-        logging.info(f"In update: {message} player {player}")
         if self.state == "running":
             if player == self.player1:
                 self.paddle1.update(message)
@@ -107,9 +108,21 @@ class Game:
         return retval
 
     async def get_ending_message(self):
+        logging.info(f"game disconnected :{self.disconnected}")
+        if self.disconnected == True:
+            msg = {"command": "ending",
+                    "startTimer": 0,
+                    "ball": self.ball.getPosition(),
+                    "paddle1": self.paddle1.getPosition(),
+                    "paddle2": self.paddle2.getPosition(),
+                    "player1": self.player1,
+                    "player2": self.player2,
+                    "player1Score": self.score["player1"],
+                    "player2Score": self.score["player2"],
+                    "message": "A player has left the game"}
+            return msg
         msg = {
                 "command": "ending",
-                "startTimer": 0,
                 "ball": self.ball.getPosition(),
                 "paddle1": self.paddle1.getPosition(),
                 "paddle2": self.paddle2.getPosition(),
@@ -126,8 +139,6 @@ class Game:
                 self.winner = self.player2
         if self.winner:
             msg["message"] = "The winner is " + self.winner
-        else:
-            msg["message"] = "Your opponent was disconnected "
         #await end_game_db_django(self.djangoId, self.winner, self.score["player1"], self.score["player2"])
         return msg
 
