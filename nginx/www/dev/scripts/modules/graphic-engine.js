@@ -10,6 +10,7 @@ import { DRACOLoader } from 'three/addons/loaders/DRACOLoader.js';
 import { TextGeometry } from 'three/addons/geometries/TextGeometry.js';
 import { FontLoader } from 'three/addons/loaders/FontLoader.js';
 
+
 const boardWidth = 4
 const boardHeight = 3
 const boardStartX = (boardWidth / 2) * -1
@@ -95,26 +96,24 @@ const greenGlowMat = new THREE.MeshStandardMaterial({ color: 0x0FFF50, emissive:
 			opacity: 0.12,
 		});
 		
-		
-		//BOARD
-		
-		//STARS
-		var stars = new Array(0);
-		for ( var i = 0; i < 20000; i ++ ) {
-			let x = THREE.MathUtils.randFloatSpread( 1500 );
-			let y = THREE.MathUtils.randFloatSpread( 1500 );
-			let z = THREE.MathUtils.randFloat( -2000, 2000 );
-			if (!(x > -100 && x < 100 && y < 100 && y > -100 && z > -100 && z <100))
-				stars.push(x, y, z);
-		}
-		var starsGeometry = new THREE.BufferGeometry();
-		starsGeometry.setAttribute(
-			"position", new THREE.Float32BufferAttribute(stars, 3)
-			);
-			var starsMaterial = new THREE.PointsMaterial( { color: 0xbbf9af } );//0x888888
-			var starField = new THREE.Points( starsGeometry, starsMaterial );
-			scene.add( starField );
-			
+
+	//STARS
+	var stars = new Array(0);
+	for ( var i = 0; i < 20000; i ++ ) {
+		let x = THREE.MathUtils.randFloatSpread( 1500 );
+		let y = THREE.MathUtils.randFloatSpread( 1500 );
+		let z = THREE.MathUtils.randFloat( -2000, 2000 );
+		if (!(x > -100 && x < 100 && y < 100 && y > -100 && z > -100 && z <100))
+			stars.push(x, y, z);
+	}
+	var starsGeometry = new THREE.BufferGeometry();
+	starsGeometry.setAttribute(
+		"position", new THREE.Float32BufferAttribute(stars, 3)
+		);
+		var starsMaterial = new THREE.PointsMaterial( { color: 0xbbf9af } );//0x888888
+		var starField = new THREE.Points( starsGeometry, starsMaterial );
+		scene.add( starField );
+
 			
 			
 			//TOP-BOTTOM lip
@@ -249,10 +248,10 @@ window.addEventListener("resize", function(){
 
 
 
+
+
+
 initGameBoard()
-
-
-
 
 
 export class graphicEngine
@@ -313,7 +312,8 @@ export class graphicEngine
 		const dis1 = `${player1Score}`
 		const dis2 = `${player2Score}`
 		this.ctx.font = "".concat(`${this.scoreScale}`, "px Arial")
-		this.ctx.strokeStyle = "white";
+		this.ctx.fillStyle = 'blue';
+
 		this.ctx.fillText(dis1, this.scoreMarginLeft, this.scoreMarginTop)
 		this.ctx.fillText(dis2, this.scoreMarginRight, this.scoreMarginTop)
 	}
