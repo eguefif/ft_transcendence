@@ -75,12 +75,13 @@ function createFormRegister() {
 		`
 }
 
-document.querySelector('body').insertAdjacentHTML("afterbegin", CreateModal("login"));
+
+
+document.querySelector('body').insertAdjacentHTML("afterbegin", CreateModal("connexion"));
 document.querySelector(".modal-body").insertAdjacentHTML("afterbegin", createFormLogin());
 document.getElementById("btnOpenRegister").addEventListener('click', function(e) {
 	e.preventDefault();
 	document.querySelector('#loginForm').remove();
-	// document.querySelector('body').insertAdjacentHTML("afterbegin", CreateModal("register"));
 	document.querySelector('.modal-body').insertAdjacentHTML("afterbegin", createFormRegister());
 	});
 

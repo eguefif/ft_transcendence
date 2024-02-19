@@ -11,7 +11,7 @@ export async function createButton () {
 	}
 	else {
 		element.innerHTML = createModalBtn("nav-item btn btn-secondary", "login", "navbar-brand test", "images/login-Icon.svg");
-		element.insertAdjacentHTML("afterbegin", createModalBtn("nav-item btn btn-secondary", "register", "navbar-brand test", "images/Setting.svg"));
+		// element.insertAdjacentHTML("afterbegin", createModalBtn("nav-item btn btn-secondary", "register", "navbar-brand test", "images/Setting.svg"));
 	}
 }
 
@@ -25,11 +25,8 @@ function createModalBtn (btnClasses="", btnName="", aClasses="", srcImg="") {
 return `
 		<li class="${btnClasses}" id="${btnName}Button"
 			data-bs-toggle="modal"
-			data-bs-target="#${btnName}Modal">
-				<a class="${aClasses}">
-					<img src="${srcImg}" />
-				<a>
-			${btnName}
+			data-bs-target="#connexionModal">
+			<img src="${srcImg}" />
 		</li>
 	`
 }

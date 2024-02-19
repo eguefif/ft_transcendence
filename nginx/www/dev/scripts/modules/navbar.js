@@ -5,7 +5,7 @@ const nav = `
 				<img src="images/logo-no-background.svg" alt="" width="150" />
 			</a>
 			<button
-				class="test navbar-toggler"
+				class="test navbar-toggler opacity-100"
 				type="button"
 				data-bs-toggle="collapse"
 				data-bs-target="#navbarNavDropdown"

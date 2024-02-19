@@ -8,7 +8,7 @@ function authLogout()
 		const result = await fetcher.post("/api/auth/logout", {})
 		if (result.status >= 200 && result.status < 300) {
 			localStorage.removeItem("refreshExpiry")
-			showLogin()
+			// showLogin()
 		}
 		else {
 			console.log("Logout failed")
@@ -84,15 +84,15 @@ function authRegister()
 	}
 	registrationForm.addEventListener("submit", function(e){
 		e.preventDefault()
-			const data = new FormData(e.target);
-			const url = e.target.action
-			const body = {
-				'formType': "register",
-				'username': data.get('username'),
-				'email': data.get('email'),
-				'password': data.get('password'),
-			}
-			sendRegistrationRequest(url, body)
+		const data = new FormData(e.target);
+		const url = e.target.action
+		const body = {
+			'formType': "register",
+			'username': data.get('username'),
+			'email': data.get('email'),
+			'password': data.get('password'),
+		}
+		sendRegistrationRequest(url, body)
 	})
 }
 
@@ -280,7 +280,7 @@ async function sendLoginRequest(url, body, method)
 		localStorage.setItem("refreshExpiry", `${refreshExpiry}`)
 		fetcher.setAccess(result.data.accessToken);
 		validation.innerHTML = ""
-		closeModal('loginModal')
+		closeModal('connexionModal')
 		// showLobby()
 	}
 	else
@@ -293,14 +293,13 @@ async function sendLoginRequest(url, body, method)
 
 async function sendRegistrationRequest(url, body, method)
 {
+	// const form = document.getElementById("registrationForm")
 
-	const form = document.getElementById("registrationForm")
-	const inputs = form.querySelectorAll("input")
-	inputs.forEach(input => {
-		input.classList.remove("is-invalid")
-		input.classList.add("is-valid")
-	})
-
+	// const inputs = form.querySelectorAll("input")
+	// inputs.forEach(input => {
+	// 	input.classList.remove("is-invalid")
+	// 	input.classList.add("is-valid")
+	// })
 
 	const refreshExpiry = Date.now() + fetcher.refreshDuration;
 	const result = await fetcher.post(url, body);
@@ -319,9 +318,9 @@ async function sendRegistrationRequest(url, body, method)
 	{
 		localStorage.setItem("refreshExpiry", `${refreshExpiry}`)
 		fetcher.setAccess(result.data.accessToken);
-		closeModal('registerModal')
-		showLobby()
-		return true
+		closeModal('connexionModal')
+		// showLobby()
+		// return true
 	}
 }
 
@@ -356,10 +355,9 @@ export async function initAuth() {
 		changeProfile();
 		authUpdateProfile();
 	}
-	else
-	{
-		authLogin();
+	else {
 		authRegister();
+		authLogin();
 	}
 
 }

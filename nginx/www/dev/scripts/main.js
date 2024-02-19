@@ -9,7 +9,7 @@ import { createNavBar } from "./modules/navbar.js";
 (async function(){
 	createNavBar();
 	await createButton();
-	watchProfile()
 	initAuth();
+	watchProfile()
 	initLocalPong();
 })();
