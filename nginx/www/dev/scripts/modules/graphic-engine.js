@@ -196,7 +196,7 @@ const pointLightHelper = new THREE.PointLightHelper( pointLight2 )
 pointLight.position.set(2, 2, 2)
 pointLight2.position.set(0, 0, 100)
 pointLight3.position.set(0, 0, 19)
-ambLight.intensity = 0
+ambLight.intensity = 0.2
 pointLight.intensity = 1
 pointLight2.intensity = 0
 pointLight3.intensity = 100
@@ -230,6 +230,7 @@ window.addEventListener("resize", function(){
 	camera.aspect = window.innerWidth / window.innerHeight;
 	camera.updateProjectionMatrix();
 	renderer.setSize(window.innerWidth, window.innerHeight);
+	renderer.updateProjectionMatrix()
 	render();
 })
 
@@ -263,10 +264,10 @@ export class graphicEngine
 		this.width = this.board.width
 		this.height = this.board.height
 		this.mid = board.width / 2
-		this.scoreMarginRight = this.mid + this.width / 10
-		this.scoreMarginLeft = this.mid - this.width / 10
+		this.scoreMarginRight = this.mid + this.width / 8
+		this.scoreMarginLeft = this.mid - this.width / 8
 		this.scoreMarginTop = this.height / 10
-		this.scoreScale = this.height / 16
+		this.scoreScale = this.height / 10
 		this.winnerMessageCenter = this.width / 2 - this.width / 7
 		this.winnerMessageMargin = this.height / 4.8
 		this.startTimerCenter = this.width / 2 - this.width / 48
