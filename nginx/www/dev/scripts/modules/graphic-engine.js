@@ -272,7 +272,7 @@ export class graphicEngine
 		this.startTimerCenter = this.width / 2 - this.width / 48
 		this.startTimerMargin = this.height / 4
 		this.startTimerScale = this.height / 6
-		
+		this.textColor = "rgb(43, 194, 14)"
 		this.paddleHeigt = 1 / 8
 		
 		render()
@@ -311,8 +311,8 @@ export class graphicEngine
 	{
 		const dis1 = `${player1Score}`
 		const dis2 = `${player2Score}`
-		this.ctx.font = "".concat(`${this.scoreScale}`, "px Arial")
-		this.ctx.fillStyle = 'blue';
+		this.ctx.font = "".concat(`${this.scoreScale}`, "px Impact, fantasy")
+		this.ctx.fillStyle = this.textColor;
 
 		this.ctx.fillText(dis1, this.scoreMarginLeft, this.scoreMarginTop)
 		this.ctx.fillText(dis2, this.scoreMarginRight, this.scoreMarginTop)
@@ -320,11 +320,11 @@ export class graphicEngine
 
 	displayWinner(winnerMessage)
 	{
-		if (winnerMessage == "")
+		if (winnerMessage == "" || winnerMessage == undefined)
 			return
 		const y = 50
-		this.ctx.font = "".concat(`${this.scoreScale}`, "px Arial")
-		this.ctx.strokeStyle = "white";
+		this.ctx.font = "".concat(`${this.scoreScale}`, "px Impact, fantasy")
+		this.ctx.fillStyle = this.textColor;
 		this.ctx.fillText(winnerMessage, this.winnerMessageCenter, this.winnerMessageMargin)
 	}
 
@@ -333,8 +333,8 @@ export class graphicEngine
 		if (timeToWait <= 0)
 			return
 		let display = `${timeToWait}`
-		this.ctx.font = "".concat(`${this.startTimerScale}`, "px Arial")
-		this.ctx.strokeStyle = "white";
+		this.ctx.font = "".concat(`${this.startTimerScale}`, "px Impact, fantasy")
+		this.ctx.fillStyle = this.textColor;
 		this.ctx.fillText(display, this.startTimerCenter, this.startTimerMargin)
 	}
 }
