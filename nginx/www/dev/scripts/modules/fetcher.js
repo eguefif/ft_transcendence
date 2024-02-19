@@ -109,7 +109,6 @@ function createFetcher() {
 			}
 			return await extractData(result);
 		} catch {
-			console.log("test");
 			return { status: 418, data: { info: "fetch failed" } };
 		}
 	};
@@ -134,18 +133,17 @@ function createFetcher() {
 		return { status: result.status, data: data, type: type };
 	}
 
-	const getWebSocket = async (url) => {
-		let websocket = new WebSocket(url)
+	const sendToken = async (websocket) => {
 		if (await token.refresh()) {
 			let rettoken = token.get()
-			await websocket.send(JSON.stringify({"token": rettoken}))
-			return websocket
+				websocket.send(JSON.stringify({"token": rettoken}))
+				return true
 		}
 		else {
-			return undefined
+			return false
 		}
 	}
-	return { accessDuration, refreshDuration, setAccess, isAuthenticated, get, post, getWebSocket, reset };
+	return { accessDuration, refreshDuration, setAccess, isAuthenticated, get, post, sendToken, reset };
 }
 
 export const fetcher = createFetcher();

@@ -1,13 +1,13 @@
 import { fetcher } from "./modules/fetcher.js";
-import * as bootstrap from "./bootstrap/bootstrap.bundle.min.js"
-import { initAuth } from "./modules/auth.js"
-import { initLocalPong } from "./modules/pong.js"
-import { createPage } from "./modules/test.js"
+import * as bootstrap from "./bootstrap/bootstrap.bundle.min.js";
+import { initAuth } from "./modules/auth.js";
+import { createPage } from "./modules/test.js";
 import { watchProfile } from "./modules/profile.js";
+import { router } from "./modules/router.js";
 
 (function(){
 	createPage();
-	watchProfile()
+	router();
+	watchProfile();
 	initAuth();
-	initLocalPong();
 })();

@@ -11,7 +11,10 @@ export class LocalController {
 		this.startTimer = 3
 		this.reset()
 		this.running = true
+		this.stop = false
 	}
+
+	cleanup(){}
 
 	init() {
 		document.addEventListener("keydown", (e) => {
@@ -68,9 +71,9 @@ export class LocalController {
 			retval = this.ball.move(this.paddle1, this.paddle2)
 			if (retval != "none") {
 				if (retval == "right")
-					this.player2Score++
-				else
 					this.player1Score++
+				else
+					this.player2Score++
 				if (this.player1Score == 3) {
 					this.message = "The winner is " + this.player1
 					this.ball.in_play = false
