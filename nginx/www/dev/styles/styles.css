@@ -17,13 +17,6 @@ li {
   transform: translate(-50%, -50%);
 }
 
-#playButton {
-  position: absolute;
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%);
-}
-
 #board {
   /* background-image: linear-gradient( 
           to right, #8a2727ef, #cb0202);  */
