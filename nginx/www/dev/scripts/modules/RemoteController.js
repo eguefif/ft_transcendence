@@ -13,8 +13,8 @@ export class RemoteController {
 		this.ball = new Ball()
 		this.address = window.location.hostname
 		this.running = true
-		this.msg = "none"
-		this.message = ""
+		this.serverMsg = {}
+		this.localMsg= ""
 		this.stop = false
 	}
 
@@ -24,11 +24,11 @@ export class RemoteController {
 	update (){
 		if (this.stop == true)
 			this.websocket.close()
-		if (this.msg.command == "data" || this.msg.command == "ending")
-			return this.msg
-		if (this.msg.scorePlayer1 == 3 || this.msg.scorePlayer2 == 3){
+		if (this.serverMsg.command == "data" || this.serverMsg.command == "ending")
+			return this.serverMsg
+		if (this.serverMsg.player1Score == 3 || this.serverMsg.player2Score == 3){
 			this.running = false
-			return
+			return this.serverMsg
 		}
 		return {
 			ball: this.ball,
@@ -36,7 +36,7 @@ export class RemoteController {
 			paddle2: this.paddle2,
 			player1Score: this.player1Score,
 			player2Score: this.player2Score,
-			message: this.message,
+			message: this.localMsg,
 			startTimer: this.startTimer
 		}
 	}
@@ -63,7 +63,7 @@ export class RemoteController {
 		}
 
 		this.websocket.onclose = (e) => {
-			this.message = "Connection lost"
+			this.localMessage = "Connection lost"
 			console.log("disconnection")
 		}
 
@@ -76,30 +76,30 @@ export class RemoteController {
 					this.running = "authenticated"
 					break
 				case "serverfull":
-					this.message = "Server full, retry later"
+					this.localMessage = "Server full, retry later"
 					this.state = "ending"
 					break
 				case "wait":
                     this.websocket.send("wait")
-					this.message = "Wait for another player"
+					this.localMessage = "Wait for another player"
 					this.state = "waiting"
-					this.msg = msg
+					this.serverMsg = msg
 					break;
 				case "getready":
 					if (this.state != "running"){
 						this.websocket.send("getready")
 						this.state = "getready"
 					}
-					this.message = "Press space to space the game"
-					this.msg = msg
+					this.localMessage = "Press space to space the game"
+					this.serverMsg = msg
 					break;
 				case "data":
 					this.state = "running"
-                    this.msg = msg
+                    this.serverMsg = msg
 					break;
 				case "ending":
 					this.state = "ending"
-					this.msg = msg
+					this.serverMsg = msg
 					break
 			}
 		}
