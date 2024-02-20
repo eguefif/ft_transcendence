@@ -8,7 +8,7 @@ from datetime import timedelta
 from authentication.serializers import UserSerializer
 from authentication.manageTokens import get_access_token, get_refresh_token, get_token_user, get_otp_token
 from authentication.decorator import require_authorization, require_otp_token
-from authentication.otp import get_new_otp_key, get_key_uri, get_current_code
+from authentication.otp import get_new_otp_key, get_key_qr_code, get_current_code
 
 @api_view(['POST'])
 def authenticate(request):
@@ -42,7 +42,7 @@ def otp_activate(request):
         user.profile.otp_active = True
         user.profile.otp_key = new_otp_key
         user.save()
-        return Response({'otpKey': get_key_uri(new_otp_key, user.username)}, status.HTTP_200_OK)
+        return Response({'otpCode': get_key_qr_code(new_otp_key, user.username)}, status.HTTP_200_OK)
     return Response({'info': 'otp already activated'}, status.HTTP_400_BAD_REQUEST)
 
 @api_view(['POST'])

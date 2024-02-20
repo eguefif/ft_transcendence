@@ -378,13 +378,20 @@ function showLogin()
 		profileButton.classList.add('d-none')
 }
 
+// THIS IS A TEMPORARY SETUP TO VALIDATE BACKEND AND NEEDS TO BE IMPLEMENTED PROPERLY
 function activateOtp() {
 	const button = document.createElement("button");
 	button.innerText = "Activate 2FA";
 	document.querySelector("body").appendChild(button);
 	button.addEventListener("click", async function() {
-		let result = await fetcher.post("/api/auth/otp/activate");
-		console.log(result);
+		const result = await fetcher.post("/api/auth/otp/activate");
+		const qrcode = document.createElement("div")
+		let qrcodeSvq = result.data.otpCode;
+		qrcode.innerHTML = result.data.otpCode; 
+		document.querySelector("body").appendChild(qrcode);
+		setTimeout(() => {
+			qrcode.remove();
+		}, 5000);
 	})
 	const otherButton = document.createElement("button");
 	otherButton.innerText = "Deactivate 2FA";
@@ -393,6 +400,7 @@ function activateOtp() {
 		let result = await fetcher.post("/api/auth/otp/deactivate");
 	})
 }
+
 export async function initAuth() {
 	if (await fetcher.isAuthenticated()) {
 		showLobby()
@@ -400,7 +408,7 @@ export async function initAuth() {
 	}
 	else
 	{
-		showLogin()
+		showLogin();
 	}
 
 	authRegister();
