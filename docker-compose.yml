@@ -3,7 +3,7 @@ services:
   nginx:
     container_name: nginx
     build: ./nginx/
-    image: nginx-transcedence
+    image: nginx-transcendence
     env_file:
       - .env
     ports:
@@ -42,6 +42,22 @@ services:
     networks:
       - transcendence-net
     restart: unless-stopped
+
+  serverpong:
+    container_name: serverpong
+    build: ./serverPong
+    image: django-serverpong
+    restart: always
+    depends_on:
+      - django
+    env_file:
+      - .env
+    expose:
+      - 10000
+    networks:
+      - transcendence-net
+    volumes:
+      - ./serverPong/serverPong:/var/src/app
 
 volumes:
   postgres-vol:

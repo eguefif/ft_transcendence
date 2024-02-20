@@ -1,6 +1,6 @@
 FROM python:latest
 
-RUN apt-get update && apt-get upgrade
+RUN apt-get update && apt-get upgrade -y
 
 COPY ./requirements.txt /
 RUN pip install --upgrade pip 
@@ -9,9 +9,11 @@ RUN rm /requirements.txt
 
 RUN mkdir -p /var/src
 RUN mkdir -p /var/src/app
+
+#COPY ./transcendence /var/src/app/
+
 COPY ./tools/entry-point.sh /
 RUN chmod +x /entry-point.sh
-COPY ./transcendence /var/src/app/
 
 expose 8000
 

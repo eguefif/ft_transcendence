@@ -1,4 +1,5 @@
 import { fetcher } from "./fetcher.js"
+import { pongMenu } from "./pong.js"
 
 function authLogout()
 {
@@ -7,7 +8,10 @@ function authLogout()
 		const result = await fetcher.post("/api/auth/logout", {})
 		if (result.status >= 200 && result.status < 300) {
 			localStorage.removeItem("refreshExpiry")
+			fetcher.reset()
+
 			showLogin()
+			await pongMenu()
 		}
 		else {
 			console.log("Logout failed")
@@ -282,6 +286,7 @@ async function sendLoginRequest(url, body)
 			document.querySelector("#modalLogin").classList.remove("show")
 			document.querySelector(".modal-backdrop").classList.remove("show")
 			showLobby()
+			await pongMenu()
 		}
 		else {
 			validation.innerHTML = "Something went wrong";
@@ -344,6 +349,7 @@ async function sendRegistrationRequest(url, body)
 		document.querySelector("#modalRegistration").classList.remove("show")
 		document.querySelector(".modal-backdrop").classList.remove("show")
 		showLobby()
+		await pongMenu()
 		return true
 	}
 }
