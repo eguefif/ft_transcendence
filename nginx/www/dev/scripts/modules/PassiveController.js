@@ -40,21 +40,25 @@ export class PassiveController {
 	}
 
 	ia_update() {
-		if (this.ball.y >= (this.paddle1.y + this.paddle1.height / 2)) {
-			this.paddle1.move_up = false
-			this.paddle1.move_down = true
+		if (Math.abs(this.ball.y - this.paddle1.y + this.paddle1.height / 2) > 0.06) {
+			if (this.ball.y >= (this.paddle1.y + (this.paddle1.height - 0.015) / 2)) {
+				this.paddle1.move_up = false
+				this.paddle1.move_down = true
+			}
+			else {
+				this.paddle1.move_up = true
+				this.paddle1.move_down = false
+			}
 		}
-		else {
-			this.paddle1.move_up = true
-			this.paddle1.move_down = false
-		}
-		if (this.ball.y > (this.paddle2.y + this.paddle1.height / 2)) {
-			this.paddle2.move_up = false
-			this.paddle2.move_down = true
-		}
-		else {
-			this.paddle2.move_up = true
-			this.paddle2.move_down = false
+		if (Math.abs(this.ball.y - this.paddle2.y + this.paddle2.height / 2) > 0.07) {
+			if (this.ball.y > (this.paddle2.y + (this.paddle1.height + 0.012) / 2)) {
+				this.paddle2.move_up = false
+				this.paddle2.move_down = true
+			}
+			else {
+				this.paddle2.move_up = true
+				this.paddle2.move_down = false
+			}
 		}
 	}
 }
@@ -154,7 +158,7 @@ class Paddle {
 		this.height = 0.1
 		this.paddle_margin_x = 1 / 32
 		this.paddle_margin_y = 1 / 48
-		this.paddle_speed = 1 / 96
+		this.paddle_speed = 1 / 180
 		this.name = playerName
 		this.paddleHeight = 1 / 8
         this.y = (1 / 2) - (this.paddleHeight / 2)
@@ -178,8 +182,5 @@ class Paddle {
             this.y -= this.paddle_speed
         else if (this.move_down)
             this.y += this.paddle_speed
-        
-        this.top = this.y
-        this.bottom = this.y - this.paddleHeight / 2
     }
 }
