@@ -8,8 +8,8 @@ export class PassiveController {
 		this.startTimer = 0
 		this.winnerMessage = ""
 		this.username = username
-		this.paddle1 = new Paddle("player1", 1)
-		this.paddle2 = new Paddle("player2", 2)
+		this.paddle1 = new Paddle("player1", "right")
+		this.paddle2 = new Paddle("player2", "left")
 		this.ball = new Ball()
 		this.running = true
 		this.message = ""
@@ -21,7 +21,7 @@ export class PassiveController {
 
 	update (){
 		this.ia_update()
-		this.ball.move(this.paddle1, this.paddle2)
+		this.move()
 		return {
 			ball: this.ball,
 			paddle1: this.paddle1,
@@ -33,31 +33,30 @@ export class PassiveController {
 		}
 	}
 
-	ia_update() {
-		console.log("test")
+	move() {
+		this.paddle1.move()
+		this.paddle2.move()
+		this.ball.move(this.paddle1, this.paddle2)
 	}
-}
 
-class Paddle{
-    constructor(playerName, side)
-    {
-        this.x = 0
-		this.height = 0.1
-		this.paddle_margin_x = 1 / 32
-		this.paddle_margin_y = 1 / 48
-		this.paddle_speed = 1 / 96
-		this.name = playerName
-		this.paddleHeight = 1 / 8
-        this.y = (1 / 2) - (this.paddleHeight / 2)
-        this.top = this.y
-        this.bottom = this.y - this.paddleHeight
-        this.move_up = false
-        this.move_down = false
-        if (side == 1)
-            this.x = this.paddle_margin_x
-        else
-            this.x = 1 - this.paddle_margin_x
-    }
+	ia_update() {
+		if (this.ball.y >= (this.paddle1.y + this.paddle1.height / 2)) {
+			this.paddle1.move_up = false
+			this.paddle1.move_down = true
+		}
+		else {
+			this.paddle1.move_up = true
+			this.paddle1.move_down = false
+		}
+		if (this.ball.y > (this.paddle2.y + this.paddle1.height / 2)) {
+			this.paddle2.move_up = false
+			this.paddle2.move_down = true
+		}
+		else {
+			this.paddle2.move_up = true
+			this.paddle2.move_down = false
+		}
+	}
 }
 
 class Ball {
@@ -73,11 +72,11 @@ class Ball {
         this.x = 1 / 2
         this.y = 1 / 2
 		let dirX = Math.random() * 2 - 1
-        this.dir = new Vector(Math.random() * 2 - 1, 0)
+        this.dir = new Vector(Math.random() * 2 - 1, 0.5)
 		if (this.dir.x < 0)
-			this.dir.x = Math.min(-0.5, dirX)
+			this.dir.x = Math.min(-0.5)
 		else 
-			this.dir.x = Math.max(0.5, dirX)
+			this.dir.x = Math.max(0.5)
         this.dir.norm()
 	}
 
@@ -145,5 +144,42 @@ class Vector {
             this.x /= mag
             this.y /= mag
         }
+    }
+}
+
+class Paddle {
+    constructor(playerName, side)
+    {
+        this.x = 0
+		this.height = 0.1
+		this.paddle_margin_x = 1 / 32
+		this.paddle_margin_y = 1 / 48
+		this.paddle_speed = 1 / 96
+		this.name = playerName
+		this.paddleHeight = 1 / 8
+        this.y = (1 / 2) - (this.paddleHeight / 2)
+        this.top = this.y
+        this.bottom = this.y - this.paddleHeight
+        this.move_up = false
+        this.move_down = false
+        if (side == "right")
+            this.x = this.paddle_margin_x
+        else
+            this.x = 1 - this.paddle_margin_x
+    }
+
+    move(){
+        if (this.y + this.paddleHeight >= 1 - this.paddle_margin_y)
+            this.move_down = false
+        else if (this.y <= this.paddle_margin_y)
+            this.move_up = false
+
+        if (this.move_up)
+            this.y -= this.paddle_speed
+        else if (this.move_down)
+            this.y += this.paddle_speed
+        
+        this.top = this.y
+        this.bottom = this.y - this.paddleHeight / 2
     }
 }
