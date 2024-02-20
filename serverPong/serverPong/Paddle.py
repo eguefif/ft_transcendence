@@ -12,6 +12,7 @@ class Paddle:
 
     def init(self):
         self.speed = 0
+        self.y = 0.5 - self.height / 2
 
     def update(self, direction):
         if direction == "up":

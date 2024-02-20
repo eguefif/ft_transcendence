@@ -1,8 +1,11 @@
-from Paddle import Paddle
-from Ball import Ball
 import asyncio
 import time
+import logging
+
+
 from djangoInterface import create_game_db_django, end_game_db_django
+from Paddle import Paddle
+from Ball import Ball
 
 
 class Game:
@@ -21,27 +24,28 @@ class Game:
         self.p1_disconnected = False
         self.p2_disconnected = True
         self.winner = None
-        self.time = 3
+        self.time = 4
         self.djangoid = -1
+        self.message = ""
+        self.disconnection = False
 
     async def add_player(self, player, websocket):
         self.player2 = player
         self.p2_disconnected = False
         self.p2_websocket = websocket
         self.state = "getready"
-        self.time = time.time()
-        self.time = 3
+        self.time = 4
         #self.djangoId = await create_game_db_django(self.player1, self.player2, self.time)
-        print(f"game {self.id} changing state to", self.state)
 
     def is_ready_to_be_remove(self):
         return self.p1_disconnected and self.p2_disconnected
 
-    def disconnect_player(self, username):
+    def set_player_to_disconnected(self, username):
         if self.player1 == username:
             self.p1_disconnected = True
         else:
             self.p2_disconnected = True
+        self.disconnection = True
 
     def isPlayerInGame(self, username):
         if not self.player2:
@@ -50,13 +54,13 @@ class Game:
 
     def update(self, message, player):
         if message == "ready" and self.state == "getready":
-            print(player, "is ready")
+            logging.info(f"{player} is ready")
             if player == self.player1:
                 self.p1_ready = True
             if player == self.player2:
                 self.p2_ready = True
             if self.is_ready() and self.state != "running":
-                print("Game is starting")
+                logging.info(f"Game {self.id} is starting")
                 self.state = "running"
         if self.state == "running":
             if player == self.player1:
@@ -71,7 +75,7 @@ class Game:
         retval = None
 
         if self.state == "running":
-            retval =  {
+            retval = {
                     "command": "data",
                     "player1Score": self.score["player1"],
                     "player2Score": self.score["player2"],
@@ -87,7 +91,7 @@ class Game:
             if self.player1 == player:
                 await asyncio.sleep(1)
                 self.time -= 1
-            retval["startTimer"] = self.time
+            retval["startTimer"] = self.time - 1
 
         if self.state == "running" and not self.is_end_game() and self.time == 0:
             result = self.move()
@@ -105,9 +109,21 @@ class Game:
         return retval
 
     async def get_ending_message(self):
-        msg =  {
+        if self.disconnection == True and not self.is_end_game():
+            logging.info(f"disconnetion {self.disconnection}, and end: {self.is_end_game()}")
+            msg = {"command": "ending",
+                    "startTimer": 0,
+                    "ball": self.ball.getPosition(),
+                    "paddle1": self.paddle1.getPosition(),
+                    "paddle2": self.paddle2.getPosition(),
+                    "player1": self.player1,
+                    "player2": self.player2,
+                    "player1Score": self.score["player1"],
+                    "player2Score": self.score["player2"],
+                    "message": "A player has left the game"}
+            return msg
+        msg = {
                 "command": "ending",
-                "startTimer": 0,
                 "ball": self.ball.getPosition(),
                 "paddle1": self.paddle1.getPosition(),
                 "paddle2": self.paddle2.getPosition(),
@@ -117,18 +133,12 @@ class Game:
                 "player2Score": self.score["player2"],
                 "startTimer": 0,
             }
-        print("score", self.score["player1"], self.score["player2"])
         if self.score["player1"] > self.score["player2"]:
             self.winner = self.player1
         else:
             self.winner = self.player2
-        print(self.winner)
-        if self.winner:
-            msg["message"] =  "The winner is " + self.winner
-        else:
-            msg["message"] = "Your opponent was disconnected "
-        #await end_game_db_django(self.djangoId, self.winner, self.score["player1"],
-        #self.score["player2"])
+        msg["message"] = "The winner is " + self.winner
+        #await end_game_db_django(self.djangoId, self.winner, self.score["player1"], self.score["player2"])
         return msg
 
     def init_game(self):
@@ -139,10 +149,10 @@ class Game:
     def update_score(self, result):
         if result == "left":
             self.score["player2"] += 1
-            self.time = 3
+            self.time = 4
         elif result == "right":
             self.score["player1"] += 1
-            self.time = 3
+            self.time = 4
         else:
             self.time = 0
 

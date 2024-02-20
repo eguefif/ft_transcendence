@@ -13,21 +13,22 @@ export class RemoteController {
 		this.ball = new Ball()
 		this.address = window.location.hostname
 		this.running = true
-		this.msg = "none"
-		this.message = ""
+		this.serverMsg = {}
+		this.localMsg= ""
+		this.stop = false
 	}
 
-	async init() {
-		await this.initSocket()
-		this.init_event()
+	cleanup(){
+		this.websocket.close()
 	}
-
 	update (){
-		if (this.msg.command == "data" || this.msg.command == "ending")
-			return this.msg
-		if (this.msg.scorePlayer1 == 3 || this.msg.scorePlayer2 == 3){
+		if (this.stop == true)
+			this.websocket.close()
+		if (this.serverMsg.command == "data" || this.serverMsg.command == "ending")
+			return this.serverMsg
+		if (this.serverMsg.player1Score == 3 || this.serverMsg.player2Score == 3){
 			this.running = false
-			return
+			return this.serverMsg
 		}
 		return {
 			ball: this.ball,
@@ -35,73 +36,78 @@ export class RemoteController {
 			paddle2: this.paddle2,
 			player1Score: this.player1Score,
 			player2Score: this.player2Score,
-			message: this.message,
+			message: this.localMsg,
 			startTimer: this.startTimer
 		}
 	}
 	 
+	async init() {
+		await this.initSocket()
+		this.init_event()
+	}
 	async initSocket() {
-		this.websocket= await fetcher.getWebSocket(`wss://${this.address}/game/`)
-		this.websocket.addEventListener("open", (e) => {
-			if (this.websocket != undefined) {
-				let gameMsg = {}
-				gameMsg["command"] = "game"
-				this.websocket.send(JSON.stringify(gameMsg))
-			}
-			else
-				console.log("Error while creating the websocket")
-		})
+		this.websocket = new WebSocket(`wss://${this.address}/game/`)
 	}
 
 	init_event() {
 		if (this.websocket == undefined) {
-			console.log("Websocket is undefined")
 			return
 		}
+			
+			this.websocket.addEventListener("open", async (e) => {
+				fetcher.sendToken(this.websocket)
+			})
 
-		this.websocket.onopen = (e) => {
-			console.log("opening websocket")
-		}
 		this.websocket.error = (e) => {
 			console.log("Error: ", e)
 		}
 
 		this.websocket.onclose = (e) => {
-			console.log(e)
+			this.localMessage = "Connection lost"
 			console.log("disconnection")
 		}
 
 		this.websocket.onmessage = (e) => {
 			const msg = JSON.parse(e.data)
-			console.log(msg)
+			//console.log(msg)
 			switch (msg.command) {
+				case "authsucess":
+					console.log("authentification success")
+					this.running = "authenticated"
+					break
+				case "serverfull":
+					this.localMessage = "Server full, retry later"
+					this.state = "ending"
+					break
 				case "wait":
                     this.websocket.send("wait")
-					this.message = "Wait for another player"
-					this.msg = msg
+					this.localMessage = "Wait for another player"
+					this.state = "waiting"
+					this.serverMsg = msg
 					break;
 				case "getready":
 					if (this.state != "running"){
 						this.websocket.send("getready")
 						this.state = "getready"
 					}
-					this.message = "Press space to start the game"
-					this.msg = msg
+					this.localMessage = "Press space to space the game"
+					this.serverMsg = msg
 					break;
 				case "data":
-                     this.msg = msg
+					this.state = "running"
+                    this.serverMsg = msg
 					break;
 				case "ending":
-					this.running = false
-					this.msg = msg
+					this.state = "ending"
+					this.serverMsg = msg
 					break
 			}
 		}
 
 		document.addEventListener("keydown", (e) => {
-            if (!this.isSocketConnected())
-                return
+			console.log(this.state)
 			if (this.state == "running") {
+				console.log("sending arrow direction")
 				if (e.key == 'ArrowDown')
 					this.websocket.send("down")
 				else if (e.key == 'ArrowUp') 
@@ -110,11 +116,10 @@ export class RemoteController {
 			})
 
 		document.addEventListener("keyup", (e) => {
-            if (!this.isSocketConnected())
-                return
-			console.log(this.state)
-			if (this.state == "running" && this.state == "running")
+			if (this.state == "running") {
+				console.log("sending stop")
 				this.websocket.send("stop")
+			}
 			if (e.code == 'Space' && this.state == "getready"){
 				this.websocket.send("ready")
 				console.log("sending ready")
