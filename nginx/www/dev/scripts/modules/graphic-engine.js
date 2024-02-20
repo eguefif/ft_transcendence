@@ -269,8 +269,6 @@ export class graphicEngine
 			this.displayPaddle1(model.paddle1.x, model.paddle1.y)
 			this.displayPaddle2(model.paddle2.x, model.paddle2.y)
 			this.displayScore(model.player1Score, model.player2Score)
-			if (model.message != "" && model.message != undefined)
-				console.log(model.message)
 			this.displayMessage(model.message)
 		}
 		render()
