@@ -1,3 +1,5 @@
+import { authRegister, authLogin } from "./auth.js"
+
 export function closeModal(modalID) {
 	let modal = document.getElementById(modalID)
 	const modalInstance = bootstrap.Modal.getInstance(modal);
@@ -77,11 +79,14 @@ function createFormRegister() {
 
 
 
-document.querySelector('body').insertAdjacentHTML("afterbegin", CreateModal("connexion"));
+document.querySelector('body').insertAdjacentHTML("afterbegin", CreateModal("login"));
 document.querySelector(".modal-body").insertAdjacentHTML("afterbegin", createFormLogin());
+authLogin()
 document.getElementById("btnOpenRegister").addEventListener('click', function(e) {
+	document.querySelector("#loginLabel").innerText = "Register"
 	e.preventDefault();
 	document.querySelector('#loginForm').remove();
 	document.querySelector('.modal-body').insertAdjacentHTML("afterbegin", createFormRegister());
+	authRegister()
 	});
 

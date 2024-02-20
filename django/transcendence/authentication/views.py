@@ -11,8 +11,9 @@ from authentication.decorator import require_authorization
 
 @api_view(['POST'])
 def authenticate(request):
+    print(request.data)
     if request.data['formType'] == "register":
-        return register(request) 
+        return register(request)
     if request.data['formType'] == "login":
         return login(request)
     return Response("invalid request", status=status.HTTP_400_BAD_REQUEST)
@@ -48,7 +49,7 @@ def register(request):
         user = User.objects.get(username=request.data['username'])
         user.set_password(request.data['password'])
         user.save()
-        return get_authenticated_response(user, status.HTTP_201_CREATED) 
+        return get_authenticated_response(user, status.HTTP_201_CREATED)
     return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 def login(request):

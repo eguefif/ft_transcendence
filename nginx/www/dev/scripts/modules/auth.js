@@ -76,7 +76,7 @@ function validatePasswordCheck(passTextBox, confirmTextBox, confirmValidationBox
 // validatePassword(textBoxPassword, passwordValidationBox);
 // validatePasswordCheck(textBoxPassword, textBoxPasswordCheck, passwordCheckValidationBox);
 
-function authRegister()
+export function authRegister()
 {
 	const registrationForm = document.querySelector("#registrationForm")
 	if (!registrationForm) {
@@ -96,7 +96,7 @@ function authRegister()
 	})
 }
 
-function authLogin()
+export function authLogin()
 {
 	const registrationForm = document.querySelector("#loginForm")
 	if(!registrationForm) {
@@ -356,8 +356,6 @@ export async function initAuth() {
 		authUpdateProfile();
 	}
 	else {
-		authRegister();
-		authLogin();
 	}
 
 }

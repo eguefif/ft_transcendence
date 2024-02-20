@@ -25,7 +25,7 @@ function createModalBtn (btnClasses="", btnName="", aClasses="", srcImg="") {
 return `
 		<li class="${btnClasses}" id="${btnName}Button"
 			data-bs-toggle="modal"
-			data-bs-target="#connexionModal">
+			data-bs-target="#${btnName}Modal">
 			<img src="${srcImg}" />
 		</li>
 	`
