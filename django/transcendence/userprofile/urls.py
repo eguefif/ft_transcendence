@@ -3,10 +3,11 @@ from rest_framework.urlpatterns import format_suffix_patterns
 from userprofile import views
 
 urlpatterns = [
-        path('api/userinfo/', views.user_info),
-        path('api/updateprofile/', views.update_profile),
-        path('api/uploadimage/', views.upload_image),
-        path('api/userpicture/', views.user_picture),
+        path('userinfo/', views.user_info),
+        path('updateprofile/', views.update_profile),
+        path('uploadimage/', views.upload_image),
+        path('userpicture/', views.user_picture),
+        #path('api/u/<str:username>', views.user_profile),
         ]
 
 urlpatterns = format_suffix_patterns(urlpatterns)

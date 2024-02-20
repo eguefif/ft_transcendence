@@ -12,8 +12,15 @@ def generate_image_uuid(instance, filename):
     return os.path.join('images/', filename)
 
 class Profile(models.Model):
+    ONLINE = 'Online'
+    OFFLINE = 'Offline'
+    AWAY = 'Away'
+    PLAYING = 'Playing'
+    STATUS = ( (ONLINE, 'Online'), (OFFLINE, 'Offline'), (AWAY, 'Away'), (PLAYING, 'Playing') )
+    
     user = models.OneToOneField(User, on_delete=models.CASCADE)
     profile_picture = models.ImageField(upload_to=generate_image_uuid)
+    online_status = models.CharField(max_length=20, choices=STATUS, default=OFFLINE)
 
 # Signals to create one to one when user is created
 @receiver(post_save, sender=User)

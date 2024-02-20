@@ -23,7 +23,7 @@ from django.conf import settings
 urlpatterns = [
     path('api/', include('gamesManager.urls')),
     path('api/', include('authentication.urls')),
-    path('', include('userprofile.urls')),
+    path('api/', include('userprofile.urls')),
 ]
 
 urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
