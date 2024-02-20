@@ -1,5 +1,6 @@
 from django.contrib.auth.models import User
 from django.http import FileResponse
+from django.shortcuts import get_object_or_404
 from authentication.decorator import require_authorization
 from rest_framework import status
 from rest_framework.decorators import api_view
@@ -8,6 +9,8 @@ import os
 
 from userprofile.serializers import UserProfileSerializer
 from authentication.manageTokens import get_token_user
+
+from gamesManager.models import Game
 
 @api_view(['GET'])
 @require_authorization
@@ -56,3 +59,14 @@ def upload_image(request):
         profile.save()
         return Response({'message': 'Image uploaded successfully'}, status=status.HTTP_201_CREATED)
     return Response({'error': 'Could not upload image'}, status=status.HTTP_400_BAD_REQUEST)
+
+@api_view(['GET'])
+def user_stats(request, username):
+    user = get_object_or_404(User, username=username)
+    games = Game.objects.all()
+    
+    for game in games:
+        print(game.player1)
+    # if not user:
+    #     return Response(status=status.HTTP_404_NOT_FOUND)
+    return Response({'user': user.username}, status=status.HTTP_200_OK)
