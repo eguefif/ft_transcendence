@@ -19,6 +19,11 @@ function createFetcher() {
 			return !(value.length == 0 || expires <= Date.now());
 		};
 
+		const reset = () => {
+			value = "";
+			expires = 0;
+		}
+
 		const refresh = async () => {
 			if (
 				!localStorage.getItem("refreshExpiry") ||
@@ -52,8 +57,12 @@ function createFetcher() {
 			}
 		};
 
-		return { get, set, isValid, refresh };
+		return { get, set, isValid, refresh, reset };
 	})();
+
+	const reset = () => {
+		token.reset();
+	}
 
 	const isAuthenticated = async () => {
 		return token.isValid() ? true : await token.refresh();
@@ -100,7 +109,6 @@ function createFetcher() {
 			}
 			return await extractData(result);
 		} catch {
-			console.log("test");
 			return { status: 418, data: { info: "fetch failed" } };
 		}
 	};
@@ -125,7 +133,17 @@ function createFetcher() {
 		return { status: result.status, data: data, type: type };
 	}
 
-	return { accessDuration, refreshDuration, setAccess, isAuthenticated, get, post };
+	const sendToken = async (websocket) => {
+		if (await token.refresh()) {
+			let rettoken = token.get()
+				websocket.send(JSON.stringify({"token": rettoken}))
+				return true
+		}
+		else {
+			return false
+		}
+	}
+	return { accessDuration, refreshDuration, setAccess, isAuthenticated, get, post, sendToken, reset };
 }
 
 export const fetcher = createFetcher();

@@ -5,8 +5,8 @@
 	<meta name="viewport" content="width=device-width, initial-scale=1.0">
 	<title>ft-Transcendence</title>
 	<link rel="stylesheet" href="styles/styles.css">
-	<link rel="stylesheet" href="styles/temp.css">
 	<script type="module" src="scripts/main.js" defer></script>
+	<link rel="icon" href="/images/favicon.ico" type="image/x-icon"/>
 </head>
 <body>
 	<!-- navbar and button are here -->
@@ -48,9 +48,25 @@
 		</div>
 	  </div>
 
-	  <div id="gameBoard">
-		  <button type="button" id="playButton" class="btn btn-secondary btn-lg">Play!</button>
-		  <canvas id="board" width="640" height="480"></canvas>
+		<div class="container text-center">
+			<div class="row">
+				<div class="col">
+					<a id="localgamebtn" href="/localgame" class="btn btn-primary m-5" data-link>local game</a>
+				</div>
+				<div class="col">
+					<a id="remotegamebtn" href="/remotegame" class="btn btn-primary d-none m-5" data-link>Remote game</a>
+				</div>
+			</div>
+			<div class="row">
+				<div class="col">
+					<a id="menubtn" href="/" class="btn btn-primary d-none m-5 bt-primary">Menu</a>
+				</div>
+			</div>
+			<div class="row">
+				<div class="col">
+					<canvas id="board" class="m-5 mt-2" width="640" height="480"></canvas>
+				</div>
+			</div>
 		</div>
 </body>
 </html>

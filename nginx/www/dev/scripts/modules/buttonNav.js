@@ -6,11 +6,11 @@ export async function createButton () {
 	const element = document.querySelector('.navbar-nav');
 
 	if (await fetcher.isAuthenticated()) {
-		element.innerHTML = createModalBtn("nav-item btn btn-secondary", "profile", "navbar-brand test", "images/Person-Icon.svg");
-		element.insertAdjacentHTML("beforeend", createActionBtn("nav-item btn btn-secondary", "logout", "navbar-brand test", "images/logout-Icon.svg"));
+		element.innerHTML = createModalBtn("nav-item btn btn-primary", "profile", "navbar-brand test", "images/Person-Icon.svg");
+		element.insertAdjacentHTML("beforeend", createActionBtn("nav-item btn btn-primary", "logout", "navbar-brand test", "images/logout-Icon.svg"));
 	}
 	else {
-		element.innerHTML = createModalBtn("nav-item btn btn-secondary", "login", "navbar-brand test", "images/login-Icon.svg");
+		element.innerHTML = createModalBtn("nav-item btn btn-primary", "login", "navbar-brand test", "images/login-Icon.svg");
 		// element.insertAdjacentHTML("afterbegin", createModalBtn("nav-item btn btn-secondary", "register", "navbar-brand test", "images/Setting.svg"));
 	}
 }

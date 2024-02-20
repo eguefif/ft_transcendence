@@ -1,8 +1,8 @@
 const nav = `
-	<nav class="navbar navbar-expand-sm sticky-top bg-primary">
+	<nav class="navbar navbar-expand-sm sticky-top bg-dark">
 		<div class="container-fluid">
 			<a class="navbar-brand test" href="#">
-				<img src="images/logo-no-background.svg" alt="" width="150" />
+				<img src="images/logo.png" alt="" width="150" />
 			</a>
 			<button
 				class="test navbar-toggler opacity-100"
