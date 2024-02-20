@@ -1,3 +1,10 @@
+
+*
+{
+    margin: 0;
+    padding: 0;
+}
+
 #playButton{
     position: absolute;
       top: 50%;
@@ -5,12 +12,39 @@
       transform: translate(-50%, -50%);
   }
   
-  #board {
-    /* background-image: linear-gradient( 
-            to right, #8a2727ef, #cb0202);  */
-    border-radius: 14px;
-    border: 0.2em solid #000000;
+  // #board {
+  //   /* background-image: linear-gradient( 
+  //           to right, #8a2727ef, #cb0202);  */
+  //   // border-radius: 14px;
+  //   // border: 0.2em solid #000000;
+  //   position: fixed;
+  //   top: 0;
+  //   left: 0;
+  //   z-index: -100;
+
+  // }
+  
+  #background{
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    z-index: -100;
   }
+  
+  // #gameBoard {
+  //   /* background-image: linear-gradient( 
+  //           to right, #8a2727ef, #cb0202);  */
+  //   border-radius: 14px;
+  //   position: absolute;
+  //     top: 50%;
+  //     left: 50%;
+  //     transform: translate(-50%, -50%);
+  //   /* border: 0.2em solid #ff0000; */
+  //   display: flex;
+  //   justify-content: center;
+  //   align-items: center;
+  // }
   
   #choose2PlayerButton{
     position: absolute;

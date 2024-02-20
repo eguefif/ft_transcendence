@@ -112,7 +112,7 @@ class Ball {
         this.x = 1 / 2
         this.y = 1 / 2
 		let dirX = Math.random() * 2 - 1
-        this.dir = new Vector(Math.random() * 2 - 1, Math.random() * 2 - 1)
+        this.dir = new Vector(Math.random() * 2 - 1, 0)
 		if (this.dir.x < 0)
 			this.dir.x = Math.min(-0.5)
 		else 
