@@ -5,6 +5,7 @@
 	<meta name="viewport" content="width=device-width, initial-scale=1.0">
 	<title>ft-Transcendence</title>
 	<link rel="stylesheet" href="styles/styles.css">
+	<!--
 	<script type="importmap">
         {
             "imports": {
@@ -12,11 +13,19 @@
 				"three/addons/": "https://unpkg.com/three@0.161.0/examples/jsm/"
             }
         }
+-->
+	<script type="importmap">
+        {
+            "imports": {
+                "three": "/scripts/three/build/three.module.js",
+				"three/addons/": "/scripts/three/examples/jsm/"
+            }
+        }
 	</script>	
 	<script type="module" src="scripts/main.js" defer></script>
 	<link rel="icon" href="/images/favicon.ico" type="image/x-icon"/>
 </head>
-<body class="bg-light">
+<body class="bg-dark">
 	<nav class="navbar navbar-expand-sm sticky-top bg-dark">
 		<div class="container-fluid">
 			<a class="navbar-brand test" href="#">
