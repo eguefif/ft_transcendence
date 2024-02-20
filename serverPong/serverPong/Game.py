@@ -95,6 +95,7 @@ class Game:
 
         if self.state == "running" and not self.is_end_game() and self.time == 0:
             result = self.move()
+            #self.ball.increase_speed()
             if result is not None:
                 self.init_game()
                 self.update_score(result)

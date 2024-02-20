@@ -4,6 +4,7 @@ from websockets.server import serve
 import json
 import signal
 from authentification import authenticate
+import time
 
 from Game import Game
 
@@ -285,6 +286,7 @@ class serverPong:
 
     async def producer_handler(self, websocket, gameid, player):
         while self.get_game_state(gameid) != "ending":
+            tick = int(time.time() * 1000 + 0.033 * 1000)
             try:
                 message = await self.games[gameid].run(player)
             except Exception as e:
@@ -295,7 +297,11 @@ class serverPong:
                 if not await self.send_msg(websocket, message, player):
                     await self.close_websocket_and_remove_game(websocket, gameid, player)
                     return
-            await asyncio.sleep(1/30)
+            delta = tick - int(time.time() * 1000)
+            if tick < 0 :
+                await asyncio.sleep(0)
+            else:
+                await asyncio.sleep(delta / 1000)
 
         ending_msg = await self.get_ending_message(gameid)
         if ending_msg:

@@ -269,7 +269,9 @@ export class graphicEngine
 			this.displayPaddle1(model.paddle1.x, model.paddle1.y)
 			this.displayPaddle2(model.paddle2.x, model.paddle2.y)
 			this.displayScore(model.player1Score, model.player2Score)
-			this.displayWinner(model.message)
+			if (model.message != "" && model.message != undefined)
+				console.log(model.message)
+			this.displayMessage(model.message)
 		}
 		render()
 		this.ctx.stroke()
@@ -302,14 +304,14 @@ export class graphicEngine
 		this.ctx.fillText(dis2, this.scoreMarginRight, this.scoreMarginTop)
 	}
 
-	displayWinner(winnerMessage)
+	displayMessage(message)
 	{
-		if (winnerMessage == "" || winnerMessage == undefined)
+		if (message == "" || message == undefined)
 			return
 		const y = 50
 		this.ctx.font = "".concat(`${this.scoreScale}`, "px Impact, fantasy")
 		this.ctx.fillStyle = this.textColor;
-		this.ctx.fillText(winnerMessage, this.winnerMessageCenter, this.winnerMessageMargin)
+		this.ctx.fillText(message, this.messageCenter, this.messageMargin)
 	}
 
 	displayStartTimer(timeToWait)

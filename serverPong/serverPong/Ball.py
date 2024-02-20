@@ -25,7 +25,11 @@ class Ball:
         self.speed = 1 / 120
         self.radius = 1 / 40
 
+    def increase_speed(self):
+        self.speed *= 1.01
+
     def resetPosition(self):
+        self.speed = 1 / 120
         self.dir = Vector(random() * 2 - 1, 0)
         if self.dir.x < 0:
             self.dir.x = min(-0.5, self.dir.x)
