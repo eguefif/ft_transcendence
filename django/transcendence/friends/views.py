@@ -6,7 +6,8 @@ from rest_framework.decorators import api_view
 from rest_framework.response import Response
 from friends.models import Friendship
 from django.db import models
-from friends.serializers import FriendshipSerializer
+from friends.serializers import FriendshipSerializer, UserFriendInfoSerializer
+from userprofile.serializers import UserProfileSerializer
 
 from authentication.manageTokens import get_token_user
 
@@ -19,13 +20,39 @@ def get_friend_requests(request):
 
         pending_friendships = Friendship.objects.filter(
             user2=user,
-            status=Friendship.ACCEPTED
+            status=Friendship.PENDING
         )
 
         serializer = FriendshipSerializer(pending_friendships, many=True)
         return Response(data=serializer.data, status=status.HTTP_200_OK)
     except:
         return Response({'error': 'Could not get pending friend requests'}, status=status.HTTP_400_BAD_REQUEST)
+
+@api_view(['GET'])
+@require_authorization
+def get_friend_list(request):
+    try:
+        username = get_token_user(request.headers["Authorization"])
+        user = User.objects.get(username=username)
+
+        friendships = Friendship.objects.filter(
+            (models.Q(user1=user) | models.Q(user2=user)),
+            status=Friendship.ACCEPTED
+        )
+
+        user_data = []
+        for fs in friendships:
+            # 1 - Get the user that is not the user that is making the request (user1 or user2)
+            friend = fs.user1 if fs.user2 == user else fs.user2
+            # 2 - Send data back as Array of serialized user data
+            friend_serializer = UserFriendInfoSerializer(friend)
+            user_data.append(friend_serializer.data)
+
+
+        #serializer = FriendshipSerializer(friendships, many=True)
+        return Response(data=user_data, status=status.HTTP_200_OK)
+    except:
+        return Response({'error': 'Could not get friends'}, status=status.HTTP_400_BAD_REQUEST)
 
 @api_view(['POST'])
 @require_authorization
@@ -35,13 +62,15 @@ def send_friend_request(request):
     userRequest = get_object_or_404(User, username=request.data['username'])
 
     friendship_exists = Friendship.objects.filter(
-        (models.Q(user1=user)) & (models.Q(user2=userRequest)) |
-        (models.Q(user1=userRequest)) & (models.Q(user2=user))
+        (models.Q(user1=user) & models.Q(user2=userRequest)) |
+        (models.Q(user1=userRequest) & models.Q(user2=user))
     ).exists()
 
     if friendship_exists:
         return Response({'error': 'Already friends'}, status=status.HTTP_400_BAD_REQUEST)
     
+    if user == userRequest:
+        return Response({'error': 'Cant be friends with yourself'}, status=status.HTTP_400_BAD_REQUEST)
     friendship = Friendship.objects.create(user1=user, user2=userRequest)
     return Response({'success': 'Request sent'}, status=status.HTTP_201_CREATED)
 

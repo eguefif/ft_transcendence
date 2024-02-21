@@ -29,21 +29,7 @@ async function preview_image() {
     }
 }
 
-async function send_friend_request() {
-    const body = {"username": "scloutie"}
-    const res = await fetcher.post("api/send_friend_request/", body)
-    console.log(res)
-}
-
-async function get_friend_requests() {
-    const res = await fetcher.get("api/get_friend_requests/")
-    console.log(res)
-}
-
 export function initSettings() {
     const profileImageField = document.getElementById("profileImageField")
-
-    send_friend_request()
-    get_friend_requests()
     profileImageField.addEventListener("change", preview_image);
 }
