@@ -8,13 +8,9 @@ export async function pongMenu() {
 	render_game_board()
 	let remoteGameBtn = document.querySelector("#remotegamebtn")
 	let localGameBtn= document.querySelector("#localgamebtn")
-	let menu = document.querySelector("#menubtn")
 	let controller = new PassiveController()
 	let game = new Game(controller)
-	menu.addEventListener("click", (e) => {
-		e.preventDefault()
-		history.back()
-		})
+	let menu = document.getElementById("menubtn")
 
 	menu.classList.add('d-none')
 	if (await fetcher.isAuthenticated())

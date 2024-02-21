@@ -2,7 +2,7 @@ import { fetcher } from "./fetcher.js"
 import { initRemoteGame } from "./pong.js"
 import { initLocalGame } from "./pong.js"
 import { pongMenu } from "./pong.js"
-import { profile } from "./profile-emmanuel.js"
+import { profile } from "./profile.js"
 
 export function initRouter() {
 	const navigateTo = url => {
