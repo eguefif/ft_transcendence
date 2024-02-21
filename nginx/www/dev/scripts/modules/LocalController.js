@@ -12,6 +12,9 @@ export class LocalController {
 		this.reset()
 		this.running = true
 		this.stop = false
+		this.ball.in_play = false
+
+		this.restartTimestamp = 0
 	}
 
 	cleanup(){}
@@ -68,24 +71,28 @@ export class LocalController {
 		if (this.ball.in_play) {
 			this.paddle1.move()
 			this.paddle2.move()
-			retval = this.ball.move(this.paddle1, this.paddle2)
-			if (retval != "none") {
-				if (retval == "right")
-					this.player1Score++
-				else
+			if (Date.now() > this.restartTimestamp && this.running)
+			{
+				retval = this.ball.move(this.paddle1, this.paddle2)
+				if (retval != "none") 
+				{
+						if (retval == "right")
+						this.player1Score++
+					else
 					this.player2Score++
-				if (this.player1Score == 3) {
-					this.message = "The winner is " + this.player1
+					if (this.player1Score == 1) {
+						this.message = "The winner is " + this.player1
+						this.running = false
+					}
+					else if (this.player2Score == 1) {
+						this.message = "The winner is " + this.player2
+						this.running = false
+					}
 					this.ball.in_play = false
-					this.running = false
+					this.restartTimestamp = Date.now() + 1000
+					this.ball.reset()
 				}
-				else if (this.player2Score == 3) {
-					this.message = "The winner is " + this.player2
-					this.ball.in_play = false
-					this.running = false
-				}
-				this.ball.reset()
-			}
+			}	
 		}
 		return {
 			ball: this.ball,
@@ -109,15 +116,16 @@ class Ball {
     }
 
     reset() {
-        this.x = 1 / 2
-        this.y = 1 / 2
+		this.x = 1 / 2
+		this.y = 1 / 2
 		let dirX = Math.random() * 2 - 1
-        this.dir = new Vector(Math.random() * 2 - 1, 0)
+		this.dir = new Vector(Math.random() * 2 - 1, Math.random() * 2 - 1)
 		if (this.dir.x < 0)
 			this.dir.x = Math.min(-0.5)
 		else 
 			this.dir.x = Math.max(0.5)
-        this.dir.norm()
+		this.dir.norm()
+		this.in_play = true
 	}
 
     move(paddle1, paddle2){
