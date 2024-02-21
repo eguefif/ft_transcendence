@@ -23,6 +23,7 @@ from django.conf import settings
 urlpatterns = [
     path('api/', include('gamesManager.urls')),
     path('api/', include('authentication.urls')),
+    path('api/', include('usrProfile.urls')),
     path('', include('userprofile.urls')),
 ]
 

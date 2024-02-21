@@ -51,8 +51,4 @@ function hideMainMenu(){
 function show_and_init_event_for_menu_button() {
 	let menu = document.querySelector("#menubtn")
 	menu.classList.remove("d-none")
-	menu.addEventListener("click", (e) => {
-		e.preventDefault()
-		history.back()
-		})
 }

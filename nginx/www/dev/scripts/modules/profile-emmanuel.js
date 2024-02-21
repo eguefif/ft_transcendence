@@ -1,13 +1,24 @@
-export function profile() {
-	let data = getData()
-	renderProfileStructure()
-	renderStats(data)
-	renderHistory(data)
+import { fetcher } from "../modules/fetcher.js"
+
+export async function profile() {
+	let msg = await fetcher.get("/api/userinfo")
+	username = msg.data.username
+	if (msg.status != 200)
+		return {"error": "problem while fetching data"}
+	let data = await getData(username)
+	if ("error" in data) {
+		displayErrorProfile(data)
+	}
+	else {
+		renderProfileStructure(username)
+		renderStats(data)
+		renderHistory(data)
+	}
 }
 
-function getData() {
+function getData(username) {
 	showSpinner()
-	let data = getGameHistoryData()
+	let data = getGameHistoryData(username)
 	return data
 }
 
@@ -22,39 +33,40 @@ function showSpinner() {
 	`
 }
 
-function getGameHistoryData() {
-	let username = getUsername()
-	let retval = {1:
-		{"player1": "Robert",
-		"avatar1": "https://www.google.com/url?sa=i&url=https%3A%2F%2Ficonscout.com%2Ficons%2Favatar&psig=AOvVaw2jyK1M_RZmGD-K3567u3-d&ust=1708553928047000&source=images&cd=vfe&opi=89978449&ved=0CBMQjRxqFwoTCKDKqcH5uoQDFQAAAAAdAAAAABAI",
-		"avatar2": "https://www.google.com/url?sa=i&url=https%3A%2F%2Ficonscout.com%2Ficons%2Favatar&psig=AOvVaw2jyK1M_RZmGD-K3567u3-d&ust=1708553928047000&source=images&cd=vfe&opi=89978449&ved=0CBMQjRxqFwoTCKDKqcH5uoQDFQAAAAAdAAAAABAY", 
-		"player2": "Georgia",	
-		"score_player1": 3,
-		"score_player2": 1,
-		"time": 1704524277},
-
-		2:{"player1": "Henry",
-		"avatar1": "https://www.google.com/url?sa=i&url=https%3A%2F%2Ficonscout.com%2Ficons%2Favatar&psig=AOvVaw2jyK1M_RZmGD-K3567u3-d&ust=1708553928047000&source=images&cd=vfe&opi=89978449&ved=0CBMQjRxqFwoTCKDKqcH5uoQDFQAAAAAdAAAAABAI",
-		"avatar2": "https://www.google.com/url?sa=i&url=https%3A%2F%2Ficonscout.com%2Ficons%2Favatar&psig=AOvVaw2jyK1M_RZmGD-K3567u3-d&ust=1708553928047000&source=images&cd=vfe&opi=89978449&ved=0CBMQjRxqFwoTCKDKqcH5uoQDFQAAAAAdAAAAABAY", 
-		"player2": "Robert",	
-		"score_player1": 3,
-		"score_player2": 1,
-		"time": 1708424277},
-		3: {"player1": "Jo",
-		"avatar1": "https://www.google.com/url?sa=i&url=https%3A%2F%2Ficonscout.com%2Ficons%2Favatar&psig=AOvVaw2jyK1M_RZmGD-K3567u3-d&ust=1708553928047000&source=images&cd=vfe&opi=89978449&ved=0CBMQjRxqFwoTCKDKqcH5uoQDFQAAAAAdAAAAABAI",
-		"avatar2": "https://www.google.com/url?sa=i&url=https%3A%2F%2Ficonscout.com%2Ficons%2Favatar&psig=AOvVaw2jyK1M_RZmGD-K3567u3-d&ust=1708553928047000&source=images&cd=vfe&opi=89978449&ved=0CBMQjRxqFwoTCKDKqcH5uoQDFQAAAAAdAAAAABAY", 
-		"player2": "Robert",	
-		"score_player1": 3,
-		"score_player2": 2,
-		"time": 1708524277},
+async function getGameHistoryData(username) {
+	let retval = await fetcher.get("/api/profile/getprofile")
+	let data = {}
+	if (retval.status == 200)
+		data = retval.data
+	else {
+		data = {"error": "Impossible to load data"}
+		return data
 	}
-	retval = setStatusGame(retval, username)
-	retval = transformDate(retval)
-	return retval
+	data = setStatusGame(data, username)
+	if ("error" in data)
+		return data
+	data = transformDate(data)
+	return data
 }
 
-function getUsername() {
-	return "Robert"
+function setStatusGame(data, username) {
+	for (const [key, game] of Object.entries(data)) {
+    let win = `<div class="p-1"><h5 class="text-success fs-3 fw-bold text-center">win</h5></div>`
+    let loss = `<div class="p-1"><h5 class="text-danger fs-3 fw-bold text-center">loss</h5></div>`
+		if (game.player1 === username) {
+			if (game.score_player1 == 3)
+				game["status"] = win
+			else
+				game["status"] = loss
+		}
+		else {
+			if (game.score_player2 == 3)
+				game["status"] = win
+			else
+				game["status"] = loss
+		}
+	}
+	return data
 }
 
 function transformDate(data) {
@@ -74,36 +86,24 @@ function transformDate(data) {
 	return data
 }
 
-function setStatusGame(retval, username) {
-	for (const [key, game] of Object.entries(retval)) {
-    let win = `<div class="p-1"><h5 class="text-success fs-3 fw-bold text-center">win</h5></div>`
-    let loss = `<div class="p-1"><h5 class="text-danger fs-3 fw-bold text-center">loss</h5></div>`
-		if (game.player1 === username) {
-			if (game.score1 == 3)
-				game["status"] = win
-			else
-				game["status"] = loss
-		}
-		else {
-			if (game.score_player2 == 3)
-				game["status"] = win
-			else
-				game["status"] = loss
-		}
-	}
-	return retval
-}
-
-function renderProfileStructure() {
+function renderProfileStructure(username) {
 	let main_frame = document.getElementById("main_frame")
 	main_frame.innerHTML = `
-
-    <h3 class="text-primary fs-1 fw-bold text-center">Profile</h3>
+    <h3 class="text-primary fs-1 fw-bold text-center">${username}</h3>
     <section id="stats" class="p-4">
     </section> 
     <hr class="w-25 mx-auto"/>
     <section id="history" class="p-4">
 	</section>
+	`
+}
+
+function displayErrorProfile(data) {
+	let main_frame = document.getElementById("main_frame")
+	main_frame.innerHTML = `
+		<div class="d-flex justify-content-center mt-5">
+			<h5 class="text-danger fs-2 fw-bold text-center">${data.error}</h5>
+		<div>
 	`
 }
 
@@ -188,7 +188,7 @@ function renderHistory(games) {
                 <div class="col-2">
                     <div class="d-flex align-items-center flex-column">
                         <div class="p-1">${game.status}</h5></div>
-                        <div class="p-1"><h5 class="fs-6 text-center">${game.date}</h5></div>
+                        <div class="p-1"><h5 class="fs-6 text-center">${game.time}</h5></div>
                     </div>
                 </div>
                 <div class="col-3">

@@ -1,4 +1,3 @@
-
 import { fetcher } from "../modules/fetcher.js";
 
 export class RemoteController {
