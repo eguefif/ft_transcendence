@@ -15,7 +15,7 @@ export async function createButton () {
 		element.innerHTML = createModalBtn("nav-item btn-primary", "profile", getSVG.navbarSVG.profil);
 		const firstElement = document.getElementById("profileButton")
 		element.insertAdjacentHTML("beforeend", createActionBtn("nav-item btn-primary", "logout", getSVG.navbarSVG.logout, "idLogout"));
-		firstElement.insertAdjacentHTML("afterend", createActionBtn("nav-item btn-primary", "seting", getSVG.navbarSVG.seting));
+		firstElement.insertAdjacentHTML("afterend", createActionBtn("nav-item btn-primary", "seting", getSVG.navbarSVG.seting, "profile", "/profile", "data-link"));
 		authLogout()
 	}
 	else {
@@ -30,21 +30,21 @@ function createUl (ulClasses="") {
 	</ul>`
 }
 
-function createModalBtn (btnClasses="", btnName="", srcImg="", name ="") {
-return `
-		<li class="${btnClasses}" id="${btnName}Button"
-			data-bs-toggle="modal"
-			data-bs-target="#${btnName}Modal">
-			${srcImg}
-			<text>${name}</text>
-		</li>
-	`
+function createModalBtn(btnClasses="", btnName="", srcImg="", name ="") {
+	return `
+			<li class="${btnClasses}" id="${btnName}Button"
+				data-bs-toggle="modal"
+				data-bs-target="#${btnName}Modal">
+				${srcImg}
+				<text>${name}</text>
+			</li>
+		`
 }
 
-function createActionBtn (btnClasses="", btnName ="", srcImg="", idLink ="", route="") {
+function createActionBtn (btnClasses="", btnName ="", srcImg="", idLink ="", route="", dataL="") {
 	return `
 		<li class="${btnClasses}" id="${btnName}Button">
-			<a id="${idLink} href="${route}">
+			<a id="${idLink}" href="${route}" ${dataL}>
 			${srcImg}
 			</a>
 		</li>

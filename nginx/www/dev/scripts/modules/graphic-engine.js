@@ -11,7 +11,7 @@ import { ShaderPass } from 'three/addons/postprocessing/ShaderPass.js'
 // import { TextGeometry } from 'three/addons/geometries/TextGeometry.js';
 // import { FontLoader } from 'three/addons/loaders/FontLoader.js';
 
-class Renderer{
+export class Renderer{
 	constructor(){
 		this.boardWidth = 4
 		this.boardHeight = 3
@@ -280,7 +280,7 @@ class Renderer{
 
 export class graphicEngine
 {
-	constructor(mode="basic"){
+	constructor(Renderer){
 		this.ctx =  board.getContext("2d")
 		this.board = document.getElementById("board")
 		
@@ -301,7 +301,7 @@ export class graphicEngine
 		this.textColor = "rgb(43, 194, 14)"
 		this.paddleHeigt = 1 / 8
 		
-		this.Renderer = new Renderer()
+		this.Renderer = Renderer
 	}
 
 	display(model) {

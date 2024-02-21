@@ -1,6 +1,6 @@
 import { fetcher } from "./fetcher.js"
 
-export async function profile() {
+export async function profile(renderer) {
 	let msg = await fetcher.get("/api/userinfo")
 	username = msg.data.username
 	if (msg.status != 200)

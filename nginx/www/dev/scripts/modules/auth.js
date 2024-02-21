@@ -3,6 +3,15 @@ import { pongMenu } from "./pong.js"
 import { checkFrontEnd, closeModal } from "./modal.js";
 import { createButton } from "./buttonNav.js";
 
+export async function initAuth() {
+	if (await fetcher.isAuthenticated()) {
+		authLogout();
+		profileInfo();
+		changeProfile();
+		authUpdateProfile();
+	}
+}
+
 export function authLogout()
 {
 	const logoutBtn = document.querySelector("#logoutSVG")
@@ -330,13 +339,4 @@ function activateOtp() {
 	otherButton.addEventListener("click", async function() {
 		let result = await fetcher.post("/api/auth/otp/deactivate");
 	})
-}
-
-export async function initAuth() {
-	if (await fetcher.isAuthenticated()) {
-		authLogout();
-		profileInfo();
-		changeProfile();
-		authUpdateProfile();
-	}
 }

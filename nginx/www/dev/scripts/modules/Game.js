@@ -1,9 +1,9 @@
 import { graphicEngine } from "./graphic-engine.js"
 
 export class Game {
-	constructor(controller) {
+	constructor(controller, renderer) {
 		this.controller = controller
-		this.graphicEngine = new graphicEngine
+		this.graphicEngine = new graphicEngine(renderer)
 		let menu = document.querySelector("#menubtn")
 		this.running = true
 

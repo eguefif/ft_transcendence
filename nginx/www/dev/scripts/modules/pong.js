@@ -4,12 +4,11 @@ import { LocalController } from "./LocalController.js"
 import { RemoteController } from "./RemoteController.js"
 import { PassiveController } from "./PassiveController.js"
 
-export async function pongMenu() {
-	render_game_board()
+export async function pongMenu(renderer) {
 	let remoteGameBtn = document.querySelector("#remotegamebtn")
 	let localGameBtn= document.querySelector("#localgamebtn")
 	let controller = new PassiveController()
-	let game = new Game(controller)
+	let game = new Game(controller, renderer)
 	let menu = document.getElementById("menubtn")
 
 	menu.classList.add('d-none')
@@ -18,11 +17,9 @@ export async function pongMenu() {
 	if (!await fetcher.isAuthenticated())
 		remoteGameBtn.classList.add('d-none')
 	localGameBtn.classList.remove('d-none')
-	game.run()
 }
 
 export async function initRemoteGame() {
-	render_game_board()
 	if (!await fetcher.isAuthenticated()) {
 		let remoteGameBtn = document.querySelector("#remotegamebtn")
 		remoteGameBtn.classList.remove('d-none')
@@ -32,17 +29,16 @@ export async function initRemoteGame() {
 	hideMainMenu()
 	let controller = new RemoteController()
 	await controller.init()
-	let game = new Game(controller)
+	let game = new Game(controller, renderer)
 	game.run()
 }
 
 export function initLocalGame() {
-	render_game_board()
 	show_and_init_event_for_menu_button()
 	hideMainMenu()
 	let controller = new LocalController()
 	controller.init()
-	let game = new Game(controller)
+	let game = new Game(controller, renderer)
 	game.run()
 }
 
@@ -61,9 +57,8 @@ function show_and_init_event_for_menu_button() {
 
 }
 
-function render_game_board() {
+export function render_game_board() {
 	let main_frame = document.getElementById("main_frame")
-	console.log("test")
 	main_frame.innerHTML = `
 			<div class="row">
 				<div class="col">
@@ -75,13 +70,13 @@ function render_game_board() {
 			</div>
 			<div class="row">
 				<div class="col">
-					<a id="menubtn" href="/" class="btn btn-primary d-none m-5 bt-primary">Menu</a>
+					<a id="menubtn" href="/" class="btn btn-primary d-none m-5 bt-primary" data-link>Menu</a>
 				</div>
 			</div>
 			<div class="row">
 				<div class="col">
-					<canvas id="board" width="640" height="480"></canvas>
-					<canvas width="640" height="480" id="background">hi</canvas>
+					<canvas id="board"></canvas>
+					<canvas id="background"></canvas>
 					  <script type="vertex" id="vertexshader">
 				  
 						  varying vec2 vUv;
