@@ -18,6 +18,14 @@ def get_otp_token(username):
                }
     return encode(payload, secret, algorithm="HS256")
 
+def get_oauth_42_token(username, status):
+    payload = {"username": username,
+               "type": "oauth-42",
+               "status": status,
+               "exp": datetime.now(tz=timezone.utc) + timedelta(minutes=2)
+               }
+    return encode(payload, secret, algorithm="HS256")
+
 def get_refresh_token(username):
     payload = {"username": username,
                "type": "refresh",
@@ -29,5 +37,12 @@ def get_token_user(token):
     try:
         username = decode(token, secret, algorithms="HS256")["username"]
         return username
+    except:
+        return None
+
+def get_decoded_token(token):
+    try:
+        result = decode(token, secret, algorithms="HS256")
+        return result
     except:
         return None

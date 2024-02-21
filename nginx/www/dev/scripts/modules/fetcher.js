@@ -13,6 +13,7 @@ function createFetcher() {
 
 		const set = (key) => {
 			value = key;
+			expires = Date.now() + accessDuration;
 		};
 
 		const isValid = () => {
@@ -41,7 +42,7 @@ function createFetcher() {
 					headers: { "Content-Type": "application/json", Authorization: value },
 				});
 				const data = await result.json();
-				if (result.status == 200) {
+				if (result.status >= 200 && result.status < 300) {
 					value = data.accessToken;
 					localStorage.setItem("refreshExpiry", `${refreshExpiry}`);
 					return true;
@@ -62,6 +63,24 @@ function createFetcher() {
 
 	const reset = () => {
 		token.reset();
+	}
+
+	const isTryingOauth = async () => {
+		const refreshExpiry = Date.now() + fetcher.refreshDuration;
+		if (!localStorage.getItem("oauth-42")) {
+			return false
+		}
+		localStorage.removeItem("oauth-42")
+		const result = await post("/api/auth/oauth")
+		if (result.status >= 200 && result.status < 300) {
+			token.set(result.data.accessToken);
+			localStorage.setItem("refreshExpiry", `${refreshExpiry}`)
+			return true;
+		}
+		else if (result.status == 403) {
+			console.log(result.data);
+		}
+		return false;
 	}
 
 	const isAuthenticated = async () => {
@@ -143,7 +162,7 @@ function createFetcher() {
 			return false
 		}
 	}
-	return { accessDuration, refreshDuration, setAccess, isAuthenticated, get, post, sendToken, reset };
+	return { accessDuration, refreshDuration, setAccess, isTryingOauth, isAuthenticated, get, post, sendToken, reset };
 }
 
 export const fetcher = createFetcher();

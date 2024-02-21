@@ -401,6 +401,25 @@ function activateOtp() {
 	})
 }
 
+// THIS IS A TEMPORARY SETUP TO VALIDATE BACKEND AND NEEDS TO BE IMPLEMENTED PROPERLY
+function showOAuth() {
+	const button = document.createElement("button");
+	button.innerText = "Login with 42";
+	document.querySelector("body").appendChild(button);
+	button.addEventListener("click", async function() {
+		let result = await fetcher.post("/api/auth/oauth/42");
+		if (result.status >= 200 && result.status < 300) {
+			localStorage.setItem("oauth-42", "I'm a ninja"); 
+			window.location.href = result.data.redirect
+		}
+	});
+}
+
+export async function tryAuthenticating() {
+	if (! await fetcher.isTryingOauth()) {
+		await fetcher.isAuthenticated()
+	}
+}
 export async function initAuth() {
 	if (await fetcher.isAuthenticated()) {
 		showLobby()
@@ -408,6 +427,7 @@ export async function initAuth() {
 	}
 	else
 	{
+		showOAuth();
 		showLogin();
 	}
 
