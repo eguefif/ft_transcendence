@@ -1,17 +1,17 @@
 import { fetcher } from "./fetcher.js"
 import { pongMenu } from "./pong.js"
-import { closeModal } from "./modal.js";
+import { checkFrontEnd, closeModal } from "./modal.js";
+import { createButton } from "./buttonNav.js";
 
-function authLogout()
+export function authLogout()
 {
-	const logoutBtn = document.querySelector("#logoutButton")
+	const logoutBtn = document.querySelector("#logoutSVG")
 	logoutBtn.addEventListener("click", async function(e){
 		const result = await fetcher.post("/api/auth/logout", {})
 		if (result.status >= 200 && result.status < 300) {
 			localStorage.removeItem("refreshExpiry")
 			fetcher.reset()
-
-			// showLogin()
+			await createButton()
 			await pongMenu()
 		}
 		else {
@@ -83,29 +83,26 @@ function validatePasswordCheck(passTextBox, confirmTextBox, confirmValidationBox
 export function authRegister()
 {
 	const registrationForm = document.querySelector("#registrationForm")
-	if (!registrationForm) {
-		return
+	if (checkFrontEnd()) {
+
 	}
-	registrationForm.addEventListener("submit", function(e){
-		e.preventDefault()
-		const data = new FormData(e.target);
-		const url = e.target.action
-		const body = {
-			'formType': "register",
-			'username': data.get('username'),
-			'email': data.get('email'),
-			'password': data.get('password'),
-		}
-		sendRegistrationRequest(url, body)
-	})
+		registrationForm.addEventListener("submit", function(e){
+			e.preventDefault()
+			const data = new FormData(e.target);
+			const url = e.target.action
+			const body = {
+				'formType': "register",
+				'username': data.get('username'),
+				'email': data.get('email'),
+				'password': data.get('password'),
+			}
+			sendRegistrationRequest(url, body)
+		})
 }
 
 export function authLogin()
 {
 	const registrationForm = document.querySelector("#loginForm")
-	if(!registrationForm) {
-		return
-	}
 	registrationForm.addEventListener("submit", function(e){
 		e.preventDefault()
 		const data = new FormData(e.target);
@@ -144,30 +141,7 @@ function profileInfo()
 		document.querySelector("#profileImageContainer").classList.add("d-none")
 		document.querySelector("#modifyProfile").classList.remove("d-none")
 		const imgElement = document.getElementById("profilePicture")
-
 		imgElement.src = "images/default-user-picture.png"
-
-		// fetch("/api/userpicture/", {
-		// 	method: "GET",
-		// 	credentials: "same-origin",
-		// 	headers: {'Authorization': 'Token ' + csrf}
-		// })
-		// 	.then(response => {
-		// 		if (!response.ok) {
-		// 			throw new Error('No image')
-		// 		}
-		// 		return response.blob()
-		// 	})
-		// 	.then(blob => {
-		// 		console.log(blob)
-		// 		const imageURL = URL.createObjectURL(blob)
-		// 		imgElement.src = imageURL
-		// 		imgElement.onload = () => {
-		// 			URL.revokeObjectURL(blob)
-		// 		}
-		// 	})
-		// 	.catch(function (err) { console.error(err) })
-
 		const imageReply = await fetcher.get("api/userpicture/")
 		if (imageReply.status == 200) {
 			const imageURL = URL.createObjectURL(imageReply.data)
@@ -176,33 +150,12 @@ function profileInfo()
 				URL.revokeObjectURL(imageReply.data)
 			}
 		}
-
 		const res = await fetcher.get("api/userinfo/")
 		if (res.status == 200) {
 
 			document.querySelector("#profileUsername").value = res.data['username']
 			document.querySelector("#profileEmail").value = res.data['email']
 		}
-
-		// try {
-		// 	const res = await fetch("/api/userinfo/", {
-		// 		method: "GET",
-		// 		credentials: "same-origin",
-		// 		headers: {"Content-Type": "application/json", 'Authorization': 'Token ' + csrf}
-		// 	})
-		// 	const data = await res.json()
-		// 	if (res.status == 200)
-		// 	{
-		// 		document.querySelector("#profileUsername").value = data['username']
-		// 		document.querySelector("#profileEmail").value = data['email']
-		// 	}
-		// 	else if (res.status == 403) //forbidden, retour a la page de connection
-		// 	{
-
-		// 	}
-		// } catch (error) {
-		// 	console.log("Profile: could not get user info")
-		// }
 	})
 }
 
@@ -224,7 +177,7 @@ function resetFormInput(form) {
 	const inputs = form.querySelectorAll("input")
 	inputs.forEach(input => {
 		input.classList.remove("is-invalid")
-		//input.classList.add("is-valid")
+		input.classList.add("is-valid")
 	})
 	// Reset validations
 }
@@ -283,30 +236,22 @@ async function sendLoginRequest(url, body, method)
 	{
 		localStorage.setItem("refreshExpiry", `${refreshExpiry}`)
 		fetcher.setAccess(result.data.accessToken);
-		validation.innerHTML = ""
-		closeModal('connexionModal')
-		// showLobby()
+		// validation.innerHTML = ""
+		await createButton()
+		closeModal('connectionModal')
 		await pongMenu()
 		console.log("test")
 	}
 	else
 	{
 		document.getElementById("loginPassword").value = ""
-		validation.innerHTML = "Wrong credentials"
+		// validation.innerHTML = "Wrong credentials"
 	}
 	return ;
 }
 
 async function sendRegistrationRequest(url, body, method)
 {
-	// const form = document.getElementById("registrationForm")
-
-	// const inputs = form.querySelectorAll("input")
-	// inputs.forEach(input => {
-	// 	input.classList.remove("is-invalid")
-	// 	input.classList.add("is-valid")
-	// })
-
 	const refreshExpiry = Date.now() + fetcher.refreshDuration;
 	const result = await fetcher.post(url, body);
 	if (result.status >= 400 && result.status < 500)
@@ -324,36 +269,12 @@ async function sendRegistrationRequest(url, body, method)
 	{
 		localStorage.setItem("refreshExpiry", `${refreshExpiry}`)
 		fetcher.setAccess(result.data.accessToken);
+		await createButton()
 		closeModal('connexionModal')
-		// showLobby()
 		await pongMenu()
 		return true
 	}
 }
-
-// function showLobby()
-// {
-// 		let loginButton = document.getElementById("loginButton")
-// 		let logoutButton = document.getElementById("logoutButton")
-// 		let registerButton = document.getElementById("registerButton")
-// 		let profileButton = document.getElementById("profileButton")
-// 		loginButton.classList.add('d-none')
-// 		registerButton.classList.add('d-none')
-// 		logoutButton.classList.remove('d-none')
-// 		profileButton.classList.remove('d-none')
-// }
-
-// function showLogin()
-// {
-// 		let loginButton = document.getElementById("loginButton")
-// 		let logoutButton = document.getElementById("logoutButton")
-// 		let registerButton = document.getElementById("registerButton")
-// 		let profileButton = document.getElementById("profileButton")
-// 		loginButton.classList.remove('d-none')
-// 		registerButton.classList.remove('d-none')
-// 		logoutButton.classList.add('d-none')
-// 		profileButton.classList.add('d-none')
-// }
 
 export async function initAuth() {
 	if (await fetcher.isAuthenticated()) {
@@ -362,7 +283,4 @@ export async function initAuth() {
 		changeProfile();
 		authUpdateProfile();
 	}
-	else {
-	}
-
 }

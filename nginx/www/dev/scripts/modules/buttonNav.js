@@ -1,17 +1,26 @@
+import { authLogout } from "./auth.js";
 import { fetcher } from "./fetcher.js";
+import { getSVG } from "./iconSVG.js";
 
 
 export async function createButton () {
-	document.querySelector('#navbarNavDropdown').insertAdjacentHTML("afterbegin", createUl("navbar-nav ms-auto"));
 	const element = document.querySelector('.navbar-nav');
+	if (!element) {
+		document.querySelector('#navbarNavDropdown').insertAdjacentHTML("afterbegin", createUl("navbar-nav ms-auto"));
+	}
 
 	if (await fetcher.isAuthenticated()) {
-		element.innerHTML = createModalBtn("nav-item btn btn-primary", "profile", "navbar-brand test", "images/Person-Icon.svg");
-		element.insertAdjacentHTML("beforeend", createActionBtn("nav-item btn btn-primary", "logout", "navbar-brand test", "images/logout-Icon.svg"));
+
+		const element = document.querySelector('.navbar-nav');
+		element.innerHTML = createModalBtn("nav-item btn-primary", "profile", getSVG.navbarSVG.profil);
+		const firstElement = document.getElementById("profileButton")
+		element.insertAdjacentHTML("beforeend", createActionBtn("nav-item btn-primary", "logout", getSVG.navbarSVG.logout, "idLogout"));
+		firstElement.insertAdjacentHTML("afterend", createActionBtn("nav-item btn-primary", "seting", getSVG.navbarSVG.seting));
+		authLogout()
 	}
 	else {
-		element.innerHTML = createModalBtn("nav-item btn btn-primary", "login", "navbar-brand test", "images/login-Icon.svg");
-		// element.insertAdjacentHTML("afterbegin", createModalBtn("nav-item btn btn-secondary", "register", "navbar-brand test", "images/Setting.svg"));
+		const element = document.querySelector('.navbar-nav');
+		element.innerHTML = createModalBtn("nav-item btn-primary", "connection","" , "Connexion");
 	}
 }
 
@@ -21,23 +30,23 @@ function createUl (ulClasses="") {
 	</ul>`
 }
 
-function createModalBtn (btnClasses="", btnName="", aClasses="", srcImg="") {
+function createModalBtn (btnClasses="", btnName="", srcImg="", name ="") {
 return `
 		<li class="${btnClasses}" id="${btnName}Button"
 			data-bs-toggle="modal"
 			data-bs-target="#${btnName}Modal">
-			<img src="${srcImg}" />
+			${srcImg}
+			<text>${name}</text>
 		</li>
 	`
 }
 
-function createActionBtn (btnClasses="", btnName ="", aClasses="", srcImg="", ref="") {
+function createActionBtn (btnClasses="", btnName ="", srcImg="", idLink ="", route="") {
 	return `
 		<li class="${btnClasses}" id="${btnName}Button">
-			<a class="${aClasses}" href="${ref}">
-				<img src="${srcImg}" />
+			<a id="${idLink} href="${route}">
+			${srcImg}
 			</a>
-			${btnName}
 		</li>
 	`
 }
