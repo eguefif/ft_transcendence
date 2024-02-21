@@ -48,6 +48,7 @@ INSTALLED_APPS = [
     'gamesManager',
     'authentication',
     'userprofile',
+    'usrprofile',
     'rest_framework',
     'rest_framework.authtoken',
     'django.contrib.auth',
