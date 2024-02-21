@@ -40,7 +40,7 @@ async function get_friend_requests() {
     console.log(res)
 }
 
-export function watchProfile() {
+export function initSettings() {
     const profileImageField = document.getElementById("profileImageField")
 
     send_friend_request()

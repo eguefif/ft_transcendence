@@ -10,4 +10,4 @@ class Friendship(models.Model):
     user1 = models.ForeignKey(User, on_delete=models.CASCADE, related_name='%(class)s_sender')
     user2 = models.ForeignKey(User, on_delete=models.CASCADE, related_name='%(class)s_reciever')
     status = models.CharField(max_length=10, choices=STATUS, default=PENDING)
-    date_added = models.DateField(auto_now=True)
+    date_added = models.DateTimeField(auto_now=True)

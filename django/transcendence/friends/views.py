@@ -19,7 +19,7 @@ def get_friend_requests(request):
 
         pending_friendships = Friendship.objects.filter(
             user2=user,
-            status=Friendship.PENDING
+            status=Friendship.ACCEPTED
         )
 
         serializer = FriendshipSerializer(pending_friendships, many=True)
@@ -44,3 +44,16 @@ def send_friend_request(request):
     
     friendship = Friendship.objects.create(user1=user, user2=userRequest)
     return Response({'success': 'Request sent'}, status=status.HTTP_201_CREATED)
+
+@api_view(['POST'])
+@require_authorization
+def accept_friend_request(request):
+    try:
+        username = get_token_user(request.headers["Authorization"])
+        user = User.objects.get(username=username)
+        friend_request = Friendship.objects.get(pk=request.data['friendshipID'], user2=user)
+        friend_request.status = Friendship.ACCEPTED
+        friend_request.save() # Update date_added a cause de auto_now=True
+        return Response({'success': 'Friend request accepted'}, status=status.HTTP_200_OK)
+    except Exception as e:
+        return Response({'error': str(e)}, status=status.HTTP_400_BAD_REQUEST)
