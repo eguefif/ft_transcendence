@@ -34,13 +34,13 @@ export class PassiveController {
 	}
 
 	move() {
-		this.paddle1.move()
-		this.paddle2.move()
+		this.paddle1.move(this.ball.dir.y)
+		this.paddle2.move(this.ball.dir.y)
 		this.ball.move(this.paddle1, this.paddle2)
 	}
 
 	ia_update() {
-		if (this.ball.y >= (this.paddle1.y + this.paddle1.height / 2)) {
+		if (this.ball.y > (this.paddle1.y + this.paddle1.height / 2)) {
 			this.paddle1.move_up = false
 			this.paddle1.move_down = true
 		}
@@ -107,14 +107,14 @@ class Ball {
 		if (this.isCollidingRightPaddle(paddle2))
 		{
 			this.dir.x = -0.5
-			let diff = this.y - (paddle2.y + paddle2.paddleHeight / 2)
+			let diff = this.y - ((paddle2.y + paddle2.paddleHeight / 2) + (Math.random() * 0.1 - 0.05))
 			this.dir.y = diff * 0.866025403784439 / (paddle2.paddleHeight)//voir cercle trigo: 0.866025403784439
 			this.dir.norm();
 		}
 		if (this.isCollidingLeftPaddle(paddle1))
 		{
 			this.dir.x = 0.5
-			let diff = this.y - (paddle1.y + paddle1.paddleHeight / 2)
+			let diff = this.y - (paddle1.y + paddle1.paddleHeight / 2 + (Math.random() * 0.1 - 0.05))
 			this.dir.y = diff * 0.866025403784439 / (paddle2.paddleHeight)
 			this.dir.norm();
 		}
@@ -168,16 +168,16 @@ class Paddle {
             this.x = 1 - this.paddle_margin_x
     }
 
-    move(){
+    move(ball_dir_y){
         if (this.y + this.paddleHeight >= 1 - this.paddle_margin_y)
             this.move_down = false
         else if (this.y <= this.paddle_margin_y)
             this.move_up = false
 
         if (this.move_up)
-            this.y -= this.paddle_speed
+            this.y -= this.paddle_speed * Math.abs(ball_dir_y)
         else if (this.move_down)
-            this.y += this.paddle_speed
+            this.y += this.paddle_speed * Math.abs(ball_dir_y)
         
         this.top = this.y
         this.bottom = this.y - this.paddleHeight / 2
