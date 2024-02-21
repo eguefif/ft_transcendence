@@ -2,3 +2,28 @@
     font-size: small;
     color:rgb(255, 0, 0);
 }
+
+nav {
+    svg {
+        min-width: 2rem;
+        min-height: 2rem;
+        &:hover {
+            transition: 0.25s;
+            color: $light;
+        }
+        color: $primary;
+        transition: 0.25s;
+    }
+}
+
+text {
+    &:hover {
+        transition: 0.25s;
+        color: $light;
+        cursor: pointer;
+    }
+    font-size: larger;
+    color: $primary;
+    transition: 0.25s;
+
+}

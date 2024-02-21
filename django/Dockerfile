@@ -3,7 +3,7 @@ FROM python:latest
 RUN apt-get update && apt-get upgrade -y
 
 COPY ./requirements.txt /
-RUN pip install --upgrade pip 
+RUN pip install --upgrade pip
 RUN pip install -r requirements.txt
 RUN rm /requirements.txt
 
@@ -15,6 +15,6 @@ RUN mkdir -p /var/src/app
 COPY ./tools/entry-point.sh /
 RUN chmod +x /entry-point.sh
 
-expose 8000
+EXPOSE 8000
 
 CMD ["./entry-point.sh"]
