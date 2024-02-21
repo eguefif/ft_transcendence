@@ -59,14 +59,3 @@ def upload_image(request):
         profile.save()
         return Response({'message': 'Image uploaded successfully'}, status=status.HTTP_201_CREATED)
     return Response({'error': 'Could not upload image'}, status=status.HTTP_400_BAD_REQUEST)
-
-@api_view(['GET'])
-def user_stats(request, username):
-    user = get_object_or_404(User, username=username)
-    games = Game.objects.all()
-    
-    for game in games:
-        print(game.player1)
-    # if not user:
-    #     return Response(status=status.HTTP_404_NOT_FOUND)
-    return Response({'user': user.username}, status=status.HTTP_200_OK)

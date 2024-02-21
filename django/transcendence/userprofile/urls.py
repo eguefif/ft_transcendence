@@ -7,7 +7,6 @@ urlpatterns = [
         path('updateprofile/', views.update_profile),
         path('uploadimage/', views.upload_image),
         path('userpicture/', views.user_picture),
-        path('u/<str:username>', views.user_stats),
         ]
 
 urlpatterns = format_suffix_patterns(urlpatterns)
