@@ -1,92 +1,27 @@
-export class LocalController {
-	constructor(player1="player1", player2="player2") {
-		this.paddle1 = new Paddle(player1, "right")
-		this.paddle2 = new Paddle(player2, "left")
-		this.player1 = player1
-		this.player2 = player2
-		this.ball = new Ball()
+
+import { fetcher } from "../modules/fetcher.js";
+
+export class PassiveController {
+	constructor(){
 		this.player1Score = 0
 		this.player2Score = 0
-		this.message = ""
-		this.startTimer = 3
-		this.reset()
+		this.startTimer = 0
+		this.winnerMessage = ""
+		this.username = username
+		this.paddle1 = new Paddle("player1", "right")
+		this.paddle2 = new Paddle("player2", "left")
+		this.ball = new Ball()
 		this.running = true
+		this.message = ""
 		this.stop = false
 	}
 
-	cleanup(){}
-
-	init() {
-		document.addEventListener("keydown", (e) => {
-			if (e.key == 'ArrowDown')
-				this.paddle2.move_down = true
-			else if (e.key == 'ArrowUp') 
-				this.paddle2.move_up = true
-			if (e.code == 'KeyS')
-				this.paddle1.move_down = true
-			else if (e.code == 'KeyW') 
-				this.paddle1.move_up = true	
-			})
-
-		document.addEventListener("keyup", (e) => {
-			if (e.code == 'KeyS')
-				this.paddle1.move_down = false
-			else if (e.code == 'KeyW') 
-				this.paddle1.move_up = false
-			if (e.key == 'ArrowDown')
-				this.paddle2.move_down = false
-			else if (e.key == 'ArrowUp') 
-				this.paddle2.move_up = false
-			})
+	cleanup(){
 	}
 
-	countdown()
-	{
-		if (this.startTimer > 0)
-		{
-			setTimeout(() => 
-			{
-				this.startTimer--
-				this.countdown()
-			}, 1000)
-		}
-		else
-			this.ball.in_play = true
-	}
-	
-	reset()
-	{
-		this.startTimer = 3
-		this.ball_in_play = false
-		this.ball.reset()
-		this.countdown()
-	}
-
-
-	update () {
-		let retval = "none"
-		if (this.ball.in_play) {
-			this.paddle1.move()
-			this.paddle2.move()
-			retval = this.ball.move(this.paddle1, this.paddle2)
-			if (retval != "none") {
-				if (retval == "right")
-					this.player1Score++
-				else
-					this.player2Score++
-				if (this.player1Score == 3) {
-					this.message = "The winner is " + this.player1
-					this.ball.in_play = false
-					this.running = false
-				}
-				else if (this.player2Score == 3) {
-					this.message = "The winner is " + this.player2
-					this.ball.in_play = false
-					this.running = false
-				}
-				this.ball.reset()
-			}
-		}
+	update (){
+		this.ia_update()
+		this.move()
 		return {
 			ball: this.ball,
 			paddle1: this.paddle1,
@@ -95,6 +30,31 @@ export class LocalController {
 			player2Score: this.player2Score,
 			message: this.message,
 			startTimer: this.startTimer
+		}
+	}
+
+	move() {
+		this.paddle1.move()
+		this.paddle2.move()
+		this.ball.move(this.paddle1, this.paddle2)
+	}
+
+	ia_update() {
+		if (this.ball.y >= (this.paddle1.y + this.paddle1.height / 2)) {
+			this.paddle1.move_up = false
+			this.paddle1.move_down = true
+		}
+		else {
+			this.paddle1.move_up = true
+			this.paddle1.move_down = false
+		}
+		if (this.ball.y > (this.paddle2.y + this.paddle1.height / 2)) {
+			this.paddle2.move_up = false
+			this.paddle2.move_down = true
+		}
+		else {
+			this.paddle2.move_up = true
+			this.paddle2.move_down = false
 		}
 	}
 }
@@ -112,7 +72,7 @@ class Ball {
         this.x = 1 / 2
         this.y = 1 / 2
 		let dirX = Math.random() * 2 - 1
-        this.dir = new Vector(Math.random() * 2 - 1, 0)
+        this.dir = new Vector(Math.random() * 2 - 1, 0.5)
 		if (this.dir.x < 0)
 			this.dir.x = Math.min(-0.5)
 		else 

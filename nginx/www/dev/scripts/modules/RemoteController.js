@@ -8,8 +8,8 @@ export class RemoteController {
 		this.startTimer = 0
 		this.winnerMessage = ""
 		this.username = username
-		this.paddle1 = new Paddle("player1", 1)
-		this.paddle2 = new Paddle("player2", 2)
+		this.paddle1 = new Paddle("player1", "right")
+		this.paddle2 = new Paddle("player2", "left")
 		this.ball = new Ball()
 		this.address = window.location.hostname
 		this.running = true
@@ -63,25 +63,25 @@ export class RemoteController {
 		}
 
 		this.websocket.onclose = (e) => {
-			this.localMessage = "Connection lost"
+			this.localMsg = "Connection lost"
 			console.log("disconnection")
 		}
 
 		this.websocket.onmessage = (e) => {
 			const msg = JSON.parse(e.data)
-			//console.log(msg)
+			console.log(msg)
 			switch (msg.command) {
 				case "authsucess":
 					console.log("authentification success")
 					this.running = "authenticated"
 					break
 				case "serverfull":
-					this.localMessage = "Server full, retry later"
+					this.localMsg = "Server full, retry later"
 					this.state = "ending"
 					break
 				case "wait":
                     this.websocket.send("wait")
-					this.localMessage = "Wait for another player"
+					this.localMsg = "Wait for another player"
 					this.state = "waiting"
 					this.serverMsg = msg
 					break;
@@ -90,7 +90,7 @@ export class RemoteController {
 						this.websocket.send("getready")
 						this.state = "getready"
 					}
-					this.localMessage = "Press space to space the game"
+					this.localMsg = "Press space to space the game"
 					this.serverMsg = msg
 					break;
 				case "data":
@@ -174,8 +174,8 @@ class Paddle{
 class Ball {
     constructor() {
 		this.radius = 1 / 50
-		this.x = 0
-		this.y = 0
+		this.x = 0.5
+		this.y = 0.5
         this.speed = 1 / 120
 		this.in_play = false
     }
