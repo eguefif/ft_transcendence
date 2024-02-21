@@ -152,7 +152,33 @@
 		</div>
 	  </div>
 
+	<div class="collapse collapse-horizontal" id="sidebarCollapse" style="position: absolute; height: 80%;">
+		<div id="friendSidebar" class="d-flex flex-column align-items-stretch flex-shrink-0 text-bg-dark" style="width: 280px; height: 100%">
+			<h1>Friends</h1>
+			<hr>
+			<ul class="nav nav-pills flex-column mb-auto">
+				<li class="nav-item" style="margin: 0px;">
+					<a href="#" class="nav-link" aria-current="page">Friend 1 <span class="badge rounded-pill bg-success">Online</span></a>
+				</li>
+				<li class="nav-item" style="margin: 0px;">
+					<a href="#" class="nav-link" aria-current="page">Friend 2 <span class="badge rounded-pill bg-info">Playing</span> </a>
+				</li>
+				<li class="nav-item" style="margin: 0px;">
+					<a href="#" class="nav-link" aria-current="page">Friend 3 <span class="badge rounded-pill text-dark bg-light">Offline</span> </a>
+				</li>
+				<li class="nav-item" style="margin: 0px;">
+					<a href="#" class="nav-link" aria-current="page">Friend 4 <span class="badge rounded-pill text-dark bg-warning">Away</span> </a>
+				</li>
+			</ul>
+			<button class="btn btn-primary" type="button" data-bs-toggle="collapse" data-bs-target="#sidebarCollapse">Collapse</button>
+		</div>
+	</div>
+
+	<button class="btn btn-primary" type="button" data-bs-toggle="collapse" data-bs-target="#sidebarCollapse">Collapse</button>
+
 		<div id="main_frame" class="container text-center">
+			
+
 			<div class="row">
 				<div class="col">
 					<a id="localgamebtn" href="/localgame" class="btn btn-primary m-5" data-link>local game</a>
