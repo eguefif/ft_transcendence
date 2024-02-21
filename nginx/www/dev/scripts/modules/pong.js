@@ -66,7 +66,6 @@ function show_and_init_event_for_menu_button() {
 
 function render_game_board() {
 	let main_frame = document.getElementById("main_frame")
-	console.log("test")
 	main_frame.innerHTML = `
 			<div class="row">
 				<div class="col">
@@ -86,28 +85,28 @@ function render_game_board() {
 					<canvas id="board" width="640" height="480"></canvas>
 					<canvas width="640" height="480" id="background">hi</canvas>
 					  <script type="vertex" id="vertexshader">
-				  
+
 						  varying vec2 vUv;
-				  
+
 						  void main() {
-				  
+
 							  vUv = uv;
-				  
+
 							  gl_Position = projectionMatrix * modelViewMatrix * vec4( position, 1.0 );
-				  
+
 						  }
 					  </script>
 					  <script type="fragment" id="fragmentshader">
-				  
+
 						  uniform sampler2D baseTexture;
 						  uniform sampler2D bloomTexture;
-				  
+
 						  varying vec2 vUv;
-				  
+
 						  void main() {
-				  
+
 							  gl_FragColor = ( texture2D( baseTexture, vUv ) + vec4( 1.0 ) * texture2D( bloomTexture, vUv ) );
-				  
+
 						  }
 					  </script>
 				</div>

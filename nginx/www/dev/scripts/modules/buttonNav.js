@@ -12,10 +12,10 @@ export async function createButton () {
 	if (await fetcher.isAuthenticated()) {
 
 		const element = document.querySelector('.navbar-nav');
-		element.innerHTML = createModalBtn("nav-item btn-primary", "profile", getSVG.navbarSVG.profil);
+		element.innerHTML = createActionBtn("nav-item btn-primary", "profile", getSVG.navbarSVG.profil);
 		const firstElement = document.getElementById("profileButton")
 		element.insertAdjacentHTML("beforeend", createActionBtn("nav-item btn-primary", "logout", getSVG.navbarSVG.logout, "idLogout"));
-		firstElement.insertAdjacentHTML("afterend", createActionBtn("nav-item btn-primary", "seting", getSVG.navbarSVG.seting));
+		firstElement.insertAdjacentHTML("afterend", createModalBtn("nav-item btn-primary", "setting", getSVG.navbarSVG.seting));
 		authLogout()
 	}
 	else {
@@ -41,7 +41,7 @@ return `
 	`
 }
 
-function createActionBtn (btnClasses="", btnName ="", srcImg="", idLink ="", route="") {
+function createActionBtn (btnClasses="", btnName ="", srcImg="", idLink ="", route="/") {
 	return `
 		<li class="${btnClasses}" id="${btnName}Button">
 			<a id="${idLink} href="${route}">

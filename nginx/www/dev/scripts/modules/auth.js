@@ -35,35 +35,34 @@ export function authLogout()
 //     });
 // }
 
-/*
-function validatePassword(textBox, validationBox) {
-	textBox.addEventListener('focusout', (e) => {
-		e.preventDefault()
-		const value = textBox.value
-		if (value.length < 4) {
-			validationBox.classList.add("error")
-			validationBox.innerHTML = "Password is too short"
-		} else {
-			validationBox.classList.remove("error");
-            validationBox.innerHTML = "";
-		}
-	})
-}
+// function validatePassword(textBox, validationBox) {
+// 	textBox.addEventListener('focusout', (e) => {
+// 		e.preventDefault()
+// 		const value = textBox.value
+// 		if (value.length < 4) {
+// 			validationBox.classList.add("error")
+// 			validationBox.innerHTML = "Password is too short"
+// 		} else {
+// 			validationBox.classList.remove("error");
+//             validationBox.innerHTML = "";
+// 		}
+// 	})
+// }
 
-function validatePasswordCheck(passTextBox, confirmTextBox, confirmValidationBox) {
-	confirmTextBox.addEventListener('focusout', (e) => {
-		const passValue = passTextBox.value
-		const passCheckValue = confirmTextBox.value
-		if (passValue != passCheckValue) {
-			confirmValidationBox.classList.add("error")
-			confirmValidationBox.innerHTML = "Passwords don't match"
-		} else {
-			confirmValidationBox.classList.remove("error")
-			confirmValidationBox.innerHTML = ""
-		}
-	})
-}
-*/
+// function validatePasswordCheck(passTextBox, confirmTextBox, confirmValidationBox) {
+// 	confirmTextBox.addEventListener('focusout', (e) => {
+// 		const passValue = passTextBox.value
+// 		const passCheckValue = confirmTextBox.value
+// 		if (passValue != passCheckValue) {
+// 			confirmValidationBox.classList.add("error")
+// 			confirmValidationBox.innerHTML = "Passwords don't match"
+// 		} else {
+// 			confirmValidationBox.classList.remove("error")
+// 			confirmValidationBox.innerHTML = ""
+// 		}
+// 	})
+// }
+
 
 // const textBoxName = document.getElementById('username');
 // const textBoxEmail = document.getElementById('email');
@@ -133,7 +132,7 @@ function authUpdateProfile()
 
 function profileInfo()
 {
-	const profileBtn = document.querySelector("#profileButton")
+	const profileBtn = document.querySelector("#settingButton")
 	profileBtn.addEventListener("click", async function (e) {
 		document.querySelector("#profileUsername").disabled = true
 		document.querySelector("#profileEmail").disabled = true
@@ -253,7 +252,6 @@ async function sendLoginRequest(url, body)
 	else
 	{
 		document.getElementById("loginPassword").value = ""
-		// validation.innerHTML = "Wrong credentials"
 	}
 	return ;
 }
@@ -318,7 +316,7 @@ function activateOtp() {
 		const result = await fetcher.post("/api/auth/otp/activate");
 		const qrcode = document.createElement("div")
 		let qrcodeSvq = result.data.otpCode;
-		qrcode.innerHTML = result.data.otpCode; 
+		qrcode.innerHTML = result.data.otpCode;
 		document.querySelector("body").appendChild(qrcode);
 		setTimeout(() => {
 			qrcode.remove();

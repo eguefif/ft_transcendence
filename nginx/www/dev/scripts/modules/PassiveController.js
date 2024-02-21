@@ -7,7 +7,6 @@ export class PassiveController {
 		this.player2Score = 0
 		this.startTimer = 0
 		this.winnerMessage = ""
-		this.username = username
 		this.paddle1 = new Paddle("player1", "right")
 		this.paddle2 = new Paddle("player2", "left")
 		this.ball = new Ball()
@@ -75,7 +74,7 @@ class Ball {
         this.dir = new Vector(Math.random() * 2 - 1, 0.5)
 		if (this.dir.x < 0)
 			this.dir.x = Math.min(-0.5)
-		else 
+		else
 			this.dir.x = Math.max(0.5)
         this.dir.norm()
 	}
@@ -138,7 +137,7 @@ class Vector {
     }
     norm(){
         let  mag = Math.sqrt((this.x * this.x) + (this.y * this.y))
-        
+
         if (mag != 0)
         {
             this.x /= mag
@@ -178,7 +177,7 @@ class Paddle {
             this.y -= this.paddle_speed
         else if (this.move_down)
             this.y += this.paddle_speed
-        
+
         this.top = this.y
         this.bottom = this.y - this.paddleHeight / 2
     }
