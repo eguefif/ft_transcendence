@@ -37,28 +37,6 @@ class Renderer{
 		this.initCameraPos()
 		this.initListener()
 
-		const loader = new FontLoader();
-
-loader.load( 'three/examples/fonts/helvetiker_regular.typeface.json', function ( font ) {
-
-
-	this.textgeometry = new TextGeometry( 'Hello three.js!', {
-		font: font,
-		size: 80,
-		height: 5,
-		curveSegments: 12,
-		bevelEnabled: true,
-		bevelThickness: 10,
-		bevelSize: 8,
-		bevelOffset: 0,
-		bevelSegments: 5
-	
-	} );
-	this.text = new THREE.MeshPhongMaterial(this.textgeometry, this.greenGlowMat)
-	this.scene.add(this.text)
-} );
-
-		
 		this.renderer.setAnimationLoop(this.render.bind(this))
 	}
 	initRenderer()
@@ -312,21 +290,21 @@ export class graphicEngine
 		this.board = document.getElementById("board")
 		
 		// this.generalTopMargin = this.height / 10;
-
+		this.board.style.top = '35%'
 		this.width = this.board.width
 		this.height = this.board.height
 		this.mid = this.board.width / 2
-		this.scoreMarginRight = this.mid + this.width / 8
-		this.scoreMarginLeft = this.mid - this.width / 8
-		this.scoreMarginTop = window.innerHeight / 10
-		this.scoreScale = this.height / 10
+		this.scoreScale = this.height / 4
+		this.scoreMarginRight = (this.mid + this.width / 4) - (this.scoreScale * 0.2)
+		this.scoreMarginLeft = (this.mid - this.width / 4) - (this.scoreScale * 0.2)
+		this.scoreMarginTop = this.board.height / 3
 		this.messageCenter = this.mid - this.width / 7
-		this.messageMargin = this.height / 2
-		this.startTimerCenter = this.mid - this.width / 48
-		this.startTimerMargin = this.height / 2
-		this.startTimerScale = this.height / 6
+		this.messageMargin = this.height / 2 + this.height / 4
+		this.messageScale = this.width / 15
+		this.startTimerMargin = this.height / 2 + this.height / 4
+		this.startTimerScale = this.height / 3
+		this.startTimerCenter = this.mid  - (this.startTimerScale * 0.2)
 		this.textColor = "rgb(43, 194, 14)"
-		this.paddleHeigt = 1 / 8
 		
 		this.Renderer = new Renderer()
 	}
@@ -364,13 +342,16 @@ export class graphicEngine
 
 	displayScore(player1Score, player2Score)
 	{
+		if (player1Score == undefined || player2Score == undefined)
+			return
 		const dis1 = `${player1Score}`
 		const dis2 = `${player2Score}`
 		this.ctx.font = "".concat(`${this.scoreScale}`, "px Impact, fantasy")
 		this.ctx.fillStyle = this.textColor;
 
-		this.ctx.fillText(dis1, this.scoreMarginLeft, window.innerHeight / 8)
-		this.ctx.fillText(dis2, this.scoreMarginRight, window.innerHeight / 8)
+		this.ctx.fillText(dis1, this.scoreMarginLeft, this.scoreMarginTop)
+
+		this.ctx.fillText(dis2, this.scoreMarginRight, this.scoreMarginTop)
 	}
 
 	displayMessage(message)
@@ -378,9 +359,9 @@ export class graphicEngine
 		if (message == "" || message == undefined)
 			return
 		const len = message.length
-		this.ctx.font = "".concat(`${this.scoreScale}`, "px Impact, fantasy")
+		this.ctx.font = "".concat(`${this.messageScale}`, "px Impact, fantasy")
 		this.ctx.fillStyle = this.textColor;
-		this.ctx.fillText(message, this.mid - len * this.scoreScale * 0.2, this.messageMargin)
+		this.ctx.fillText(message, this.mid - len * this.messageScale * 0.2, this.messageMargin)
 	}
 
 	displayStartTimer(timeToWait)

@@ -5,7 +5,7 @@ import { RemoteController } from "./RemoteController.js"
 import { PassiveController } from "./PassiveController.js"
 
 export async function pongMenu() {
-	render_game_board()
+	// render_game_board()
 	let remoteGameBtn = document.querySelector("#remotegamebtn")
 	let localGameBtn= document.querySelector("#localgamebtn")
 	let menu = document.querySelector("#menubtn")
@@ -26,7 +26,7 @@ export async function pongMenu() {
 }
 
 export async function initRemoteGame() {
-	render_game_board()
+	// render_game_board()
 	if (!await fetcher.isAuthenticated()) {
 		let remoteGameBtn = document.querySelector("#remotegamebtn")
 		remoteGameBtn.classList.remove('d-none')
@@ -41,7 +41,7 @@ export async function initRemoteGame() {
 }
 
 export function initLocalGame() {
-	render_game_board()
+	// render_game_board()
 	show_and_init_event_for_menu_button()
 	hideMainMenu()
 	let controller = new LocalController()
@@ -64,53 +64,53 @@ function show_and_init_event_for_menu_button() {
 	menu.classList.remove("d-none")
 }
 
-function render_game_board() {
-	let main_frame = document.getElementById("main_frame")
-	console.log("test")
-	main_frame.innerHTML = `
-			<div class="row">
-				<div class="col">
-					<a id="localgamebtn" href="/localgame" class="btn btn-primary m-5" data-link>local game</a>
-				</div>
-				<div class="col">
-					<a id="remotegamebtn" href="/remotegame" class="btn btn-primary d-none m-5" data-link>Remote game</a>
-				</div>
-			</div>
-			<div class="row">
-				<div class="col">
-					<a id="menubtn" href="/" class="btn btn-primary d-none m-5 bt-primary">Menu</a>
-				</div>
-			</div>
-			<div class="row">
-				<div class="col">
-					<canvas id="board" width="640" height="480"></canvas>
-					<canvas width="640" height="480" id="background">hi</canvas>
-					  <script type="vertex" id="vertexshader">
+// function render_game_board() {
+// 	let main_frame = document.getElementById("main_frame")
+// 	console.log("test")
+// 	main_frame.innerHTML = `
+// 			<div class="row">
+// 				<div class="col">
+// 					<a id="localgamebtn" href="/localgame" class="btn btn-primary m-5" data-link>local game</a>
+// 				</div>
+// 				<div class="col">
+// 					<a id="remotegamebtn" href="/remotegame" class="btn btn-primary d-none m-5" data-link>Remote game</a>
+// 				</div>
+// 			</div>
+// 			<div class="row">
+// 				<div class="col">
+// 					<a id="menubtn" href="/" class="btn btn-primary d-none m-5 bt-primary">Menu</a>
+// 				</div>
+// 			</div>
+// 			<div class="row">
+// 				<div class="col">
+// 					<canvas id="board" width="640" height="480"></canvas>
+// 					<canvas width="640" height="480" id="background">hi</canvas>
+// 					  <script type="vertex" id="vertexshader">
 				  
-						  varying vec2 vUv;
+// 						  varying vec2 vUv;
 				  
-						  void main() {
+// 						  void main() {
 				  
-							  vUv = uv;
+// 							  vUv = uv;
 				  
-							  gl_Position = projectionMatrix * modelViewMatrix * vec4( position, 1.0 );
+// 							  gl_Position = projectionMatrix * modelViewMatrix * vec4( position, 1.0 );
 				  
-						  }
-					  </script>
-					  <script type="fragment" id="fragmentshader">
+// 						  }
+// 					  </script>
+// 					  <script type="fragment" id="fragmentshader">
 				  
-						  uniform sampler2D baseTexture;
-						  uniform sampler2D bloomTexture;
+// 						  uniform sampler2D baseTexture;
+// 						  uniform sampler2D bloomTexture;
 				  
-						  varying vec2 vUv;
+// 						  varying vec2 vUv;
 				  
-						  void main() {
+// 						  void main() {
 				  
-							  gl_FragColor = ( texture2D( baseTexture, vUv ) + vec4( 1.0 ) * texture2D( bloomTexture, vUv ) );
+// 							  gl_FragColor = ( texture2D( baseTexture, vUv ) + vec4( 1.0 ) * texture2D( bloomTexture, vUv ) );
 				  
-						  }
-					  </script>
-				</div>
-			</div>
-	`
-}
+// 						  }
+// 					  </script>
+// 				</div>
+// 			</div>
+// 	`
+// }
