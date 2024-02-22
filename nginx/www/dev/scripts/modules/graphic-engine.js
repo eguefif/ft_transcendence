@@ -6,6 +6,9 @@ import { EffectComposer } from 'three/addons/postprocessing/EffectComposer.js';
 import { UnrealBloomPass } from 'three/addons/postprocessing/UnrealBloomPass.js';
 import { OutputPass } from 'three/addons/postprocessing/OutputPass.js'
 import { ShaderPass } from 'three/addons/postprocessing/ShaderPass.js'
+
+import { TextGeometry } from 'three/addons/geometries/TextGeometry.js';
+import { FontLoader } from 'three/addons/loaders/FontLoader.js';
 // import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
 // import { DRACOLoader } from 'three/addons/loaders/DRACOLoader.js';
 // import { TextGeometry } from 'three/addons/geometries/TextGeometry.js';
@@ -33,7 +36,7 @@ export class Renderer{
 		this.initLight()
 		this.initCameraPos()
 		this.initListener()
-		
+
 		this.renderer.setAnimationLoop(this.render.bind(this))
 	}
 	initRenderer()
@@ -250,10 +253,12 @@ export class Renderer{
 		window.addEventListener("resize", (function (e) {
 			this.windowWidth = window.innerWidth
 			this.windowHeight = window.innerHeight
-			// this.initBloom()
+
 			this.camera.aspect = this.windowWidth / this.windowHeight;
 			this.camera.updateProjectionMatrix();
 			this.renderer.setSize(this.windowWidth, this.windowHeight);
+			this.composer.setSize(this.windowWidth, this.windowHeight);
+			this.finalComposer.setSize(this.windowWidth, this.windowHeight);
 		}).bind(this));
 	}
 
@@ -267,21 +272,21 @@ export class graphicEngine
 
 		
 		// this.generalTopMargin = this.height / 10;
-
+		this.board.style.top = '35%'
 		this.width = this.board.width
 		this.height = this.board.height
 		this.mid = this.board.width / 2
-		this.scoreMarginRight = this.mid + this.width / 8
-		this.scoreMarginLeft = this.mid - this.width / 8
-		this.scoreMarginTop = this.height / 3
-		this.scoreScale = this.height / 10
+		this.scoreScale = this.height / 4
+		this.scoreMarginRight = (this.mid + this.width / 4) - (this.scoreScale * 0.2)
+		this.scoreMarginLeft = (this.mid - this.width / 4) - (this.scoreScale * 0.2)
+		this.scoreMarginTop = this.board.height / 3
 		this.messageCenter = this.mid - this.width / 7
-		this.messageMargin = this.height / 2
-		this.startTimerCenter = this.mid - this.width / 48
-		this.startTimerMargin = this.height / 2
-		this.startTimerScale = this.height / 6
+		this.messageMargin = this.height / 2 + this.height / 4
+		this.messageScale = this.width / 15
+		this.startTimerMargin = this.height / 2 + this.height / 4
+		this.startTimerScale = this.height / 3
+		this.startTimerCenter = this.mid  - (this.startTimerScale * 0.2)
 		this.textColor = "rgb(43, 194, 14)"
-		this.paddleHeigt = 1 / 8
 		
 		//this.Renderer = renderer
 		this.Renderer = renderer
@@ -321,12 +326,15 @@ export class graphicEngine
 
 	displayScore(player1Score, player2Score)
 	{
+		if (player1Score == undefined || player2Score == undefined)
+			return
 		const dis1 = `${player1Score}`
 		const dis2 = `${player2Score}`
 		this.ctx.font = "".concat(`${this.scoreScale}`, "px Impact, fantasy")
 		this.ctx.fillStyle = this.textColor;
 
 		this.ctx.fillText(dis1, this.scoreMarginLeft, this.scoreMarginTop)
+
 		this.ctx.fillText(dis2, this.scoreMarginRight, this.scoreMarginTop)
 	}
 
@@ -335,9 +343,9 @@ export class graphicEngine
 		if (message == "" || message == undefined)
 			return
 		const len = message.length
-		this.ctx.font = "".concat(`${this.scoreScale}`, "px Impact, fantasy")
+		this.ctx.font = "".concat(`${this.messageScale}`, "px Impact, fantasy")
 		this.ctx.fillStyle = this.textColor;
-		this.ctx.fillText(message, this.mid - len * this.scoreScale * 0.2, this.messageMargin)
+		this.ctx.fillText(message, this.mid - len * this.messageScale * 0.2, this.messageMargin)
 	}
 
 	displayStartTimer(timeToWait)

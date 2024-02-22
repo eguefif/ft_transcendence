@@ -1,4 +1,8 @@
 @charset "UTF-8";
+body {
+  overflow: hidden;
+}
+
 li {
   margin: 2rem;
 }
@@ -28,6 +32,15 @@ li {
   left: 50%;
   transform: translate(-50%, -50%);
   z-index: -100;
+}
+
+#board {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  z-index: 0;
+  width: 30em;
 }
 
 #choose2PlayerButton {
