@@ -14,8 +14,8 @@ export function generateModal() {
 }
 
 function removeForm() {
-	const loginForm = document.querySelector('#loginForm');
-	const registrationForm = document.querySelector('#registrationForm');
+	const loginForm = document.getElementById('createFormLogin');
+	const registrationForm = document.getElementById('createFormRegister');
 	if (loginForm) {
 		loginForm.remove();
 	}
@@ -26,7 +26,7 @@ function removeForm() {
 
 function addLoginForm() {
 	document.querySelector("#connectionLabel").innerText = "Login";
-	document.querySelector('.modal-body').insertAdjacentHTML("afterbegin", createFormLogin());
+	document.querySelector('.modal-content').insertAdjacentHTML("beforeend", createFormLogin());
 	authLogin();
 	const btnSwitchRegister = document.getElementById("btnOpenRegister")
 	btnSwitchRegister.addEventListener('click', function(e) {
@@ -38,7 +38,7 @@ function addLoginForm() {
 
 function addRegistrationForm() {
 	document.querySelector("#connectionLabel").innerText = "Register";
-	document.querySelector('.modal-body').insertAdjacentHTML("afterbegin", createFormRegister());
+	document.querySelector('.modal-content').insertAdjacentHTML("beforeend", createFormRegister());
 	authRegister();
 	const btnSwitchLogin = document.getElementById("btnOpenLogin")
 	btnSwitchLogin.addEventListener('click', function(e) {
@@ -52,12 +52,10 @@ function CreateModal(name) {
 	return `
 		<div class="modal fade" id="${name}Modal">
 			<div class="modal-dialog">
-				<div class="modal-content">
+				<div class="modal-content bg-dark">
 					<div class="modal-header">
 						<h1 class="modal-title fs-5" id="${name}Label"></h1>
 						<div class="btn-close" data-bs-dismiss="modal"></div>
-					</div>
-					<div class="modal-body">
 					</div>
 				</div>
 			</div>
@@ -67,6 +65,7 @@ function CreateModal(name) {
 
 function createFormLogin() {
 	return `
+	<div id="createFormLogin" class="modal-body">
 		<form class="needs-validation" novalidate id="loginForm" action="api/auth/token" method="POST">
 			<div class="mb-3">
 				<label for="username" class="form-label">Username</label>
@@ -82,14 +81,19 @@ function createFormLogin() {
 					Your password is required
 				</div>
 			</div>
-			<button type="submit" value="Login" class="btn btn-primary">Submit</button>
-			<button id="btnOpenRegister" class="btn btn-primary">Register</button>
 		</form>
+		<button form="loginForm" type="submit" class="btn btn-primary">Submit</button>
+		<button class="btn btn-primary">Login with 42</button>
+		<div class="modal-footer">
+			<a id="btnOpenRegister">Create Account</a>
+		</div>
+	</div>
 	`
 }
 
 function createFormRegister() {
 	return  `
+	<div id="createFormRegister" class="modal-body">
 		<form class="needs-validation" novalidate id="registrationForm" action="api/auth/token" method="POST">
 			<div class="mb-3">
 				<label for="username" class="form-label">Username</label>
@@ -102,7 +106,7 @@ function createFormRegister() {
 				<label for="email" class="form-label">Email</label>
 				<input type="email" name='email' id="email" class="form-control" required>
 				<div id="emailValidation" class="invalid-feedback">
-					Your email is enter a valid email ("exemple@domaine.exp").
+					Your email is not a valid email ("exemple@domaine.exp").
 				</div>
 			</div>
 			<div class="mb-3">
@@ -120,7 +124,10 @@ function createFormRegister() {
 				</div>
 			</div>
 			<button type="submit" value="Register" class="btn btn-primary">Submit</button>
-			<button id="btnOpenLogin" class="btn btn-primary">Login</button>
 		</form>
+		<div class="modal-footer">
+			<a id="btnOpenLogin">Has an account</a>
+		</div>
+	</div>
 		`
 }

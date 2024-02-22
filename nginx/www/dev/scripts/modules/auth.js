@@ -3,10 +3,20 @@ import { pongMenu } from "./pong.js"
 import { closeModal } from "./modal.js";
 import { createButton } from "./buttonNav.js";
 
+export async function initAuth() {
+	if (await fetcher.isAuthenticated()) {
+		authLogout();
+		profileInfo();
+		changeProfile();
+		authUpdateProfile();
+	}
+}
+
 export function authLogout()
 {
-	const logoutBtn = document.querySelector("#logoutSVG")
+	const logoutBtn = document.querySelector("#logoutButton")
 	logoutBtn.addEventListener("click", async function(e){
+		e.preventDefault()
 		const result = await fetcher.post("/api/auth/logout", {})
 		if (result.status >= 200 && result.status < 300) {
 			localStorage.removeItem("refreshExpiry")
@@ -19,7 +29,6 @@ export function authLogout()
 		}
 	});
 }
-
 
 export function authRegister()
 {
@@ -91,7 +100,7 @@ function authUpdateProfile()
 
 function profileInfo()
 {
-	const profileBtn = document.querySelector("#settingButton")
+	const profileBtn = document.querySelector("#settingsButton")
 	profileBtn.addEventListener("click", async function (e) {
 		document.querySelector("#profileUsername").disabled = true
 		document.querySelector("#profileEmail").disabled = true
@@ -159,7 +168,7 @@ async function sendUpdateProfileRequest(url, body)
 		profileUsername.disabled = true
 		profileEmail.disabled = true
 		// alert test
-		document.querySelector("#profileModal").insertAdjacentHTML("afterbegin", `
+		document.querySelector("#settingsModal").insertAdjacentHTML("afterbegin", `
 		<div class="alert alert-success alert-dismissible fade show" role="alert">
 			<strong>Success!</strong> Your information has been saved.
 			<button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
@@ -260,7 +269,7 @@ async function sendRegistrationRequest(url, body)
 		localStorage.setItem("refreshExpiry", `${refreshExpiry}`)
 		fetcher.setAccess(result.data.accessToken);
 		await createButton()
-		closeModal('connexionModal')
+		closeModal('connectionModal')
 		await pongMenu()
 		return true
 	}
@@ -287,13 +296,4 @@ function activateOtp() {
 	otherButton.addEventListener("click", async function() {
 		let result = await fetcher.post("/api/auth/otp/deactivate");
 	})
-}
-
-export async function initAuth() {
-	if (await fetcher.isAuthenticated()) {
-		authLogout();
-		profileInfo();
-		changeProfile();
-		authUpdateProfile();
-	}
 }

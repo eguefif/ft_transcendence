@@ -4,15 +4,22 @@
 }
 
 nav {
-    svg {
-        min-width: 2rem;
-        min-height: 2rem;
+    a {
+        color: $primary;
+        transition: 0.25s;
         &:hover {
             transition: 0.25s;
             color: $light;
         }
-        color: $primary;
-        transition: 0.25s;
+    }
+    svg {
+        min-width: 2rem;
+        min-height: 2rem;
+
+
+    }
+    .noclick {
+        pointer-events: none;
     }
 }
 
@@ -26,4 +33,8 @@ text {
     color: $primary;
     transition: 0.25s;
 
+}
+
+#connectionModal {
+    color: $primary;
 }

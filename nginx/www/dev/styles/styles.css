@@ -11934,15 +11934,20 @@ textarea.form-control-lg {
   color: rgb(255, 0, 0);
 }
 
-nav svg {
-  min-width: 2rem;
-  min-height: 2rem;
+nav a {
   color: #2FF924;
   transition: 0.25s;
 }
-nav svg:hover {
+nav a:hover {
   transition: 0.25s;
   color: #F9F6EE;
+}
+nav svg {
+  min-width: 2rem;
+  min-height: 2rem;
+}
+nav .noclick {
+  pointer-events: none;
 }
 
 text {
@@ -11954,4 +11959,8 @@ text:hover {
   transition: 0.25s;
   color: #F9F6EE;
   cursor: pointer;
+}
+
+#connectionModal {
+  color: #2FF924;
 }

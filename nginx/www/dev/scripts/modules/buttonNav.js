@@ -4,49 +4,42 @@ import { getSVG } from "./iconSVG.js";
 
 
 export async function createButton () {
-	const element = document.querySelector('.navbar-nav');
-	if (!element) {
-		document.querySelector('#navbarNavDropdown').insertAdjacentHTML("afterbegin", createUl("navbar-nav ms-auto"));
-	}
-
 	if (await fetcher.isAuthenticated()) {
-
-		const element = document.querySelector('.navbar-nav');
-		element.innerHTML = createActionBtn("nav-item btn-primary", "profile", getSVG.navbarSVG.profil);
-		const firstElement = document.getElementById("profileButton")
-		element.insertAdjacentHTML("beforeend", createActionBtn("nav-item btn-primary", "logout", getSVG.navbarSVG.logout, "idLogout"));
-		firstElement.insertAdjacentHTML("afterend", createModalBtn("nav-item btn-primary", "setting", getSVG.navbarSVG.seting));
+		createBtns()
 		authLogout()
 	}
 	else {
-		const element = document.querySelector('.navbar-nav');
+		const element = document.getElementById("navBarButton")
 		element.innerHTML = createModalBtn("nav-item btn-primary", "connection","" , "Connexion");
 	}
 }
 
-function createUl (ulClasses="") {
+function createModalBtn(btnClasses="", btnName="", srcImg="", name ="") {
 	return `
-	<ul class="${ulClasses}">
-	</ul>`
+			<div class="${btnClasses} mx -3" id="${btnName}Button"
+				data-bs-toggle="modal"
+				data-bs-target="#${btnName}Modal">
+				${srcImg}
+				<text>${name}</text>
+			</div>
+		`
 }
 
-function createModalBtn (btnClasses="", btnName="", srcImg="", name ="") {
-return `
-		<li class="${btnClasses}" id="${btnName}Button"
-			data-bs-toggle="modal"
-			data-bs-target="#${btnName}Modal">
-			${srcImg}
-			<text>${name}</text>
-		</li>
-	`
-}
-
-function createActionBtn (btnClasses="", btnName ="", srcImg="", idLink ="", route="/") {
-	return `
-		<li class="${btnClasses}" id="${btnName}Button">
-			<a id="${idLink} href="${route}">
-			${srcImg}
+function createBtns() {
+	let nav = document.getElementById("navBarButton")
+	nav.innerHTML = `
+		<div class="d-flex navbar-nav ms-auto">
+			<a id="profileButton" class="nav-item mx-3" href="/profile" data-link>
+				${getSVG.navbarSVG.profile}
 			</a>
-		</li>
+			<a class="nav-item btn-primary mx-3" id="settingsButton"
+				data-bs-toggle="modal"
+				data-bs-target="#settingsModal">
+				${getSVG.navbarSVG.settings}
+			</a>
+			<a id="logoutButton" class ="nav-item btn-primary mx-3" href="">
+				${getSVG.navbarSVG.logout}
+			</a>
+		</div>
 	`
 }

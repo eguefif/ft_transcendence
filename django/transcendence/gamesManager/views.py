@@ -12,6 +12,7 @@ import json
 from gamesManager.models import Game
 from gamesManager.serializers import GameSerializer
 
+
 @api_view(["POST"])
 def create_game(request, format=None):
     data = json.loads(request.data)

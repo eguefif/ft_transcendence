@@ -1,4 +1,3 @@
-
 import { fetcher } from "../modules/fetcher.js";
 
 export class RemoteController {
@@ -19,6 +18,7 @@ export class RemoteController {
 
 	cleanup(){
 		this.websocket.close()
+		this.stop = True
 	}
 	update (){
 		if (this.stop == true)
