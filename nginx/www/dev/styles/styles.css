@@ -11942,6 +11942,10 @@ textarea.form-control-lg {
     display: none !important;
   }
 }
+.bg-dark {
+  background-color: rgba(54, 69, 79, 0.8) !important;
+}
+
 .error {
   font-size: small;
   color: rgb(255, 0, 0);
@@ -11972,4 +11976,9 @@ text:hover {
   transition: 0.25s;
   color: #F9F6EE;
   cursor: pointer;
+}
+
+#profile {
+  max-height: 100%;
+  overflow: auto;
 }
