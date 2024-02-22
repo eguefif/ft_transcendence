@@ -207,5 +207,8 @@ function renderHistory(games) {
             </div>
 		`
 	}
+	html +=`
+		</div>
+		`
 	history.innerHTML = html
 }

@@ -38,21 +38,6 @@ export function initLocalGame() {
 	game.run()
 }
 
-function hideMainMenu(){
-	let remoteGameBtn = document.querySelector("#remotegamebtn")
-	let localGameBtn= document.querySelector("#localgamebtn")
-	let menu = document.querySelector("#menubtn")
-
-	remoteGameBtn.classList.add('d-none')
-	localGameBtn.classList.add('d-none')
-}
-
-function show_and_init_event_for_menu_button() {
-	let menu = document.querySelector("#menubtn")
-	menu.classList.remove("d-none")
-}
-
-
 export function render_game_board() {
 	let main_frame = document.getElementById("pongDiv")
 	main_frame.innerHTML = `
@@ -99,4 +84,3 @@ function render_pong_menu_button() {
 		`
 		
 }
-

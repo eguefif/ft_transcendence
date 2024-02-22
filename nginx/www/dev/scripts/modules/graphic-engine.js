@@ -7,7 +7,6 @@ import { UnrealBloomPass } from 'three/addons/postprocessing/UnrealBloomPass.js'
 import { OutputPass } from 'three/addons/postprocessing/OutputPass.js'
 import { ShaderPass } from 'three/addons/postprocessing/ShaderPass.js'
 
-export const renderer = new Renderer()
 
 export class Renderer{
 	constructor(){
@@ -286,6 +285,7 @@ export class Renderer{
 
 }
 
+export const renderer = new Renderer()
 
 export class graphicEngine
 {
