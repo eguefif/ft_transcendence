@@ -47,7 +47,7 @@ def get_friend_list(request):
 
         user_data = []
         for fs in friendships:
-            # 1 - Get the user that is not the user that is making the request (user1 or user2)
+            # 1 - Get the user that is not the user making the request (user1 or user2)
             friend = fs.user1 if fs.user2 == user else fs.user2
             # 2 - Send data back as Array of serialized user data
             friend_serializer = UserFriendInfoSerializer(friend)

@@ -47,7 +47,7 @@ function makeFriendElement(username, onlineStatus) {
         <li class="nav-item" style="margin: 0px;">
             <div class="row align-items-center">
                 <div class="col-auto">
-                    <a href="#" class="nav-link" aria-current="page">${username} <span class="badge rounded-pill text-dark bg-light">${onlineStatus}</span></a>
+                    <a href="#" class="nav-link" aria-current="page">${username} <span class="badge rounded-pill text-dark bg-light">(Not implemented)</span></a>
                 </div>
                 <div class="col">
                     <a name="delete-${username}" class="btn btn-sm btn-danger btn-delete-friend">Delet</a>
@@ -96,7 +96,7 @@ export async function initSidebar() {
 
     sidebar.innerHTML = `
         <div class="collapse collapse-horizontal" id="sidebarCollapse" style="position: absolute; height: 80%;">	
-            <div id="friendSidebar" class="d-flex flex-column align-items-stretch flex-shrink-0 text-bg-dark overflow-auto" style="width: 280px; height: 100%">
+            <div id="friendSidebar" class="d-flex flex-column align-items-stretch flex-shrink-0 text-bg-dark overflow-auto" style="width: 350px; height: 100%">
                 <h1>Friends</h1>
                 <hr>
                     <ul class="nav nav-pills flex-column mb-auto">
