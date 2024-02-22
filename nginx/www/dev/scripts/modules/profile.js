@@ -122,25 +122,25 @@ function renderStats(games) {
 	stats_div.innerHTML = `
         <div id="profile-stats" class="container text-center">
             <div class="d-flex justify-content-around">
-                <div class="card border border-3 bg-dark border-primary rounded-pill" style="width: 10rem">
+                <div class="card border border-3 bg-dark custom-opacity border-primary rounded-pill" style="width: 10rem">
                     <div class="card-body text-secondary">
                         <h5 class="card-title">Winrate</h5>
                         <p class="card-body fs-4">${stats.winrate}%</p>
                     </div>
                 </div>
-                <div class="card border border-3 bg-dark border-primary rounded-pill" style="width: 10rem">
+                <div class="card border border-3 bg-dark custom-opacity border-primary rounded-pill" style="width: 10rem">
                     <div class="card-body text-secondary">
                         <h5 class="card-title">Games</h5>
                         <p class="card-body fs-4">${stats.nbr_games}</p>
                     </div>
                 </div>
-                <div class="card border border-3 bg-dark border-primary rounded-pill" style="width: 10rem">
+                <div class="card border border-3 bg-dark custom-opacity border-primary rounded-pill" style="width: 10rem">
                     <div class="card-body text-secondary">
                         <h5 class="card-title">Wins</h5>
                         <p class="card-body fs-4">${stats.wins}</p>
                     </div>
                 </div>
-                <div class="card border border-3 bg-dark border-primary rounded-pill" style="width: 10rem">
+                <div class="card border border-3 bg-dark custom-opacity border-primary rounded-pill" style="width: 10rem">
                     <div class="card-body text-secondary">
                         <h5 class="card-title">Losses</h5>
                         <p class="card-body fs-4">${stats.losses}</p>
@@ -183,7 +183,7 @@ function renderHistory(games) {
 	`
 	for (const [key, game] of Object.entries(games)) {
 		html += `
-            <div class="row align-items-center bg-dark justify-content-around border border-primary border-3 rounded p-2 m-2">
+            <div class="row align-items-center bg-dark custom-opacity justify-content-around border border-primary border-3 rounded p-2 m-2">
                 <div class="col-2"><img src="${game.avatar1}" class="img-fluid rounded float-left"></div>
                 <div class="col-3">
                     <div class="d-flex flex-column">

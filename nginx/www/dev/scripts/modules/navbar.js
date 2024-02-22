@@ -1,5 +1,5 @@
 const nav = `
-	<nav class="navbar navbar-expand-sm sticky-top bg-dark">
+	<nav class="navbar navbar-expand-sm sticky-top bg-dark custom-opacity">
 		<div class="container-fluid">
 			<a class="navbar navbar-brand" href="/" data-link>
 				<img src="images/logo.png" class="nav noclick" alt="" width="150" />
