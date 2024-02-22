@@ -24,6 +24,9 @@ export class Renderer{
 
 		this.windowWidth = window.innerWidth
 		this.windowHeight = window.innerHeight
+	}
+
+	init (){
 
 		this.initRenderer()
 		this.initBloom()
@@ -61,7 +64,24 @@ export class Renderer{
 		this.renderPass = new RenderPass(this.scene, this.camera)
 		this.composer = new EffectComposer(this.renderer)
 		this.composer.addPass(this.renderPass)
-
+		const fragment_shader = `
+		uniform sampler2D baseTexture;
+		uniform sampler2D bloomTexture;
+		varying vec2 vUv;
+		void main() {
+			gl_FragColor = ( texture2D( baseTexture, vUv ) + vec4( 1.0 ) * texture2D( bloomTexture, vUv ) );
+		}
+		`
+		const vertex_shader = `
+		varying vec2 vUv;	
+		void main() {
+		
+			vUv = uv;
+		
+			gl_Position = projectionMatrix * modelViewMatrix * vec4( position, 1.0 );
+		
+		}	
+		`
 		this.bloomPass = new UnrealBloomPass( 
 		    new THREE.Vector2(this.windowWidth, this.windowHeight),
 		    0.3, //bloom intensity
@@ -77,8 +97,10 @@ export class Renderer{
 					baseTexture: {value: null},
 		            bloomTexture: {value: this.composer.renderTarget2.texture}
 		        },
-		        vertexShader: document.getElementById('vertexshader').textContent,
-		        fragmentShader: document.getElementById('fragmentshader').textContent
+		        //vertexShader: document.getElementById('vertexshader').textContent,
+		        //fragmentShader: document.getElementById('fragmentshader').textContent
+				vertexShader: vertex_shader,
+				fragmentShader: fragment_shader
 		    }), 'baseTexture'
 		    )
 	
@@ -264,9 +286,11 @@ export class Renderer{
 
 }
 
+export const renderer = new Renderer()
+
 export class graphicEngine
 {
-	constructor(renderer){
+	constructor(){
 		this.board = document.getElementById("board")
 		this.ctx =  this.board.getContext("2d")
 
@@ -288,7 +312,6 @@ export class graphicEngine
 		this.startTimerCenter = this.mid  - (this.startTimerScale * 0.2)
 		this.textColor = "rgb(43, 194, 14)"
 		
-		//this.Renderer = renderer
 		this.Renderer = renderer
 	}
 
@@ -359,3 +382,4 @@ export class graphicEngine
 	}
 
 }
+

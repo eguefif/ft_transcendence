@@ -1,9 +1,9 @@
 import { graphicEngine } from "./graphic-engine.js"
 
 export class Game {
-	constructor(controller, renderer) {
+	constructor(controller) {
 		this.controller = controller
-		this.graphicEngine = new graphicEngine(renderer)
+		this.graphicEngine = new graphicEngine()
 		this.running = true
 		let menu = document.querySelector("#menubtn")
 		if (menu != undefined) {
@@ -23,7 +23,6 @@ export class Game {
 	run() {
 		const update = () => {
 			if (!this.running) {
-
 				return
 			}
 			let data = this.controller.update()
