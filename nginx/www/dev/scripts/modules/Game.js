@@ -9,11 +9,13 @@ export class Game {
 		if (menu != undefined) {
 			menu.addEventListener("click", (e) => {
 				this.running = false
+				this.controller.cleanup()
 				this.controller.stop = true
 				})
 			}
 		window.addEventListener("popstate", (e) => {
 			this.running = false
+			this.controller.cleanup()
 			this.controller.stop = true
 			})
 	}
@@ -21,7 +23,7 @@ export class Game {
 	run() {
 		const update = () => {
 			if (!this.running) {
-				this.controller.cleanup()
+
 				return
 			}
 			let data = this.controller.update()

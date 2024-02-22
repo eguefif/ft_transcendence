@@ -1,6 +1,7 @@
 import { authLogout } from "./auth.js";
 import { fetcher } from "./fetcher.js";
 import { getSVG } from "./iconSVG.js";
+import { initRouter } from "./router.js";
 
 
 export async function createButton () {
@@ -8,7 +9,7 @@ export async function createButton () {
 	const element = document.querySelector('.navbar-nav');
 	console.log(element)
 	if (!element) {
-		document.querySelector('#navbarNavDropdown').insertAdjacentHTML("afterbegin", createUl("navbar-nav ms-auto"));
+		document.querySelector('#navBarButton').insertAdjacentHTML("afterbegin", createUl("navbar-nav ms-auto"));
 	}
 	*/
 
@@ -19,14 +20,14 @@ export async function createButton () {
 		element.innerHTML = createModalBtn("nav-item btn-primary", "profile", getSVG.navbarSVG.profil);
 		const firstElement = document.getElementById("profileButton")
 		element.insertAdjacentHTML("beforeend", createActionBtn("nav-item btn-primary", "logout", getSVG.navbarSVG.logout, "idLogout"));
-		firstElement.insertAdjacentHTML("afterend", createActionBtn("nav-item btn-primary", "seting", getSVG.navbarSVG.seting, "settings", "/profile", "data-link"));
+		firstElement.insertAdjacentHTML("afterend", createActionBtn("nav-item btn-primary", "seting", getSVG.navbarSVG.seting, "seting", "/profile", "data-link"));
 		*/
 		createBtns()
 		authLogout()
 	}
 	else {
 		//const element = document.querySelector('.navbar-nav');
-		const element = document.getElementById("navbarNavDropdown")
+		const element = document.getElementById("navBarButton")
 		element.innerHTML = createModalBtn("nav-item btn-primary", "connection","" , "Connexion");
 	}
 }
@@ -50,7 +51,7 @@ function createModalBtn(btnClasses="", btnName="", srcImg="", name ="") {
 
 function createActionBtn (btnClasses="", btnName ="", srcImg="", idLink ="", route="", dataL="") {
 	return `
-		<li class="${btnClasses}" id="${btnName}Button">
+		<li class="${btnClasses}" id="${btnName}Button" ${dataL}>
 			<a id="${idLink}" href="${route}" ${dataL}>
 			${srcImg}
 			</a>
@@ -59,25 +60,22 @@ function createActionBtn (btnClasses="", btnName ="", srcImg="", idLink ="", rou
 }
 
 function createBtns() {
-	let nav = document.getElementById("navbarNavDropdown")
+	let nav = document.getElementById("navBarButton")
 	nav.innerHTML = `
-		<ul class="navbar-nav ms-auto">
-			<li class="nav-item btn-primary" id="setingButton">
-				<a id="id" href="/profile" data-link>
-				${getSVG.navbarSVG.profil}
-				</a>
-			</li>
-			<li class="nav-item btn-primary" id="profileButton"
+		<div class="d-flex navbar-nav ms-auto">
+			<a id="profileButton" class="nav-item mx-2" href="/profile" data-link>
+				${getSVG.navbarSVG.profile}
+			</a>
+			<a class="nav-item btn-primary mx-2" id="settingsButton"
 				data-bs-toggle="modal"
-				data-bs-target="#profileModal">
-				${getSVG.navbarSVG.seting}
-				<text></text>
-			</li>
-			<li class="nav-item btn-primary" id="logoutButton">
-				<a id="idLogout" href="">
-				${getSVG.navbarSVG.logout}
-				</a>
-			</li>
-	</ul>
+				data-bs-target="#settingsModal">
+				${getSVG.navbarSVG.settings}
+			</a>
+
+			<a id="logoutButton" class ="nav-item btn-primary mx-2" href="">
+			${getSVG.navbarSVG.logout}
+			</a>
+		</div>
 	`
 }
+//

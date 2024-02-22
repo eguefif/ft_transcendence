@@ -117,4 +117,5 @@ function render_pong_menu_button() {
 		</div>
 
 		`
+		
 }

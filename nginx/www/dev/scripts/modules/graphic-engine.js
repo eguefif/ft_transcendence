@@ -259,30 +259,12 @@ export class Renderer{
 
 }
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 export class graphicEngine
 {
 	constructor(renderer){
-		this.ctx =  board.getContext("2d")
 		this.board = document.getElementById("board")
+		this.ctx =  this.board.getContext("2d")
+
 		
 		// this.generalTopMargin = this.height / 10;
 
@@ -322,7 +304,7 @@ export class graphicEngine
 	}
 
 	clearFrame(){
-		this.ctx.clearRect(0, 0, board.width, board.height)
+		this.ctx.clearRect(0, 0, this.board.width, this.board.height)
 	}
 
 	displayBall(ball_x, ball_y, ball_radius){

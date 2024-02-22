@@ -1,25 +1,27 @@
 import { fetcher } from "./fetcher.js"
 
-export async function profile(renderer) {
+export async function profile() {
 	let msg = await fetcher.get("/api/userinfo")
-	username = msg.data.username
-	if (msg.status != 200)
-		return {"error": "problem while fetching data"}
-	let data = await getData(username)
-	if ("error" in data) {
-		displayErrorProfile(data)
+	let games ={}
+	let username = msg.data.username
+	if (msg.status >= 200 && msg.status < 300)
+		games = {"error": "problem while fetching data"}
+	else
+		games = await getData(username)
+	if ("error" in games) {
+		displayErrorProfile(games)
 	}
 	else {
 		renderProfileStructure(username)
-		renderStats(data)
-		renderHistory(data)
+		renderStats(games)
+		renderHistory(games)
 	}
 }
 
 function getData(username) {
 	showSpinner()
-	let data = getGameHistoryData(username)
-	return data
+	let games = getGameHistoryData(username)
+	return games
 }
 
 function showSpinner() {
@@ -35,22 +37,22 @@ function showSpinner() {
 
 async function getGameHistoryData(username) {
 	let retval = await fetcher.get("/api/profile/getprofile")
-	let data = {}
-	if (retval.status == 200)
-		data = retval.data
+	let games = {}
+	if (retval.status >= 200 && retval.status < 300)
+		games = retval.data
 	else {
-		data = {"error": "Impossible to load data"}
+		games = {"error": "Impossible to load data"}
 		return data
 	}
-	data = setStatusGame(data, username)
-	if ("error" in data)
-		return data
-	data = transformDate(data)
-	return data
+	games = setStatusGame(data, username)
+	if ("error" in games)
+		return games
+	games = transformDate(games)
+	return games
 }
 
-function setStatusGame(data, username) {
-	for (const [key, game] of Object.entries(data)) {
+function setStatusGame(games, username) {
+	for (const [key, game] of Object.entries(games)) {
     let win = `<div class="p-1"><h5 class="text-success fs-3 fw-bold text-center">win</h5></div>`
     let loss = `<div class="p-1"><h5 class="text-danger fs-3 fw-bold text-center">loss</h5></div>`
 		if (game.player1 === username) {
@@ -90,11 +92,11 @@ function renderProfileStructure(username) {
 	let main_frame = document.getElementById("main_frame")
 	main_frame.innerHTML = `
     <h3 class="text-primary fs-1 fw-bold text-center">${username}</h3>
-    <section id="stats" class="p-4">
-    </section> 
+    <div id="stats" class="p-4">
+    </div> 
     <hr class="w-25 mx-auto"/>
-    <section id="history" class="p-4">
-	</section>
+    <div id="history" class="p-4">
+	</div>
 	`
 }
 
@@ -170,7 +172,7 @@ function getStats(data) {
 }
 
 function renderHistory(games) {
-	let stats = document.getElementById("history")
+	let history = document.getElementById("history")
 	let html = `
         <h3 class="text-primary fs-2 fw-bold px-5">History</h3>
         <div class="container text-center">
@@ -201,5 +203,5 @@ function renderHistory(games) {
             </div>
 		`
 	}
-	stats.innerHTML = html
+	history.innerHTML = html
 }

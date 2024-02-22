@@ -9,89 +9,55 @@ export function closeModal(modalID) {
 }
 
 export function generateModal() {
-	//document.querySelector('nav').insertAdjacentHTML("afterend", CreateModal("connection"));
-	let modals = document.getElementById("modals_frame")
-	modals.innerHTML = createLoginModal()
-	modals.innerHTML += getProfileModal()
-	displayLoginForm();
+	document.querySelector('nav').insertAdjacentHTML("afterend", CreateModal("connection"));
+	addLoginForm();
 }
 
-function getProfileModal() {
-	return `
-		<div class="modal fade" id="profileModal">
-			<div class="modal-dialog modal-lg">
-				<div class="modal-content">
-					<div class="modal-header">
-						<h1 class="modal-title fs-5" id="profileLabel">Profile</h1>
-						<div class="btn-close" data-bs-dismiss="modal"></div>
-					</div>
-					<div id="profilePictureContainer">
-						<img id="profilePicture" class="rounded-circle border" alt="profilePicture" width="150" height="150" src="images/default-user-picture.png"/>
-					</div>
-					<div class="modal-body">
-						<form id="profileForm" action="api/updateprofile/" method="PATCH">
-							<div id="profileImageContainer" class="mb-3 d-none">
-								<label for="formFile" class="form-label">Profile picture</label>
-								<input class="form-control" type="file" id="profileImageField">
-								<div id="pictureUploadValidation" class="error text-danger"></div>
-							</div>
-							<div class="mb-3">
-								<label for="username" class="col-md-3 col-form-label">Username</label>
-								<input type="username" name="username" id="profileUsername" class="form-control" placeholder="username" disabled>
-								<div id="profileUsernameValidation"></div>
-							</div>
-							<div class="mb-3">
-								<label for="email" class="col-md-3 col-form-label">Email</label>
-								<input type="email" name="email" id="profileEmail" class="form-control" placeholder="email" disabled>
-								<div id="profileEmailValidation"></div>
-							</div>
-							<button type="button" class="btn btn-primary" id="modifyProfile">Modify</button>
-							<button type="submit" class="btn btn-primary d-none" id="profileSaveChanges">Save changes</button>
-						</form>
-					</div>
-				</div>
-			</div>
-		</div>
-	
-	`
+function removeForm() {
+	const loginForm = document.querySelector('#loginForm');
+	const registrationForm = document.querySelector('#registrationForm');
+	if (loginForm) {
+		loginForm.remove();
+	}
+	if (registrationForm) {
+		registrationForm.remove();
+	}
 }
 
-function displayLoginForm() {
-	document.querySelector("#loginModalTitle").innerText = "Login";
-	document.querySelector('#loginModalBody').innerHTML = createFormLogin();
+function addLoginForm() {
+	document.querySelector("#connectionLabel").innerText = "Login";
+	document.querySelector('.modal-body').insertAdjacentHTML("afterbegin", createFormLogin());
 	authLogin();
 	const btnSwitchRegister = document.getElementById("btnOpenRegister")
-	if (btnSwitchRegister != undefined) {
-		btnSwitchRegister.addEventListener('click', function(e) {
-			e.preventDefault()
-			displayRegistrationForm()
-		});
-	}
+	btnSwitchRegister.addEventListener('click', function(e) {
+		e.preventDefault()
+		removeForm();
+		addRegistrationForm()
+	});
 }
 
-function displayRegistrationForm() {
-	document.querySelector("#loginModalTitle").innerText = "Register";
-	document.querySelector('#loginModalBody').innerHTML = createFormRegister();
+function addRegistrationForm() {
+	document.querySelector("#connectionLabel").innerText = "Register";
+	document.querySelector('.modal-body').insertAdjacentHTML("afterbegin", createFormRegister());
 	authRegister();
 	const btnSwitchLogin = document.getElementById("btnOpenLogin")
-	if (btnSwitchLogin != undefined) {
-		btnSwitchLogin.addEventListener('click', function(e) {
-			e.preventDefault()
-			displayLoginForm();
-		});
-	}
+	btnSwitchLogin.addEventListener('click', function(e) {
+		e.preventDefault()
+		removeForm();
+		addLoginForm();
+	});
 }
 
-function createLoginModal() {
+function CreateModal(name) {
 	return `
-		<div class="modal fade" id="loginModal">
+		<div class="modal fade" id="${name}Modal">
 			<div class="modal-dialog">
 				<div class="modal-content">
 					<div class="modal-header">
-						<h1 class="modal-title fs-5" id="loginModalTitle"></h1>
+						<h1 class="modal-title fs-5" id="${name}Label">${name}</h1>
 						<div class="btn-close" data-bs-dismiss="modal"></div>
 					</div>
-					<div id="loginModalBody" class="modal-body">
+					<div class="modal-body">
 					</div>
 				</div>
 			</div>
@@ -175,31 +141,3 @@ export function checkFrontEnd() {
 	})
 }
 
-function removeForm() {
-	const loginForm = document.querySelector('#loginForm');
-	const registrationForm = document.querySelector('#registrationForm');
-	if (loginForm) {
-		loginForm.remove();
-	}
-	if (registrationForm) {
-		registrationForm.remove();
-	}
-}
-
-
-function createModal(name) {
-	return `
-		<div class="modal fade" id="${name}Modal">
-			<div class="modal-dialog">
-				<div class="modal-content">
-					<div class="modal-header">
-						<h1 class="modal-title fs-5" id="${name}Label">${name}</h1>
-						<div class="btn-close" data-bs-dismiss="modal"></div>
-					</div>
-					<div class="modal-body">
-					</div>
-				</div>
-			</div>
-		</div>
-	`
-}

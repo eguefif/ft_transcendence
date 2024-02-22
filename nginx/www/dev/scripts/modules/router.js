@@ -38,13 +38,11 @@ export function initRouter(renderer) {
 
 	window.addEventListener("popstate", router)
 
-	document.addEventListener("DOMContentLoaded", () => {
-		document.body.addEventListener("click", e => {
-			if (e.target.matches("[data-link]")) {
-				e.preventDefault()
-				navigateTo(e.target.href)
-			}
-		})
+	document.addEventListener("click", e => {
+		if (e.target.matches("[data-link]")) {
+			e.preventDefault()
+			navigateTo(e.target.href)
+		}
 	})
 	router(renderer)
 }
