@@ -349,5 +349,4 @@ export class graphicEngine
 		this.ctx.fillStyle = this.textColor;
 		this.ctx.fillText(display, this.startTimerCenter, this.startTimerMargin)
 	}
-
 }
