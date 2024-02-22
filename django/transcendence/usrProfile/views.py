@@ -22,10 +22,10 @@ def get_image(user):
         usrImg = "/images/avatar.png"
         return usrImg
 
-    if len(profile_user.profile_picture) == 0:
+    if not profile_user.profile_picture:
         usrImg = "/images/avatar.png"
     else:
-        usrImg = profile_user["profile_picture"]
+        usrImg = profile_user.profile_picture
     return usrImg
 
 def get_games_history(games, user):

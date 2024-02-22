@@ -311,7 +311,7 @@ export class graphicEngine
 		this.textColor = "rgb(43, 194, 14)"
 		
 		this.Renderer = renderer
-		renderer.showBoard()
+		this.Renderer.showBoard()
 	}
 
 	display(model) {
