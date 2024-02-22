@@ -95,7 +95,7 @@ function renderProfileStructure(username) {
     <div id="stats" class="p-4">
     </div> 
     <hr class="w-25 mx-auto"/>
-    <div id="history" class="p-4">
+    <div id="history" style="overflow:scroll cla	ss="p-4">
 	</div>
 	`
 }
