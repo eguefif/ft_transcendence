@@ -5,37 +5,14 @@ import { initRouter } from "./router.js";
 
 
 export async function createButton () {
-	/*
-	const element = document.querySelector('.navbar-nav');
-	console.log(element)
-	if (!element) {
-		document.querySelector('#navBarButton').insertAdjacentHTML("afterbegin", createUl("navbar-nav ms-auto"));
-	}
-	*/
-
 	if (await fetcher.isAuthenticated()) {
-
-		/*
-		const element = document.querySelector('.navbar-nav');
-		element.innerHTML = createModalBtn("nav-item btn-primary", "profile", getSVG.navbarSVG.profil);
-		const firstElement = document.getElementById("profileButton")
-		element.insertAdjacentHTML("beforeend", createActionBtn("nav-item btn-primary", "logout", getSVG.navbarSVG.logout, "idLogout"));
-		firstElement.insertAdjacentHTML("afterend", createActionBtn("nav-item btn-primary", "seting", getSVG.navbarSVG.seting, "seting", "/profile", "data-link"));
-		*/
 		createBtns()
 		authLogout()
 	}
 	else {
-		//const element = document.querySelector('.navbar-nav');
 		const element = document.getElementById("navBarButton")
 		element.innerHTML = createModalBtn("nav-item btn-primary", "connection","" , "Connexion");
 	}
-}
-
-function createUl (ulClasses="") {
-	return `
-	<ul class="${ulClasses}">
-	</ul>`
 }
 
 function createModalBtn(btnClasses="", btnName="", srcImg="", name ="") {
@@ -47,16 +24,6 @@ function createModalBtn(btnClasses="", btnName="", srcImg="", name ="") {
 				<text>${name}</text>
 			</li>
 		`
-}
-
-function createActionBtn (btnClasses="", btnName ="", srcImg="", idLink ="", route="", dataL="") {
-	return `
-		<li class="${btnClasses}" id="${btnName}Button" ${dataL}>
-			<a id="${idLink}" href="${route}" ${dataL}>
-			${srcImg}
-			</a>
-		</li>
-	`
 }
 
 function createBtns() {

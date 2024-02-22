@@ -3,11 +3,13 @@ import { Game } from "./Game.js"
 import { LocalController } from "./LocalController.js"
 import { RemoteController } from "./RemoteController.js"
 import { PassiveController } from "./PassiveController.js"
+import { renderer } from "./graphic-engine.js";
 
-export async function pongMenu(renderer) {
-
+export async function pongMenu() {
 	let controller = new PassiveController()
-	let game = new Game(controller, renderer)
+	let game = new Game(controller)
+	let profile = document.getElementById("profileDiv")
+	profile.innerHTML = ``
 
 	if (await fetcher.isAuthenticated())
 		render_pong_menu_connected()
@@ -16,7 +18,8 @@ export async function pongMenu(renderer) {
 	game.run()
 }
 
-export async function initRemoteGame(renderer) {
+
+export async function initRemoteGame() {
 	if (!await fetcher.isAuthenticated()) {
 		return
 	}
@@ -27,65 +30,27 @@ export async function initRemoteGame(renderer) {
 	game.run()
 }
 
-export function initLocalGame(renderer) {
-	render_pong_menu_button()
+export function initLocalGame() {
 	let controller = new LocalController()
+	render_pong_menu_button()
 	controller.init()
-	let game = new Game(controller, renderer)
+	let game = new Game(controller, )
 	game.run()
 }
 
-function hideMainMenu(){
-	let remoteGameBtn = document.querySelector("#remotegamebtn")
-	let localGameBtn= document.querySelector("#localgamebtn")
-	let menu = document.querySelector("#menubtn")
-
-	remoteGameBtn.classList.add('d-none')
-	localGameBtn.classList.add('d-none')
-}
-
-function show_and_init_event_for_menu_button() {
-	let menu = document.querySelector("#menubtn")
-	menu.classList.remove("d-none")
-}
-
 export function render_game_board() {
-	let main_frame = document.getElementById("main_frame")
+	let main_frame = document.getElementById("pongDiv")
 	main_frame.innerHTML = `
-			<div id="pong_menu" class="row m-5">
+		<div id="pong_menu" class="row m-5">
+		</div>
+		<div class="row">
+			<div class="col">
+				<canvas id="board"></canvas>
+				<canvas id="background"></canvas>
 			</div>
-			<div class="row">
-				<div class="col">
-					<canvas id="board"></canvas>
-					<canvas id="background"></canvas>
-					  <script type="vertex" id="vertexshader">
-				  
-						  varying vec2 vUv;
-				  
-						  void main() {
-				  
-							  vUv = uv;
-				  
-							  gl_Position = projectionMatrix * modelViewMatrix * vec4( position, 1.0 );
-				  
-						  }
-					  </script>
-					  <script type="fragment" id="fragmentshader">
-				  
-						  uniform sampler2D baseTexture;
-						  uniform sampler2D bloomTexture;
-				  
-						  varying vec2 vUv;
-				  
-						  void main() {
-				  
-							  gl_FragColor = ( texture2D( baseTexture, vUv ) + vec4( 1.0 ) * texture2D( bloomTexture, vUv ) );
-				  
-						  }
-					  </script>
-				</div>
-			</div>
+		</div>
 	`
+	renderer.init()
 }
 
 function render_pong_menu_connected() {

@@ -6,10 +6,7 @@ import { EffectComposer } from 'three/addons/postprocessing/EffectComposer.js';
 import { UnrealBloomPass } from 'three/addons/postprocessing/UnrealBloomPass.js';
 import { OutputPass } from 'three/addons/postprocessing/OutputPass.js'
 import { ShaderPass } from 'three/addons/postprocessing/ShaderPass.js'
-// import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
-// import { DRACOLoader } from 'three/addons/loaders/DRACOLoader.js';
-// import { TextGeometry } from 'three/addons/geometries/TextGeometry.js';
-// import { FontLoader } from 'three/addons/loaders/FontLoader.js';
+
 
 export class Renderer{
 	constructor(){
@@ -21,6 +18,9 @@ export class Renderer{
 
 		this.windowWidth = window.innerWidth
 		this.windowHeight = window.innerHeight
+	}
+
+	init (){
 
 		this.initRenderer()
 		this.initBloom()
@@ -33,7 +33,7 @@ export class Renderer{
 		this.initLight()
 		this.initCameraPos()
 		this.initListener()
-		
+
 		this.renderer.setAnimationLoop(this.render.bind(this))
 	}
 	initRenderer()
@@ -58,7 +58,24 @@ export class Renderer{
 		this.renderPass = new RenderPass(this.scene, this.camera)
 		this.composer = new EffectComposer(this.renderer)
 		this.composer.addPass(this.renderPass)
-
+		const fragment_shader = `
+		uniform sampler2D baseTexture;
+		uniform sampler2D bloomTexture;
+		varying vec2 vUv;
+		void main() {
+			gl_FragColor = ( texture2D( baseTexture, vUv ) + vec4( 1.0 ) * texture2D( bloomTexture, vUv ) );
+		}
+		`
+		const vertex_shader = `
+		varying vec2 vUv;	
+		void main() {
+		
+			vUv = uv;
+		
+			gl_Position = projectionMatrix * modelViewMatrix * vec4( position, 1.0 );
+		
+		}	
+		`
 		this.bloomPass = new UnrealBloomPass( 
 		    new THREE.Vector2(this.windowWidth, this.windowHeight),
 		    0.3, //bloom intensity
@@ -74,8 +91,8 @@ export class Renderer{
 					baseTexture: {value: null},
 		            bloomTexture: {value: this.composer.renderTarget2.texture}
 		        },
-		        vertexShader: document.getElementById('vertexshader').textContent,
-		        fragmentShader: document.getElementById('fragmentshader').textContent
+				vertexShader: vertex_shader,
+				fragmentShader: fragment_shader
 		    }), 'baseTexture'
 		    )
 	
@@ -117,26 +134,33 @@ export class Renderer{
 		const LipGeometry = new THREE.BoxGeometry(this.boardWidth, 0.027, 0.04);
 		const vertBoarderGeo = new THREE.BoxGeometry(0.015, this.boardHeight, 0.0001);
 
-		const topLip = new THREE.Mesh(LipGeometry, this.greenGlowMat);
-		const bottomLip = new THREE.Mesh(LipGeometry, this.greenGlowMat);
-		const gameboard = new THREE.Mesh(boardGeometry, this.calizStella_mat)
+		this.topLip = new THREE.Mesh(LipGeometry, this.greenGlowMat);
+		this.bottomLip = new THREE.Mesh(LipGeometry, this.greenGlowMat);
+		this.gameboard = new THREE.Mesh(boardGeometry, this.calizStella_mat)
 
 	    const vertBoarderMat = new THREE.MeshBasicMaterial({ color: 0x000604 })
-	    const vertBoarderLeft = new THREE.Mesh(vertBoarderGeo, vertBoarderMat);
-	    const vertBoarderRight = new THREE.Mesh(vertBoarderGeo, vertBoarderMat);
+	    this.vertBoarderLeft = new THREE.Mesh(vertBoarderGeo, vertBoarderMat);
+	    this.vertBoarderRight = new THREE.Mesh(vertBoarderGeo, vertBoarderMat);
 
-	    vertBoarderLeft.position.set(this.boardWidth / 2, 0, 0)
-	    vertBoarderRight.position.set((this.boardWidth / -2), 0, 0)
+	    this.vertBoarderLeft.position.set(this.boardWidth / 2, 0, 0)
+	    this.vertBoarderRight.position.set((this.boardWidth / -2), 0, 0)
 
-		topLip.position.set(0, this.boardHeight / 2, 0.05)
-		bottomLip.position.set(0, this.boardHeight / -2, 0.05)
-		gameboard.position.set(0,0,0)
+		this.topLip.position.set(0, this.boardHeight / 2, 0.05)
+		this.bottomLip.position.set(0, this.boardHeight / -2, 0.05)
+		this.gameboard.position.set(0,0,0)
 
-		topLip.layers.toggle(this.BLOOM_SCENE)
-		bottomLip.layers.toggle(this.BLOOM_SCENE)
-		gameboard.layers.disable(20)
+		this.topLip.layers.toggle(this.BLOOM_SCENE)
+		this.bottomLip.layers.toggle(this.BLOOM_SCENE)
+		this.gameboard.layers.disable(20)
 
-		this.scene.add(topLip, bottomLip, gameboard, vertBoarderLeft, vertBoarderRight)
+	}
+	showBoard()
+	{
+		this.scene.add(this.topLip, this.bottomLip, this.gameboard, this.vertBoarderLeft, this.vertBoarderRight, this.ball, this.paddle1, this.paddle2)
+	}
+	hideBoard()
+	{
+		this.scene.remove(this.topLip, this.bottomLip, this.gameboard, this.vertBoarderLeft, this.vertBoarderRight, this.ball, this.paddle1, this.paddle2)
 	}
 
 	initMaterials()
@@ -181,7 +205,7 @@ export class Renderer{
 
 		this.paddle2.position.set(this.boardStartX + this.boardWidth - this.paddleMarging_x, 0, 0.1)
 		this.paddle2.layers.toggle(this.BLOOM_SCENE)
-		this.scene.add(this.paddle1, this.paddle2)
+		// this.scene.add(this.paddle1, this.paddle2)
 	}
 
 	initBall()
@@ -190,7 +214,7 @@ export class Renderer{
 		this.ball = new THREE.Mesh(ballGeometry, this.greenGlowMat);
 		this.ball.position.set(this.boardStartX + this.boardWidth / 2, this.boardStartY + this.boardHeight / 2, 0.1)
 		this.ball.layers.toggle(this.BLOOM_SCENE)
-		this.scene.add(this.ball)
+		// this.scene.add(this.ball)
 	}
 
 	initSun()
@@ -236,7 +260,7 @@ export class Renderer{
 		this.sun.translateX(0.003)
 		this.sun.translateY(0.0002)
 		this.scene.traverse(this.nonBloomed.bind(this))
-		this.pointLight.intensity = (Math.sin(Date.now() / 1000) + 1.2) * 0.025
+		this.pointLight.intensity = (Math.sin(Date.now() / 1000) + 1) * 0.025
 		this.sunLight.intensity = 8000 * (Math.sin(Date.now() / 5000) + 3)
 		this.composer.render()
 		
@@ -250,41 +274,45 @@ export class Renderer{
 		window.addEventListener("resize", (function (e) {
 			this.windowWidth = window.innerWidth
 			this.windowHeight = window.innerHeight
-			// this.initBloom()
+
 			this.camera.aspect = this.windowWidth / this.windowHeight;
 			this.camera.updateProjectionMatrix();
 			this.renderer.setSize(this.windowWidth, this.windowHeight);
+			this.composer.setSize(this.windowWidth, this.windowHeight);
+			this.finalComposer.setSize(this.windowWidth, this.windowHeight);
 		}).bind(this));
 	}
 
 }
 
+export const renderer = new Renderer()
+
 export class graphicEngine
 {
-	constructor(renderer){
+	constructor(){
 		this.board = document.getElementById("board")
 		this.ctx =  this.board.getContext("2d")
 
 		
 		// this.generalTopMargin = this.height / 10;
-
+		this.board.style.top = '35%'
 		this.width = this.board.width
 		this.height = this.board.height
 		this.mid = this.board.width / 2
-		this.scoreMarginRight = this.mid + this.width / 8
-		this.scoreMarginLeft = this.mid - this.width / 8
-		this.scoreMarginTop = this.height / 3
-		this.scoreScale = this.height / 10
+		this.scoreScale = this.height / 4
+		this.scoreMarginRight = (this.mid + this.width / 4) - (this.scoreScale * 0.2)
+		this.scoreMarginLeft = (this.mid - this.width / 4) - (this.scoreScale * 0.2)
+		this.scoreMarginTop = this.board.height / 3
 		this.messageCenter = this.mid - this.width / 7
-		this.messageMargin = this.height / 2
-		this.startTimerCenter = this.mid - this.width / 48
-		this.startTimerMargin = this.height / 2
-		this.startTimerScale = this.height / 6
+		this.messageMargin = this.height / 2 + this.height / 4
+		this.messageScale = this.width / 15
+		this.startTimerMargin = this.height / 2 + this.height / 4
+		this.startTimerScale = this.height / 3
+		this.startTimerCenter = this.mid  - (this.startTimerScale * 0.2)
 		this.textColor = "rgb(43, 194, 14)"
-		this.paddleHeigt = 1 / 8
 		
-		//this.Renderer = renderer
 		this.Renderer = renderer
+		this.Renderer.showBoard()
 	}
 
 	display(model) {
@@ -321,12 +349,15 @@ export class graphicEngine
 
 	displayScore(player1Score, player2Score)
 	{
+		if (player1Score == undefined || player2Score == undefined)
+			return
 		const dis1 = `${player1Score}`
 		const dis2 = `${player2Score}`
 		this.ctx.font = "".concat(`${this.scoreScale}`, "px Impact, fantasy")
 		this.ctx.fillStyle = this.textColor;
 
 		this.ctx.fillText(dis1, this.scoreMarginLeft, this.scoreMarginTop)
+
 		this.ctx.fillText(dis2, this.scoreMarginRight, this.scoreMarginTop)
 	}
 
@@ -335,9 +366,9 @@ export class graphicEngine
 		if (message == "" || message == undefined)
 			return
 		const len = message.length
-		this.ctx.font = "".concat(`${this.scoreScale}`, "px Impact, fantasy")
+		this.ctx.font = "".concat(`${this.messageScale}`, "px Impact, fantasy")
 		this.ctx.fillStyle = this.textColor;
-		this.ctx.fillText(message, this.mid - len * this.scoreScale * 0.2, this.messageMargin)
+		this.ctx.fillText(message, this.mid - len * this.messageScale * 0.2, this.messageMargin)
 	}
 
 	displayStartTimer(timeToWait)
@@ -350,3 +381,4 @@ export class graphicEngine
 		this.ctx.fillText(display, this.startTimerCenter, this.startTimerMargin)
 	}
 }
+
