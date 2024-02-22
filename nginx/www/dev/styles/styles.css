@@ -3,8 +3,8 @@ li {
   margin: 2rem;
 }
 
-.navbar {
-  opacity: 0.4;
+body {
+  overflow: hidden;
 }
 
 #profilePictureContainer {

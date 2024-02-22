@@ -1,6 +1,8 @@
 import { fetcher } from "./fetcher.js"
+import { renderer } from "./graphic-engine.js"
 
 export async function profile() {
+	renderer.hideBoard()
 	let msg = await fetcher.get("/api/userinfo")
 	let games ={}
 	let username = msg.data.username
