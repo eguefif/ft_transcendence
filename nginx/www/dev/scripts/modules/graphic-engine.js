@@ -280,7 +280,7 @@ export class Renderer{
 
 export class graphicEngine
 {
-	constructor(Renderer){
+	constructor(renderer){
 		this.ctx =  board.getContext("2d")
 		this.board = document.getElementById("board")
 		
@@ -301,10 +301,12 @@ export class graphicEngine
 		this.textColor = "rgb(43, 194, 14)"
 		this.paddleHeigt = 1 / 8
 		
-		this.Renderer = Renderer
+		//this.Renderer = renderer
+		this.Renderer = renderer
 	}
 
 	display(model) {
+
 		if (model != "none" && model != undefined)
 		{
 			this.clearFrame()

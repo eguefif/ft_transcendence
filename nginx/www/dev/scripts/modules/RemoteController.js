@@ -6,7 +6,6 @@ export class RemoteController {
 		this.player2Score = 0
 		this.startTimer = 0
 		this.winnerMessage = ""
-		this.username = username
 		this.paddle1 = new Paddle("player1", "right")
 		this.paddle2 = new Paddle("player2", "left")
 		this.ball = new Ball()

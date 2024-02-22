@@ -4,22 +4,29 @@ import { getSVG } from "./iconSVG.js";
 
 
 export async function createButton () {
+	/*
 	const element = document.querySelector('.navbar-nav');
+	console.log(element)
 	if (!element) {
 		document.querySelector('#navbarNavDropdown').insertAdjacentHTML("afterbegin", createUl("navbar-nav ms-auto"));
 	}
+	*/
 
 	if (await fetcher.isAuthenticated()) {
 
+		/*
 		const element = document.querySelector('.navbar-nav');
 		element.innerHTML = createModalBtn("nav-item btn-primary", "profile", getSVG.navbarSVG.profil);
 		const firstElement = document.getElementById("profileButton")
 		element.insertAdjacentHTML("beforeend", createActionBtn("nav-item btn-primary", "logout", getSVG.navbarSVG.logout, "idLogout"));
-		firstElement.insertAdjacentHTML("afterend", createActionBtn("nav-item btn-primary", "seting", getSVG.navbarSVG.seting, "profile", "/profile", "data-link"));
+		firstElement.insertAdjacentHTML("afterend", createActionBtn("nav-item btn-primary", "seting", getSVG.navbarSVG.seting, "settings", "/profile", "data-link"));
+		*/
+		createBtns()
 		authLogout()
 	}
 	else {
-		const element = document.querySelector('.navbar-nav');
+		//const element = document.querySelector('.navbar-nav');
+		const element = document.getElementById("navbarNavDropdown")
 		element.innerHTML = createModalBtn("nav-item btn-primary", "connection","" , "Connexion");
 	}
 }
@@ -48,5 +55,29 @@ function createActionBtn (btnClasses="", btnName ="", srcImg="", idLink ="", rou
 			${srcImg}
 			</a>
 		</li>
+	`
+}
+
+function createBtns() {
+	let nav = document.getElementById("navbarNavDropdown")
+	nav.innerHTML = `
+		<ul class="navbar-nav ms-auto">
+			<li class="nav-item btn-primary" id="setingButton">
+				<a id="id" href="/profile" data-link>
+				${getSVG.navbarSVG.profil}
+				</a>
+			</li>
+			<li class="nav-item btn-primary" id="profileButton"
+				data-bs-toggle="modal"
+				data-bs-target="#profileModal">
+				${getSVG.navbarSVG.seting}
+				<text></text>
+			</li>
+			<li class="nav-item btn-primary" id="logoutButton">
+				<a id="idLogout" href="">
+				${getSVG.navbarSVG.logout}
+				</a>
+			</li>
+	</ul>
 	`
 }

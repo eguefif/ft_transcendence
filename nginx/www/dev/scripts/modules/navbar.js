@@ -5,6 +5,7 @@ export function createNavBar () {
 				<a class="navbar-brand test" href="/" data-link>
 					<img src="images/logo-new.png" alt="" width="150" />
 				</a>
+				<!--
 				<button
 					class="test navbar-toggler opacity-100"
 					type="button"
@@ -16,11 +17,13 @@ export function createNavBar () {
 					>
 					<span class="navbar-toggler-icon"></span>
 				</button>
-				<div class="collapse navbar-collapse" id="navbarNavDropdown">
+				-->
+				<!--<div class="collapse navbar-collapse" id="navbarNavDropdown"> -->
+				<div id="navbarNavDropdown">
 				</div>
 			</div>
 		</nav>
 	`
 
-	document.querySelector('body').insertAdjacentHTML("afterbegin", nav);
+	document.getElementById('nav_frame').insertAdjacentHTML("afterbegin", nav);
 }

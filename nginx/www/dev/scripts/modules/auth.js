@@ -29,65 +29,36 @@ export function authLogout()
 	});
 }
 
-// function validateInput(textBox, validationBox, errorMessage) {
-//     textBox.addEventListener('focusout', (event) => {
-// 		event.preventDefault()
-//         const value = textBox.value;
-//         if ( value.length < 4) {
-//             validationBox.classList.add("error");
-//             validationBox.innerHTML = errorMessage;
-//         }
-// 		else {
-// 			validationBox.classList.remove("error");
-//             validationBox.innerHTML = "";
-// 		}
-//     });
-// }
-
-/*
-function validatePassword(textBox, validationBox) {
-	textBox.addEventListener('focusout', (e) => {
-		e.preventDefault()
-		const value = textBox.value
-		if (value.length < 4) {
-			validationBox.classList.add("error")
-			validationBox.innerHTML = "Password is too short"
-		} else {
-			validationBox.classList.remove("error");
-            validationBox.innerHTML = "";
+async function sendLoginRequest(url, body)
+{
+	const refreshExpiry = Date.now() + fetcher.refreshDuration;
+	const result = await fetcher.post(url, body);
+	const validation = document.getElementById("loginValidation")
+	if (result.status >= 200 && result.status < 300)
+	{
+		if (result.data.otpToken) {
+			fetcher.setAccess(result.data.otpToken);
+			await requireOtp();
+			return;
 		}
-	})
-}
-
-function validatePasswordCheck(passTextBox, confirmTextBox, confirmValidationBox) {
-	confirmTextBox.addEventListener('focusout', (e) => {
-		const passValue = passTextBox.value
-		const passCheckValue = confirmTextBox.value
-		if (passValue != passCheckValue) {
-			confirmValidationBox.classList.add("error")
-			confirmValidationBox.innerHTML = "Passwords don't match"
-		} else {
-			confirmValidationBox.classList.remove("error")
-			confirmValidationBox.innerHTML = ""
+		else if (result.data.accessToken) {
+			localStorage.setItem("refreshExpiry", `${refreshExpiry}`)
+			fetcher.setAccess(result.data.accessToken);
+			await createButton()
+			await pongMenu()
+			closeModal('connectionModal')
 		}
-	})
+		else {
+			validation.innerHTML = "Something went wrong";
+		}
+	}
+	else
+	{
+		document.getElementById("loginPassword").value = ""
+		// validation.innerHTML = "Wrong credentials"
+	}
+	return ;
 }
-*/
-
-// const textBoxName = document.getElementById('username');
-// const textBoxEmail = document.getElementById('email');
-// const textBoxPassword = document.getElementById('password');
-// const textBoxPasswordCheck = document.getElementById('password-check');
-
-// const usernameValidationBox = document.getElementById('usernameValidation');
-// const emailValidationBox = document.getElementById('emailValidation');
-// const passwordValidationBox = document.getElementById('passwordValidation');
-// const passwordCheckValidationBox = document.getElementById('password-checkValidation');
-
-// validateInput(textBoxName, usernameValidationBox, "This field is the wrong size.");
-// validateInput(textBoxEmail, emailValidationBox, "This field is the wrong size.");
-// validatePassword(textBoxPassword, passwordValidationBox);
-// validatePasswordCheck(textBoxPassword, textBoxPasswordCheck, passwordCheckValidationBox);
 
 export function authRegister()
 {
@@ -236,37 +207,6 @@ async function sendUpdateProfileRequest(url, body)
 	}
 }
 
-async function sendLoginRequest(url, body)
-{
-	const refreshExpiry = Date.now() + fetcher.refreshDuration;
-	const result = await fetcher.post(url, body);
-	const validation = document.getElementById("loginValidation")
-	if (result.status >= 200 && result.status < 300)
-	{
-		if (result.data.otpToken) {
-			fetcher.setAccess(result.data.otpToken);
-			await requireOtp();
-			return;
-		}
-		else if (result.data.accessToken) {
-			localStorage.setItem("refreshExpiry", `${refreshExpiry}`)
-			fetcher.setAccess(result.data.accessToken);
-		  await createButton()
-		  closeModal('connectionModal')
-			await pongMenu()
-		}
-		else {
-			validation.innerHTML = "Something went wrong";
-		}
-	}
-	else
-	{
-		document.getElementById("loginPassword").value = ""
-		// validation.innerHTML = "Wrong credentials"
-	}
-	return ;
-}
-
 async function requireOtp() {
 	let code;
 	while (!code) {
@@ -340,3 +280,64 @@ function activateOtp() {
 		let result = await fetcher.post("/api/auth/otp/deactivate");
 	})
 }
+
+
+// function validateInput(textBox, validationBox, errorMessage) {
+//     textBox.addEventListener('focusout', (event) => {
+// 		event.preventDefault()
+//         const value = textBox.value;
+//         if ( value.length < 4) {
+//             validationBox.classList.add("error");
+//             validationBox.innerHTML = errorMessage;
+//         }
+// 		else {
+// 			validationBox.classList.remove("error");
+//             validationBox.innerHTML = "";
+// 		}
+//     });
+// }
+
+/*
+function validatePassword(textBox, validationBox) {
+	textBox.addEventListener('focusout', (e) => {
+		e.preventDefault()
+		const value = textBox.value
+		if (value.length < 4) {
+			validationBox.classList.add("error")
+			validationBox.innerHTML = "Password is too short"
+		} else {
+			validationBox.classList.remove("error");
+            validationBox.innerHTML = "";
+		}
+	})
+}
+
+function validatePasswordCheck(passTextBox, confirmTextBox, confirmValidationBox) {
+	confirmTextBox.addEventListener('focusout', (e) => {
+		const passValue = passTextBox.value
+		const passCheckValue = confirmTextBox.value
+		if (passValue != passCheckValue) {
+			confirmValidationBox.classList.add("error")
+			confirmValidationBox.innerHTML = "Passwords don't match"
+		} else {
+			confirmValidationBox.classList.remove("error")
+			confirmValidationBox.innerHTML = ""
+		}
+	})
+}
+*/
+
+// const textBoxName = document.getElementById('username');
+// const textBoxEmail = document.getElementById('email');
+// const textBoxPassword = document.getElementById('password');
+// const textBoxPasswordCheck = document.getElementById('password-check');
+
+// const usernameValidationBox = document.getElementById('usernameValidation');
+// const emailValidationBox = document.getElementById('emailValidation');
+// const passwordValidationBox = document.getElementById('passwordValidation');
+// const passwordCheckValidationBox = document.getElementById('password-checkValidation');
+
+// validateInput(textBoxName, usernameValidationBox, "This field is the wrong size.");
+// validateInput(textBoxEmail, emailValidationBox, "This field is the wrong size.");
+// validatePassword(textBoxPassword, passwordValidationBox);
+// validatePasswordCheck(textBoxPassword, textBoxPasswordCheck, passwordCheckValidationBox);
