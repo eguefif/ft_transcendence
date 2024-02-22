@@ -10,3 +10,10 @@ $light: #F9F6EE;
 $dark: #36454F;
 
 @import '../../node_modules/bootstrap/scss/bootstrap.scss';
+
+.bg-dark {
+    &.custom-opacity {
+        background-color: rgba($dark, 0.8) !important;
+    }
+}
+

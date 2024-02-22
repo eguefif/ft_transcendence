@@ -3,6 +3,10 @@ li {
   margin: 2rem;
 }
 
+body {
+  overflow: hidden;
+}
+
 #profilePictureContainer {
   display: block;
   margin-left: auto;
@@ -28,6 +32,15 @@ li {
   left: 50%;
   transform: translate(-50%, -50%);
   z-index: -100;
+}
+
+#board {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  z-index: -1;
+  width: 30em;
 }
 
 #choose2PlayerButton {
@@ -11929,20 +11942,29 @@ textarea.form-control-lg {
     display: none !important;
   }
 }
+.bg-dark.custom-opacity {
+  background-color: rgba(54, 69, 79, 0.8) !important;
+}
+
 .error {
   font-size: small;
   color: rgb(255, 0, 0);
 }
 
-nav svg {
-  min-width: 2rem;
-  min-height: 2rem;
+nav a {
   color: #2FF924;
   transition: 0.25s;
 }
-nav svg:hover {
+nav a:hover {
   transition: 0.25s;
   color: #F9F6EE;
+}
+nav svg {
+  min-width: 2rem;
+  min-height: 2rem;
+}
+nav .noclick {
+  pointer-events: none;
 }
 
 text {
@@ -11954,4 +11976,9 @@ text:hover {
   transition: 0.25s;
   color: #F9F6EE;
   cursor: pointer;
+}
+
+#profile {
+  max-height: 100%;
+  overflow: auto;
 }

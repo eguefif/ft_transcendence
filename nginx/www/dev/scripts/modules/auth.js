@@ -3,10 +3,20 @@ import { pongMenu } from "./pong.js"
 import { checkFrontEnd, closeModal } from "./modal.js";
 import { createButton } from "./buttonNav.js";
 
+export async function initAuth() {
+	if (await fetcher.isAuthenticated()) {
+		authLogout();
+		profileInfo();
+		changeProfile();
+		authUpdateProfile();
+	}
+}
+
 export function authLogout()
 {
-	const logoutBtn = document.querySelector("#logoutSVG")
+	const logoutBtn = document.querySelector("#logoutButton")
 	logoutBtn.addEventListener("click", async function(e){
+		e.preventDefault()
 		const result = await fetcher.post("/api/auth/logout", {})
 		if (result.status >= 200 && result.status < 300) {
 			localStorage.removeItem("refreshExpiry")
@@ -20,65 +30,36 @@ export function authLogout()
 	});
 }
 
-// function validateInput(textBox, validationBox, errorMessage) {
-//     textBox.addEventListener('focusout', (event) => {
-// 		event.preventDefault()
-//         const value = textBox.value;
-//         if ( value.length < 4) {
-//             validationBox.classList.add("error");
-//             validationBox.innerHTML = errorMessage;
-//         }
-// 		else {
-// 			validationBox.classList.remove("error");
-//             validationBox.innerHTML = "";
-// 		}
-//     });
-// }
-
-/*
-function validatePassword(textBox, validationBox) {
-	textBox.addEventListener('focusout', (e) => {
-		e.preventDefault()
-		const value = textBox.value
-		if (value.length < 4) {
-			validationBox.classList.add("error")
-			validationBox.innerHTML = "Password is too short"
-		} else {
-			validationBox.classList.remove("error");
-            validationBox.innerHTML = "";
+async function sendLoginRequest(url, body)
+{
+	const refreshExpiry = Date.now() + fetcher.refreshDuration;
+	const result = await fetcher.post(url, body);
+	const validation = document.getElementById("loginValidation")
+	if (result.status >= 200 && result.status < 300)
+	{
+		if (result.data.otpToken) {
+			fetcher.setAccess(result.data.otpToken);
+			await requireOtp();
+			return;
 		}
-	})
-}
-
-function validatePasswordCheck(passTextBox, confirmTextBox, confirmValidationBox) {
-	confirmTextBox.addEventListener('focusout', (e) => {
-		const passValue = passTextBox.value
-		const passCheckValue = confirmTextBox.value
-		if (passValue != passCheckValue) {
-			confirmValidationBox.classList.add("error")
-			confirmValidationBox.innerHTML = "Passwords don't match"
-		} else {
-			confirmValidationBox.classList.remove("error")
-			confirmValidationBox.innerHTML = ""
+		else if (result.data.accessToken) {
+			localStorage.setItem("refreshExpiry", `${refreshExpiry}`)
+			fetcher.setAccess(result.data.accessToken);
+			await createButton()
+			await pongMenu()
+			closeModal('connectionModal')
 		}
-	})
+		else {
+			validation.innerHTML = "Something went wrong";
+		}
+	}
+	else
+	{
+		document.getElementById("loginPassword").value = ""
+		// validation.innerHTML = "Wrong credentials"
+	}
+	return ;
 }
-*/
-
-// const textBoxName = document.getElementById('username');
-// const textBoxEmail = document.getElementById('email');
-// const textBoxPassword = document.getElementById('password');
-// const textBoxPasswordCheck = document.getElementById('password-check');
-
-// const usernameValidationBox = document.getElementById('usernameValidation');
-// const emailValidationBox = document.getElementById('emailValidation');
-// const passwordValidationBox = document.getElementById('passwordValidation');
-// const passwordCheckValidationBox = document.getElementById('password-checkValidation');
-
-// validateInput(textBoxName, usernameValidationBox, "This field is the wrong size.");
-// validateInput(textBoxEmail, emailValidationBox, "This field is the wrong size.");
-// validatePassword(textBoxPassword, passwordValidationBox);
-// validatePasswordCheck(textBoxPassword, textBoxPasswordCheck, passwordCheckValidationBox);
 
 export function authRegister()
 {
@@ -133,7 +114,7 @@ function authUpdateProfile()
 
 function profileInfo()
 {
-	const profileBtn = document.querySelector("#profileButton")
+	const profileBtn = document.querySelector("#settingsButton")
 	profileBtn.addEventListener("click", async function (e) {
 		document.querySelector("#profileUsername").disabled = true
 		document.querySelector("#profileEmail").disabled = true
@@ -201,7 +182,7 @@ async function sendUpdateProfileRequest(url, body)
 		profileUsername.disabled = true
 		profileEmail.disabled = true
 		// alert test
-		document.querySelector("#profileModal").insertAdjacentHTML("afterbegin", `
+		document.querySelector("#settingsModal").insertAdjacentHTML("afterbegin", `
 		<div class="alert alert-success alert-dismissible fade show" role="alert">
 			<strong>Success!</strong> Your information has been saved.
 			<button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
@@ -225,37 +206,6 @@ async function sendUpdateProfileRequest(url, body)
 			profileEmailValidation.innerHTML = data['email']
 		}
 	}
-}
-
-async function sendLoginRequest(url, body)
-{
-	const refreshExpiry = Date.now() + fetcher.refreshDuration;
-	const result = await fetcher.post(url, body);
-	const validation = document.getElementById("loginValidation")
-	if (result.status >= 200 && result.status < 300)
-	{
-		if (result.data.otpToken) {
-			fetcher.setAccess(result.data.otpToken);
-			await requireOtp();
-			return;
-		}
-		else if (result.data.accessToken) {
-			localStorage.setItem("refreshExpiry", `${refreshExpiry}`)
-			fetcher.setAccess(result.data.accessToken);
-		  await createButton()
-		  closeModal('connectionModal')
-			await pongMenu()
-		}
-		else {
-			validation.innerHTML = "Something went wrong";
-		}
-	}
-	else
-	{
-		document.getElementById("loginPassword").value = ""
-		// validation.innerHTML = "Wrong credentials"
-	}
-	return ;
 }
 
 async function requireOtp() {
@@ -332,11 +282,63 @@ function activateOtp() {
 	})
 }
 
-export async function initAuth() {
-	if (await fetcher.isAuthenticated()) {
-		authLogout();
-		profileInfo();
-		changeProfile();
-		authUpdateProfile();
-	}
+
+// function validateInput(textBox, validationBox, errorMessage) {
+//     textBox.addEventListener('focusout', (event) => {
+// 		event.preventDefault()
+//         const value = textBox.value;
+//         if ( value.length < 4) {
+//             validationBox.classList.add("error");
+//             validationBox.innerHTML = errorMessage;
+//         }
+// 		else {
+// 			validationBox.classList.remove("error");
+//             validationBox.innerHTML = "";
+// 		}
+//     });
+// }
+
+/*
+function validatePassword(textBox, validationBox) {
+	textBox.addEventListener('focusout', (e) => {
+		e.preventDefault()
+		const value = textBox.value
+		if (value.length < 4) {
+			validationBox.classList.add("error")
+			validationBox.innerHTML = "Password is too short"
+		} else {
+			validationBox.classList.remove("error");
+            validationBox.innerHTML = "";
+		}
+	})
 }
+
+function validatePasswordCheck(passTextBox, confirmTextBox, confirmValidationBox) {
+	confirmTextBox.addEventListener('focusout', (e) => {
+		const passValue = passTextBox.value
+		const passCheckValue = confirmTextBox.value
+		if (passValue != passCheckValue) {
+			confirmValidationBox.classList.add("error")
+			confirmValidationBox.innerHTML = "Passwords don't match"
+		} else {
+			confirmValidationBox.classList.remove("error")
+			confirmValidationBox.innerHTML = ""
+		}
+	})
+}
+*/
+
+// const textBoxName = document.getElementById('username');
+// const textBoxEmail = document.getElementById('email');
+// const textBoxPassword = document.getElementById('password');
+// const textBoxPasswordCheck = document.getElementById('password-check');
+
+// const usernameValidationBox = document.getElementById('usernameValidation');
+// const emailValidationBox = document.getElementById('emailValidation');
+// const passwordValidationBox = document.getElementById('passwordValidation');
+// const passwordCheckValidationBox = document.getElementById('password-checkValidation');
+
+// validateInput(textBoxName, usernameValidationBox, "This field is the wrong size.");
+// validateInput(textBoxEmail, emailValidationBox, "This field is the wrong size.");
+// validatePassword(textBoxPassword, passwordValidationBox);
+// validatePasswordCheck(textBoxPassword, textBoxPasswordCheck, passwordCheckValidationBox);
