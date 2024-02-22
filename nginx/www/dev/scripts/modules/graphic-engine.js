@@ -14,7 +14,7 @@ import { FontLoader } from 'three/addons/loaders/FontLoader.js';
 // import { TextGeometry } from 'three/addons/geometries/TextGeometry.js';
 // import { FontLoader } from 'three/addons/loaders/FontLoader.js';
 
-class Renderer{
+export class Renderer{
 	constructor(){
 		this.boardWidth = 4
 		this.boardHeight = 3
@@ -24,6 +24,9 @@ class Renderer{
 
 		this.windowWidth = window.innerWidth
 		this.windowHeight = window.innerHeight
+	}
+
+	init (){
 
 		this.initRenderer()
 		this.initBloom()
@@ -61,7 +64,24 @@ class Renderer{
 		this.renderPass = new RenderPass(this.scene, this.camera)
 		this.composer = new EffectComposer(this.renderer)
 		this.composer.addPass(this.renderPass)
-
+		const fragment_shader = `
+		uniform sampler2D baseTexture;
+		uniform sampler2D bloomTexture;
+		varying vec2 vUv;
+		void main() {
+			gl_FragColor = ( texture2D( baseTexture, vUv ) + vec4( 1.0 ) * texture2D( bloomTexture, vUv ) );
+		}
+		`
+		const vertex_shader = `
+		varying vec2 vUv;	
+		void main() {
+		
+			vUv = uv;
+		
+			gl_Position = projectionMatrix * modelViewMatrix * vec4( position, 1.0 );
+		
+		}	
+		`
 		this.bloomPass = new UnrealBloomPass( 
 		    new THREE.Vector2(this.windowWidth, this.windowHeight),
 		    0.3, //bloom intensity
@@ -77,8 +97,10 @@ class Renderer{
 					baseTexture: {value: null},
 		            bloomTexture: {value: this.composer.renderTarget2.texture}
 		        },
-		        vertexShader: document.getElementById('vertexshader').textContent,
-		        fragmentShader: document.getElementById('fragmentshader').textContent
+		        //vertexShader: document.getElementById('vertexshader').textContent,
+		        //fragmentShader: document.getElementById('fragmentshader').textContent
+				vertexShader: vertex_shader,
+				fragmentShader: fragment_shader
 		    }), 'baseTexture'
 		    )
 	
@@ -264,30 +286,14 @@ class Renderer{
 
 }
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+export const renderer = new Renderer()
 
 export class graphicEngine
 {
-	constructor(mode="basic"){
-		this.ctx =  board.getContext("2d")
+	constructor(){
 		this.board = document.getElementById("board")
+		this.ctx =  this.board.getContext("2d")
+
 		
 		// this.generalTopMargin = this.height / 10;
 		this.board.style.top = '35%'
@@ -306,10 +312,11 @@ export class graphicEngine
 		this.startTimerCenter = this.mid  - (this.startTimerScale * 0.2)
 		this.textColor = "rgb(43, 194, 14)"
 		
-		this.Renderer = new Renderer()
+		this.Renderer = renderer
 	}
 
 	display(model) {
+
 		if (model != "none" && model != undefined)
 		{
 			this.clearFrame()
@@ -325,7 +332,7 @@ export class graphicEngine
 	}
 
 	clearFrame(){
-		this.ctx.clearRect(0, 0, board.width, board.height)
+		this.ctx.clearRect(0, 0, this.board.width, this.board.height)
 	}
 
 	displayBall(ball_x, ball_y, ball_radius){
@@ -375,3 +382,4 @@ export class graphicEngine
 	}
 
 }
+
