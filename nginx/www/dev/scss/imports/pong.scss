@@ -29,6 +29,8 @@
     left: 50%;
     transform: translate(-50%, -50%);
     z-index: -100;
+    // pointer-events: none;
+    
   }
 
   #board{
@@ -38,8 +40,10 @@
     transform: translate(-50%, -50%);
     z-index: -1;
     width: 30em;
+    pointer-events: none;
+
   }
- 
+
   // #gameBoard {
   //   /* background-image: linear-gradient( 
   //           to right, #8a2727ef, #cb0202);  */
@@ -61,11 +65,19 @@
     transform: translate(-50%, -50%);
 }
 
-#chooseRemoteButton{
-    position: absolute;
-    top: 70%;
-    left: 50%;
-    transform: translate(-50%, -50%);
+#pong_menu{
+  pointer-events: none;
+}
+
+// #chooseRemoteButton{
+//     position: absolute;
+//     top: 70%;
+//     left: 50%;
+//     transform: translate(-50%, -50%);
+// }
+
+#remotegamebtn{
+  pointer-events: auto;
 }
 
 #chooseTouramentButton{

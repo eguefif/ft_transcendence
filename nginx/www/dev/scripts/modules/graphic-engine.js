@@ -7,6 +7,9 @@ import { UnrealBloomPass } from 'three/addons/postprocessing/UnrealBloomPass.js'
 import { OutputPass } from 'three/addons/postprocessing/OutputPass.js'
 import { ShaderPass } from 'three/addons/postprocessing/ShaderPass.js'
 
+
+
+
 export class Renderer{
 	constructor(){
 		this.boardWidth = 4
