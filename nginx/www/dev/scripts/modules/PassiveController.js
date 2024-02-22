@@ -154,7 +154,7 @@ class Paddle {
 		this.height = 0.1
 		this.paddle_margin_x = 1 / 32
 		this.paddle_margin_y = 1 / 48
-		this.paddle_speed = 1 / 180
+		this.paddle_speed = 1 / 120
 		this.name = playerName
 		this.paddleHeight = 1 / 8
         this.y = (1 / 2) - (this.paddleHeight / 2)

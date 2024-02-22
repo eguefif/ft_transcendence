@@ -6,6 +6,9 @@ import { EffectComposer } from 'three/addons/postprocessing/EffectComposer.js';
 import { UnrealBloomPass } from 'three/addons/postprocessing/UnrealBloomPass.js';
 import { OutputPass } from 'three/addons/postprocessing/OutputPass.js'
 import { ShaderPass } from 'three/addons/postprocessing/ShaderPass.js'
+
+import { TextGeometry } from 'three/addons/geometries/TextGeometry.js';
+import { FontLoader } from 'three/addons/loaders/FontLoader.js';
 // import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
 // import { DRACOLoader } from 'three/addons/loaders/DRACOLoader.js';
 // import { TextGeometry } from 'three/addons/geometries/TextGeometry.js';
@@ -33,6 +36,28 @@ class Renderer{
 		this.initLight()
 		this.initCameraPos()
 		this.initListener()
+
+		const loader = new FontLoader();
+
+loader.load( 'three/examples/fonts/helvetiker_regular.typeface.json', function ( font ) {
+
+
+	this.textgeometry = new TextGeometry( 'Hello three.js!', {
+		font: font,
+		size: 80,
+		height: 5,
+		curveSegments: 12,
+		bevelEnabled: true,
+		bevelThickness: 10,
+		bevelSize: 8,
+		bevelOffset: 0,
+		bevelSegments: 5
+	
+	} );
+	this.text = new THREE.MeshPhongMaterial(this.textgeometry, this.greenGlowMat)
+	this.scene.add(this.text)
+} );
+
 		
 		this.renderer.setAnimationLoop(this.render.bind(this))
 	}
@@ -250,10 +275,12 @@ class Renderer{
 		window.addEventListener("resize", (function (e) {
 			this.windowWidth = window.innerWidth
 			this.windowHeight = window.innerHeight
-			// this.initBloom()
+
 			this.camera.aspect = this.windowWidth / this.windowHeight;
 			this.camera.updateProjectionMatrix();
 			this.renderer.setSize(this.windowWidth, this.windowHeight);
+			this.composer.setSize(this.windowWidth, this.windowHeight);
+			this.finalComposer.setSize(this.windowWidth, this.windowHeight);
 		}).bind(this));
 	}
 
@@ -291,7 +318,7 @@ export class graphicEngine
 		this.mid = this.board.width / 2
 		this.scoreMarginRight = this.mid + this.width / 8
 		this.scoreMarginLeft = this.mid - this.width / 8
-		this.scoreMarginTop = this.height / 3
+		this.scoreMarginTop = window.innerHeight / 10
 		this.scoreScale = this.height / 10
 		this.messageCenter = this.mid - this.width / 7
 		this.messageMargin = this.height / 2
@@ -342,8 +369,8 @@ export class graphicEngine
 		this.ctx.font = "".concat(`${this.scoreScale}`, "px Impact, fantasy")
 		this.ctx.fillStyle = this.textColor;
 
-		this.ctx.fillText(dis1, this.scoreMarginLeft, this.scoreMarginTop)
-		this.ctx.fillText(dis2, this.scoreMarginRight, this.scoreMarginTop)
+		this.ctx.fillText(dis1, this.scoreMarginLeft, window.innerHeight / 8)
+		this.ctx.fillText(dis2, this.scoreMarginRight, window.innerHeight / 8)
 	}
 
 	displayMessage(message)
