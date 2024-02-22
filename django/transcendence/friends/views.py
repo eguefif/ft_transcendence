@@ -23,8 +23,13 @@ def get_friend_requests(request):
             status=Friendship.PENDING
         )
 
-        serializer = FriendshipSerializer(pending_friendships, many=True)
-        return Response(data=serializer.data, status=status.HTTP_200_OK)
+        user_data = []
+        for fs in pending_friendships:
+            friend = fs.user1 if fs.user2 == user else fs.user2
+            friend_serializer = UserFriendInfoSerializer(friend)
+            user_data.append(friend_serializer.data)
+
+        return Response(data=user_data, status=status.HTTP_200_OK)
     except:
         return Response({'error': 'Could not get pending friend requests'}, status=status.HTTP_400_BAD_REQUEST)
 
@@ -48,8 +53,6 @@ def get_friend_list(request):
             friend_serializer = UserFriendInfoSerializer(friend)
             user_data.append(friend_serializer.data)
 
-
-        #serializer = FriendshipSerializer(friendships, many=True)
         return Response(data=user_data, status=status.HTTP_200_OK)
     except:
         return Response({'error': 'Could not get friends'}, status=status.HTTP_400_BAD_REQUEST)
@@ -80,9 +83,41 @@ def accept_friend_request(request):
     try:
         username = get_token_user(request.headers["Authorization"])
         user = User.objects.get(username=username)
-        friend_request = Friendship.objects.get(pk=request.data['friendshipID'], user2=user)
+        userToAccept = User.objects.get(username=request.data['username'])
+        friend_request = Friendship.objects.get(user1=userToAccept, user2=user)
         friend_request.status = Friendship.ACCEPTED
         friend_request.save() # Update date_added a cause de auto_now=True
         return Response({'success': 'Friend request accepted'}, status=status.HTTP_200_OK)
     except Exception as e:
         return Response({'error': str(e)}, status=status.HTTP_400_BAD_REQUEST)
+    
+@api_view(['POST'])
+@require_authorization
+def decline_friend_request(request):
+    try:
+        username = get_token_user(request.headers["Authorization"])
+        user = User.objects.get(username=username)
+        userToDecline = User.objects.get(username=request.data['username'])
+        friendship = Friendship.objects.get(user1=userToDecline, user2=user)
+        friendship.delete()
+        return Response({'success': 'User has been declined'}, status=status.HTTP_200_OK)
+    except Exception as e:
+        return Response({'error': str(e)}, status=status.HTTP_400_BAD_REQUEST)
+    
+@api_view(['POST'])
+@require_authorization
+def delete_friendship(request):
+    username = get_token_user(request.headers["Authorization"])
+    user = User.objects.get(username=username)
+    userToDelete = get_object_or_404(User, username=request.data['username'])
+
+    friendship = Friendship.objects.filter(
+        (models.Q(user1=user) & models.Q(user2=userToDelete)) |
+        (models.Q(user1=userToDelete) & models.Q(user2=user))
+    )
+    
+    if friendship.exists():
+        friendship.delete()
+        return Response({'succes': 'Friend deleted'}, status=status.HTTP_200_OK)
+
+    return Response({'error': 'Not friends'}, status=status.HTTP_400_BAD_REQUEST)
