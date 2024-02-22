@@ -77,7 +77,7 @@ function render_game_board() {
 			</div>
 			<div class="row">
 				<div class="col">
-					<a id="menubtn" href="/" class="btn btn-primary d-none m-5 bt-primary">Menu</a>
+					<a id="menubtn" href="/" class="btn btn-primary d-none m-5 bt-primary" data-link>Menu</a>
 				</div>
 			</div>
 			<div class="row">

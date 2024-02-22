@@ -54,7 +54,7 @@ function CreateModal(name) {
 			<div class="modal-dialog">
 				<div class="modal-content">
 					<div class="modal-header">
-						<h1 class="modal-title fs-5" id="${name}Label">${name}</h1>
+						<h1 class="modal-title fs-5" id="${name}Label"></h1>
 						<div class="btn-close" data-bs-dismiss="modal"></div>
 					</div>
 					<div class="modal-body">
@@ -72,14 +72,14 @@ function createFormLogin() {
 				<label for="username" class="form-label">Username</label>
 				<input type="username" name='username' id="loginUsername" class="form-control" required>
 				<div class="invalid-feedback">
-					Your username must have between 4-24 characters, only letters and numbers.
+					Your user name is required
 				</div>
 			</div>
 			<div class="mb-3">
 				<label for="password" class="form-label">Password</label>
 				<input type="password" name='password' id="loginPassword" class="form-control" required>
 				<div class="invalid-feedback">
-					Your password must have between 4-24 characters, at least one uppercase, one lowercase and one number.
+					Your password is required
 				</div>
 			</div>
 			<button type="submit" value="Login" class="btn btn-primary">Submit</button>
@@ -124,20 +124,3 @@ function createFormRegister() {
 		</form>
 		`
 }
-
-
-
-
-export function checkFrontEnd() {
-	const forms = document.querySelectorAll('.needs-validation')
-	Array.from(forms).forEach(form => {
-		form.addEventListener('submit', event => {
-			if (!form.checkValidity()) {
-				event.preventDefault()
-				event.stopPropagation()
-			}
-			form.classList.add('was-validated')
-		}, false)
-	})
-}
-

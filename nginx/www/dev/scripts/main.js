@@ -8,10 +8,10 @@ import { createNavBar } from "./modules/navbar.js";
 import { generateModal } from "./modules/modal.js";
 
 (async function(){
+	initRouter();
 	createNavBar();
 	generateModal();
 	await createButton();
 	initAuth();
-	initRouter();
 	watchProfile();
 })();

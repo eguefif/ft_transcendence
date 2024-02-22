@@ -7,7 +7,6 @@ export class RemoteController {
 		this.player2Score = 0
 		this.startTimer = 0
 		this.winnerMessage = ""
-		this.username = username
 		this.paddle1 = new Paddle("player1", "right")
 		this.paddle2 = new Paddle("player2", "left")
 		this.ball = new Ball()
@@ -40,7 +39,7 @@ export class RemoteController {
 			startTimer: this.startTimer
 		}
 	}
-	 
+
 	async init() {
 		await this.initSocket()
 		this.init_event()
@@ -53,7 +52,7 @@ export class RemoteController {
 		if (this.websocket == undefined) {
 			return
 		}
-			
+
 			this.websocket.addEventListener("open", async (e) => {
 				fetcher.sendToken(this.websocket)
 			})
@@ -110,7 +109,7 @@ export class RemoteController {
 				console.log("sending arrow direction")
 				if (e.key == 'ArrowDown')
 					this.websocket.send("down")
-				else if (e.key == 'ArrowUp') 
+				else if (e.key == 'ArrowUp')
 					this.websocket.send("up")
 			    }
 			})
@@ -131,7 +130,7 @@ export class RemoteController {
         if (this.websocket.readyState != 3)
             return true
         return false
-	}	
+	}
 
 }
 
@@ -166,7 +165,7 @@ class Paddle{
             this.y -= this.paddle_speed
         else if (this.move_down)
             this.y += this.paddle_speed
-        
+
         this.top = this.y
         this.bottom = this.y - this.paddleHeight / 2
     }
