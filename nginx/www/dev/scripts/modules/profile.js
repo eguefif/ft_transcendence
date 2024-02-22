@@ -4,8 +4,8 @@ export async function profile() {
 	let msg = await fetcher.get("/api/userinfo")
 	let games ={}
 	let username = msg.data.username
-	if (msg.status >= 200 && msg.status < 300)
-		games = {"error": "problem while fetching data"}
+	if (msg.status >= 300)
+		games = {"error": "Problem while fetching data"}
 	else
 		games = await getData(username)
 	if ("error" in games) {
@@ -42,7 +42,7 @@ async function getGameHistoryData(username) {
 		games = retval.data
 	else {
 		games = {"error": "Impossible to load data"}
-		return data
+		return games
 	}
 	games = setStatusGame(data, username)
 	if ("error" in games)
