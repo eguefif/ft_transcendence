@@ -26,7 +26,7 @@ function getData(username) {
 	return games
 }
 
-function showSpinner() {
+export function showSpinner() {
 	let profile = document.getElementById("profileDiv")
 	profile.innerHTML = `
 		<div class="d-flex justify-content-center mt-5">
