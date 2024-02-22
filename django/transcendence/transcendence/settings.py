@@ -50,6 +50,7 @@ INSTALLED_APPS = [
     'authentication',
     'userprofile',
     'friends',
+    'usrProfile',
     'rest_framework',
     'rest_framework.authtoken',
     'django.contrib.auth',

@@ -31,5 +31,6 @@ async function preview_image() {
 
 export function initSettings() {
     const profileImageField = document.getElementById("profileImageField")
+
     profileImageField.addEventListener("change", preview_image);
 }

@@ -11933,3 +11933,30 @@ textarea.form-control-lg {
   font-size: small;
   color: rgb(255, 0, 0);
 }
+
+nav a {
+  color: #2FF924;
+  transition: 0.25s;
+}
+nav a:hover {
+  transition: 0.25s;
+  color: #F9F6EE;
+}
+nav svg {
+  min-width: 2rem;
+  min-height: 2rem;
+}
+nav .noclick {
+  pointer-events: none;
+}
+
+text {
+  font-size: larger;
+  color: #2FF924;
+  transition: 0.25s;
+}
+text:hover {
+  transition: 0.25s;
+  color: #F9F6EE;
+  cursor: pointer;
+}
