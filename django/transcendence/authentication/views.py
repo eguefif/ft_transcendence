@@ -9,7 +9,7 @@ from authentication.serializers import UserSerializer
 from authentication.manageTokens import get_access_token, get_refresh_token, get_token_user, get_otp_token, get_oauth_42_token, get_decoded_token
 from authentication.decorator import require_authorization, require_otp_token
 from authentication.otp import get_new_otp_key, get_key_qr_code, get_current_code
-from authentication.oauth import request_42_oauth, get_42_oauth_redirect
+from authentication.oauth import get_42_oauth_redirect, authenticate_42_user 
 
 @api_view(['POST'])
 def authenticate(request):
@@ -56,8 +56,8 @@ def oauth_42(request):
 
 @api_view(['GET'])
 def login_42(request):
-    response = redirect('https://localhost');
-    status = "valid";
+    status = authenticate_42_user(request)
+    response = redirect('https://localhost')
     response.set_cookie(key='oauthToken',
                         value=get_oauth_42_token("maxpelle", status),
                         max_age=timedelta(minutes=2),

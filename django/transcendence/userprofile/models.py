@@ -17,6 +17,9 @@ class Profile(models.Model):
     otp_active = models.BooleanField(default=False)
     otp_key = models.CharField(max_length=32, default="")
     otp_previous = models.CharField(max_length=6, default="")
+    oauth_42_active = models.BooleanField(default=False)
+    oauth_42_access = models.CharField(default="")
+    oauth_42_refresh = models.CharField(default="")
 
 # Signals to create one to one when user is created
 @receiver(post_save, sender=User)
