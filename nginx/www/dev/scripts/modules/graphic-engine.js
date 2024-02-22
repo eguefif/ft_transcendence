@@ -239,7 +239,7 @@ class Renderer{
 		this.sun.translateX(0.003)
 		this.sun.translateY(0.0002)
 		this.scene.traverse(this.nonBloomed.bind(this))
-		this.pointLight.intensity = (Math.sin(Date.now() / 1000) + 1.2) * 0.025
+		this.pointLight.intensity = (Math.sin(Date.now() / 1000) + 1) * 0.025
 		this.sunLight.intensity = 8000 * (Math.sin(Date.now() / 5000) + 3)
 		this.composer.render()
 		

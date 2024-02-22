@@ -1,10 +1,10 @@
 @charset "UTF-8";
-body {
-  overflow: hidden;
-}
-
 li {
   margin: 2rem;
+}
+
+.navbar {
+  opacity: 0.4;
 }
 
 #profilePictureContainer {
