@@ -18,7 +18,7 @@ export class RemoteController {
 
 	cleanup(){
 		this.websocket.close()
-		this.stop = True
+		this.stop = true
 	}
 	update (){
 		if (this.stop == true)

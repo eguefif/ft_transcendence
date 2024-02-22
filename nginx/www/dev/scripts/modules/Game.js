@@ -10,6 +10,7 @@ export class Game {
 		this.graphicEngine = new graphicEngine()
 		this.running = true
 		let menu = document.querySelector("#menubtn")
+		/*
 		if (menu != undefined) {
 			menu.addEventListener("click", (e) => {
 				// renderer.hideBoard()
@@ -18,10 +19,20 @@ export class Game {
 				this.controller.stop = true
 				})
 			}
+			*/
 		window.addEventListener("popstate", (e) => {
 			this.running = false
 			this.controller.cleanup()
 			this.controller.stop = true
+			})
+
+		document.addEventListener("click", (e) => {
+			if (e.target.matches("[data-link]")) {
+				this.running = false
+				this.controller.cleanup()
+				this.graphicEngine.clearFrame()
+				this.controller.stop = true
+				}
 			})
 	}
 

@@ -27,8 +27,8 @@ function getData(username) {
 }
 
 function showSpinner() {
-	let main_frame = document.getElementById("main_frame")
-	main_frame.innerHTML = `
+	let profile = document.getElementById("profileDiv")
+	profile.innerHTML = `
 		<div class="d-flex justify-content-center mt-5">
 			<div class="spinner-border text-primary" role="status">
 				<span class="visually-hidden"></span>
@@ -91,8 +91,8 @@ function transformDate(games) {
 }
 
 function renderProfileStructure(username) {
-	let main_frame = document.getElementById("main_frame")
-	main_frame.innerHTML = `
+	let profile = document.getElementById("profileDiv")
+	profile.innerHTML = `
 	<div id="profile">
 		<h3 class="text-primary py-3 fs-1 fw-bold text-center">${username}</h3>
 		<hr class="w-25 border border-1 border-primary mx-auto text-primary"/>
@@ -108,8 +108,8 @@ function renderProfileStructure(username) {
 }
 
 function displayErrorProfile(games) {
-	let main_frame = document.getElementById("main_frame")
-	main_frame.innerHTML = `
+	let profile = document.getElementById("profileDiv")
+	profile.innerHTML = `
 		<div class="d-flex justify-content-center mt-5">
 			<h5 class="text-danger fs-2 fw-bold text-center">${games.error}</h5>
 		<div>
@@ -183,7 +183,7 @@ function renderHistory(games) {
 	`
 	for (const [key, game] of Object.entries(games)) {
 		html += `
-            <div class="row align-items-center bg- justify-content-around border border-primary border-3 rounded p-2 m-2">
+            <div class="row align-items-center bg-dark justify-content-around border border-primary border-3 rounded p-2 m-2">
                 <div class="col-2"><img src="${game.avatar1}" class="img-fluid rounded float-left"></div>
                 <div class="col-3">
                     <div class="d-flex flex-column">
