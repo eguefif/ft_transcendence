@@ -98,7 +98,7 @@ function renderProfileStructure(username) {
 		<hr class="w-25 border border-1 border-primary mx-auto text-primary"/>
         <h3 class="text-primary fs-2 fw-bold px-5">Stats</h3>
 		<div id="stats" class="p-4">
-		</div> 
+		</div>
 		<hr class="w-25 border border-1 border-primary mx-auto text-primary"/>
         <h3 class="text-primary p-2 fs-2 fw-bold px-5">History</h3>
 		<div id="history" class="p-4">
@@ -148,7 +148,7 @@ function renderStats(games) {
                 </div>
             </div>
         </div>
-    </section> 
+    </section>
 		`
 }
 
@@ -157,7 +157,7 @@ function getStats(games) {
 	let nbr_games = 0
 	let losses = 0
 	let wins = 0
-	
+
 	for (const [key, game] of Object.entries(games)) {
 		nbr_games++
 		if (game["status"].includes("win"))
@@ -193,7 +193,7 @@ function renderHistory(games) {
                 </div>
                 <div class="col-2">
                     <div class="d-flex align-items-center flex-column">
-                        <div class="p-1">${game.status}</h5></div>
+                        <div class="p-1"><h5>${game.status}</h5></div>
                         <div class="p-1"><h5 class="fs-6 text-center text-secondary">${game.time}</h5></div>
                     </div>
                 </div>
@@ -202,7 +202,7 @@ function renderHistory(games) {
                         <div class="p-1"><h5 class="text-primary fs-4 fw-bold text-center">${game.player2}</h5></div>
                         <div class="p-1"><h5 class="text-secondary fs-3 fw-bold text-center">${game.score_player2}</h5></div>
                     </div>
-                </div>   
+                </div>
                 <div class="col-2"><img src="${game.avatar2}" class="img-fluid rounded float-right"></div>
             </div>
 		`

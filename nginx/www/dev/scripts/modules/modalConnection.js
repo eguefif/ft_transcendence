@@ -8,7 +8,7 @@ export function closeModal(modalID) {
 	}
 }
 
-export function generateModal() {
+export function generateModalConnection() {
 	document.querySelector('nav').insertAdjacentHTML("afterend", CreateModal("connection"));
 	addLoginForm();
 }
@@ -85,7 +85,7 @@ function createFormLogin() {
 		<button form="loginForm" type="submit" class="btn btn-primary">Submit</button>
 		<button class="btn btn-primary">Login with 42</button>
 		<div class="modal-footer">
-			<a id="btnOpenRegister">Register</a>
+			<text id="btnOpenRegister">Register</text>
 		</div>
 	</div>
 	`
@@ -126,7 +126,7 @@ function createFormRegister() {
 			<button type="submit" value="Register" class="btn btn-primary">Submit</button>
 		</form>
 		<div class="modal-footer">
-			<a id="btnOpenLogin">Login</a>
+			<text id="btnOpenLogin">Login</text>
 		</div>
 	</div>
 		`
