@@ -196,7 +196,7 @@ function getStats(games) {
 function renderHistory(games) {
 	let history = document.getElementById("history")
 	let html = `
-        <div class="container text-center">
+        <div id="match-history" class="container text-center">
 	`
 	if (!("error" in games)) {
 		for (const [key, game] of Object.entries(games)) {
