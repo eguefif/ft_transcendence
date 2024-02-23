@@ -8,6 +8,7 @@ class OnlineStatusConsumer(WebsocketConsumer):
         # self.user = self.scope['user']
         # print(self.scope['query_string'])
         self.accept()
+        print(self.scope['headers'])
         #self.user = self.scope['user']
         #print(self.scope['token'])
 
