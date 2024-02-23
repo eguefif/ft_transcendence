@@ -26,6 +26,7 @@ def get_image(user):
         usrImg = "/images/avatar.png"
     else:
         usrImg = profile_user.profile_picture
+    usrImg = "/images/avatar.png"
     return usrImg
 
 def get_games_history(games, user):
@@ -65,7 +66,11 @@ def get_games_history(games, user):
 @api_view(["GET"])
 @require_authorization
 def get_profile(request):
-    username = get_token_user(request.headers["Authorization"])
+    try:
+        username = get_token_user(request.headers["Authorization"])
+    except Exception as e:
+        print("in request catch:", e)
+        return Response(retval, status.HTTP_400_BAD_REQUEST)
     try:
         user = User.objects.get(username=username)
     except Exception:
