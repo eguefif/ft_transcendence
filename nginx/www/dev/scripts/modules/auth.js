@@ -1,6 +1,6 @@
 import { fetcher } from "./fetcher.js"
 import { pongMenu } from "./pong.js"
-import { checkFrontEnd, closeModal } from "./modal.js";
+import { closeModal } from "./modal.js";
 import { createButton } from "./buttonNav.js";
 
 export async function initAuth() {
@@ -30,44 +30,16 @@ export function authLogout()
 	});
 }
 
-async function sendLoginRequest(url, body)
-{
-	const refreshExpiry = Date.now() + fetcher.refreshDuration;
-	const result = await fetcher.post(url, body);
-	const validation = document.getElementById("loginValidation")
-	if (result.status >= 200 && result.status < 300)
-	{
-		if (result.data.otpToken) {
-			fetcher.setAccess(result.data.otpToken);
-			await requireOtp();
-			return;
-		}
-		else if (result.data.accessToken) {
-			localStorage.setItem("refreshExpiry", `${refreshExpiry}`)
-			fetcher.setAccess(result.data.accessToken);
-			await createButton()
-			await pongMenu()
-			closeModal('connectionModal')
-		}
-		else {
-			validation.innerHTML = "Something went wrong";
-		}
-	}
-	else
-	{
-		document.getElementById("loginPassword").value = ""
-		// validation.innerHTML = "Wrong credentials"
-	}
-	return ;
-}
-
 export function authRegister()
 {
-	const registrationForm = document.querySelector("#registrationForm")
-	if (checkFrontEnd()) {
-
-	}
-		registrationForm.addEventListener("submit", function(e){
+	const formsRegister = document.querySelectorAll('.needs-validation');
+	Array.from(formsRegister).forEach(form => {
+		form.addEventListener('submit', e => {
+		  if (!form.checkValidity()) {
+			e.preventDefault();
+			e.stopPropagation();
+		  }
+		  else {
 			e.preventDefault()
 			const data = new FormData(e.target);
 			const url = e.target.action
@@ -78,23 +50,37 @@ export function authRegister()
 				'password': data.get('password'),
 			}
 			sendRegistrationRequest(url, body)
-		})
+		  }
+
+		  form.classList.add('was-validated');
+		}, false);
+	  });
 }
 
 export function authLogin()
 {
-	const registrationForm = document.querySelector("#loginForm")
-	registrationForm.addEventListener("submit", function(e){
-		e.preventDefault()
-		const data = new FormData(e.target);
-		const url = e.target.action
-		const body = {
-			'formType': "login",
-			'username': data.get('username'),
-			'password': data.get('password'),
+	const formsLogin = document.querySelectorAll('.needs-validation');
+	Array.from(formsLogin).forEach(form => {
+	  form.addEventListener('submit', e => {
+		if (!form.checkValidity()) {
+		  e.preventDefault();
+		  e.stopPropagation();
 		}
-		sendLoginRequest(url, body)
-	})
+		else {
+			e.preventDefault();
+			const data = new FormData(e.target);
+			const url = e.target.action
+			const body = {
+				'formType': "login",
+				'username': data.get('username'),
+				'password': data.get('password'),
+			}
+			sendLoginRequest(url, body)
+		}
+
+		form.classList.add('was-validated');
+	  }, false);
+	});
 }
 
 function authUpdateProfile()
@@ -208,6 +194,36 @@ async function sendUpdateProfileRequest(url, body)
 	}
 }
 
+async function sendLoginRequest(url, body)
+{
+	const refreshExpiry = Date.now() + fetcher.refreshDuration;
+	const result = await fetcher.post(url, body);
+	const validation = document.getElementById("loginValidation")
+	if (result.status >= 200 && result.status < 300)
+	{
+		if (result.data.otpToken) {
+			fetcher.setAccess(result.data.otpToken);
+			await requireOtp();
+			return;
+		}
+		else if (result.data.accessToken) {
+			localStorage.setItem("refreshExpiry", `${refreshExpiry}`)
+			fetcher.setAccess(result.data.accessToken);
+			closeModal('connectionModal')
+		  	await createButton()
+			await pongMenu()
+		}
+		else {
+			validation.innerHTML = "Something went wrong";
+		}
+	}
+	else
+	{
+		document.getElementById("loginPassword").value = ""
+	}
+	return ;
+}
+
 async function requireOtp() {
 	let code;
 	while (!code) {
@@ -253,7 +269,7 @@ async function sendRegistrationRequest(url, body)
 		localStorage.setItem("refreshExpiry", `${refreshExpiry}`)
 		fetcher.setAccess(result.data.accessToken);
 		await createButton()
-		closeModal('connexionModal')
+		closeModal('connectionModal')
 		await pongMenu()
 		return true
 	}
@@ -268,7 +284,7 @@ function activateOtp() {
 		const result = await fetcher.post("/api/auth/otp/activate");
 		const qrcode = document.createElement("div")
 		let qrcodeSvq = result.data.otpCode;
-		qrcode.innerHTML = result.data.otpCode; 
+		qrcode.innerHTML = result.data.otpCode;
 		document.querySelector("body").appendChild(qrcode);
 		setTimeout(() => {
 			qrcode.remove();
@@ -281,64 +297,3 @@ function activateOtp() {
 		let result = await fetcher.post("/api/auth/otp/deactivate");
 	})
 }
-
-
-// function validateInput(textBox, validationBox, errorMessage) {
-//     textBox.addEventListener('focusout', (event) => {
-// 		event.preventDefault()
-//         const value = textBox.value;
-//         if ( value.length < 4) {
-//             validationBox.classList.add("error");
-//             validationBox.innerHTML = errorMessage;
-//         }
-// 		else {
-// 			validationBox.classList.remove("error");
-//             validationBox.innerHTML = "";
-// 		}
-//     });
-// }
-
-/*
-function validatePassword(textBox, validationBox) {
-	textBox.addEventListener('focusout', (e) => {
-		e.preventDefault()
-		const value = textBox.value
-		if (value.length < 4) {
-			validationBox.classList.add("error")
-			validationBox.innerHTML = "Password is too short"
-		} else {
-			validationBox.classList.remove("error");
-            validationBox.innerHTML = "";
-		}
-	})
-}
-
-function validatePasswordCheck(passTextBox, confirmTextBox, confirmValidationBox) {
-	confirmTextBox.addEventListener('focusout', (e) => {
-		const passValue = passTextBox.value
-		const passCheckValue = confirmTextBox.value
-		if (passValue != passCheckValue) {
-			confirmValidationBox.classList.add("error")
-			confirmValidationBox.innerHTML = "Passwords don't match"
-		} else {
-			confirmValidationBox.classList.remove("error")
-			confirmValidationBox.innerHTML = ""
-		}
-	})
-}
-*/
-
-// const textBoxName = document.getElementById('username');
-// const textBoxEmail = document.getElementById('email');
-// const textBoxPassword = document.getElementById('password');
-// const textBoxPasswordCheck = document.getElementById('password-check');
-
-// const usernameValidationBox = document.getElementById('usernameValidation');
-// const emailValidationBox = document.getElementById('emailValidation');
-// const passwordValidationBox = document.getElementById('passwordValidation');
-// const passwordCheckValidationBox = document.getElementById('password-checkValidation');
-
-// validateInput(textBoxName, usernameValidationBox, "This field is the wrong size.");
-// validateInput(textBoxEmail, emailValidationBox, "This field is the wrong size.");
-// validatePassword(textBoxPassword, passwordValidationBox);
-// validatePasswordCheck(textBoxPassword, textBoxPasswordCheck, passwordCheckValidationBox);

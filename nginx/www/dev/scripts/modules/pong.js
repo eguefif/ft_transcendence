@@ -47,6 +47,7 @@ export function render_game_board() {
 	main_frame.innerHTML = `
 		<div class="container">
 			<div id="pongMenu" class="row m-5">
+er
 			</div>
 			<div class="row">
 				<div class="col">
@@ -88,5 +89,5 @@ function render_pong_menu_button() {
 		</div>
 
 		`
-		
+
 }
