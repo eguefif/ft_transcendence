@@ -28,7 +28,9 @@ export class PassiveController {
 			player1Score: this.player1Score,
 			player2Score: this.player2Score,
 			message: this.message,
-			startTimer: this.startTimer
+			startTimer: this.startTimer,
+			player1: "",
+			player2: ""
 		}
 	}
 
