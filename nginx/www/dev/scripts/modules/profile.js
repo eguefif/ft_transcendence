@@ -5,7 +5,7 @@ export async function profile() {
 	hidePong()
 	const username = await getUsername()
 	let games ={}
-	if (username >= "error") {
+	if (username == "error") {
 		games = {"error": "Problem while fetching data"}
 		displayErrorProfile(games)
 	}
