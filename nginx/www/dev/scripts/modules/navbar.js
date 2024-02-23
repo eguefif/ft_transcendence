@@ -14,7 +14,6 @@ function navHTML() {
 			<a class="navbar navbar-brand" href="/" data-link>
 				<img src="images/logo-new.png" class="nav noclick" alt="" width="150" />
 			</a>
-			<div id="friendButton"></div>
 			<div id="navBarButton">
 			</div>
 		</div>
