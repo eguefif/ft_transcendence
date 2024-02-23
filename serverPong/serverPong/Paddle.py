@@ -2,6 +2,7 @@ class Paddle:
     def __init__(self, side):
         self.side = side
         self.height = 0.1
+        self.width = 0.004
         self.init()
         self.speed = 0
         if side == 1:

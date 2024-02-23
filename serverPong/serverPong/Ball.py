@@ -26,7 +26,8 @@ class Ball:
         self.radius = 1 / 40
 
     def increase_speed(self):
-        self.speed *= 1.01
+        if self.speed <= paddle.width - 0.001:
+            self.speed += 0.000025
 
     def resetPosition(self):
         self.speed = 1 / 120

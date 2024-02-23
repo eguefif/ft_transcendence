@@ -90,13 +90,14 @@ class Game:
                 }
         if self.time != 0 and self.state == "running":
             if self.player1 == player:
-                await asyncio.sleep(1)
+                if self.time < 4:
+                    await asyncio.sleep(1)
                 self.time -= 1
-            retval["startTimer"] = self.time - 1
+            retval["startTimer"] = self.time
 
         if self.state == "running" and not self.is_end_game() and self.time == 0:
             result = self.move()
-            #self.ball.increase_speed()
+            self.ball.increase_speed(this.paddle1)
             if result is not None:
                 self.init_game()
                 self.update_score(result)
