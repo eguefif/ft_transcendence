@@ -36,7 +36,8 @@ class Game:
         self.p2_websocket = websocket
         self.state = "getready"
         self.time = 4
-        self.djangoId = await self.db.create_game_db_django(self.player1, self.player2, self.time)
+        now = time.time()
+        self.djangoId = await self.db.create_game_db_django(self.player1, self.player2, now)
 
     def is_ready_to_be_remove(self):
         return self.p1_disconnected and self.p2_disconnected
@@ -90,13 +91,14 @@ class Game:
                 }
         if self.time != 0 and self.state == "running":
             if self.player1 == player:
-                await asyncio.sleep(1)
+                if self.time < 4:
+                    await asyncio.sleep(1)
                 self.time -= 1
-            retval["startTimer"] = self.time - 1
+            retval["startTimer"] = self.time
 
         if self.state == "running" and not self.is_end_game() and self.time == 0:
             result = self.move()
-            #self.ball.increase_speed()
+            self.ball.increase_speed()
             if result is not None:
                 self.init_game()
                 self.update_score(result)
@@ -112,7 +114,6 @@ class Game:
 
     async def get_ending_message(self):
         if self.disconnection == True and not self.is_end_game():
-            logging.info(f"disconnetion {self.disconnection}, and end: {self.is_end_game()}")
             msg = {"command": "ending",
                     "startTimer": 0,
                     "ball": self.ball.getPosition(),

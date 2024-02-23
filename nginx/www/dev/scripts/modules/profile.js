@@ -2,22 +2,37 @@ import { fetcher } from "./fetcher.js"
 import { renderer } from "./graphic-engine.js"
 
 export async function profile() {
-	renderer.hideBoard()
-	let msg = await fetcher.get("/api/userinfo")
+	hidePong()
+	const username = await getUsername()
 	let games ={}
-	let username = msg.data.username
-	if (msg.status >= 300)
+	if (username >= "error") {
 		games = {"error": "Problem while fetching data"}
-	else
-		games = await getData(username)
-	if ("error" in games) {
 		displayErrorProfile(games)
 	}
 	else {
+		games = await getData(username)
 		renderProfileStructure(username)
 		renderStats(games)
 		renderHistory(games)
 	}
+}
+
+function hidePong() {
+	renderer.hideBoard()
+	let pongMenu = document.getElementById("pongMenu")
+	pongMenu.innerHTML = ""
+}
+
+async function getUsername() {
+	let msg = await fetcher.get("/api/userinfo")
+	let username = ""
+	if (msg.status >= 200 && msg.status < 300)
+		username = msg.data.username
+	else{
+		username = "error"
+		console.log("Error in getuesrname")
+	}
+	return username
 }
 
 function getData(username) {
@@ -43,7 +58,7 @@ async function getGameHistoryData(username) {
 	if (retval.status >= 200 && retval.status < 300)
 		games = retval.data
 	else {
-		games = {"error": "Impossible to load data"}
+		games = retval.data
 		return games
 	}
 	games = setStatusGame(games, username)
@@ -158,14 +173,16 @@ function getStats(games) {
 	let losses = 0
 	let wins = 0
 	
-	for (const [key, game] of Object.entries(games)) {
-		nbr_games++
-		if (game["status"].includes("win"))
-			wins++
-		else
-			losses++
+	if (!("error" in games)) {
+		for (const [key, game] of Object.entries(games)) {
+			nbr_games++
+			if (game["status"].includes("win"))
+				wins++
+			else
+				losses++
+		}
+		winrate = Math.round(wins / nbr_games * 100)
 	}
-	winrate = Math.round(wins / nbr_games * 100)
 
 	let retval = {
 		"winrate": winrate,
@@ -181,31 +198,36 @@ function renderHistory(games) {
 	let html = `
         <div class="container text-center">
 	`
-	for (const [key, game] of Object.entries(games)) {
-		html += `
-            <div class="row align-items-center bg-dark custom-opacity justify-content-around border border-primary border-3 rounded p-2 m-2">
-                <div class="col-2"><img src="${game.avatar1}" class="img-fluid rounded float-left"></div>
-                <div class="col-3">
-                    <div class="d-flex flex-column">
-                        <div class="p-1"><h5 class="text-primary fs-4 fw-bold text-center">${game.player1}</h5></div>
-                        <div class="p-1"><h5 class="text-secondary fs-3 fw-bold text-center">${game.score_player1}</h5></div>
-                    </div>
-                </div>
-                <div class="col-2">
-                    <div class="d-flex align-items-center flex-column">
-                        <div class="p-1">${game.status}</h5></div>
-                        <div class="p-1"><h5 class="fs-6 text-center text-secondary">${game.time}</h5></div>
-                    </div>
-                </div>
-                <div class="col-3">
-                    <div class="d-flex flex-column">
-                        <div class="p-1"><h5 class="text-primary fs-4 fw-bold text-center">${game.player2}</h5></div>
-                        <div class="p-1"><h5 class="text-secondary fs-3 fw-bold text-center">${game.score_player2}</h5></div>
-                    </div>
-                </div>   
-                <div class="col-2"><img src="${game.avatar2}" class="img-fluid rounded float-right"></div>
-            </div>
-		`
+	if (!("error" in games)) {
+		for (const [key, game] of Object.entries(games)) {
+			html += `
+				<div class="row align-items-center bg-dark custom-opacity justify-content-around border border-primary border-3 rounded p-2 m-2">
+					<div class="col-2"><img src="${game.avatar1}" class="img-fluid rounded float-left"></div>
+					<div class="col-3">
+						<div class="d-flex flex-column">
+							<div class="p-1"><h5 class="text-primary fs-4 fw-bold text-center">${game.player1}</h5></div>
+							<div class="p-1"><h5 class="text-secondary fs-3 fw-bold text-center">${game.score_player1}</h5></div>
+						</div>
+					</div>
+					<div class="col-2">
+						<div class="d-flex align-items-center flex-column">
+							<div class="p-1">${game.status}</h5></div>
+							<div class="p-1"><h5 class="fs-6 text-center text-secondary">${game.time}</h5></div>
+						</div>
+					</div>
+					<div class="col-3">
+						<div class="d-flex flex-column">
+							<div class="p-1"><h5 class="text-primary fs-4 fw-bold text-center">${game.player2}</h5></div>
+							<div class="p-1"><h5 class="text-secondary fs-3 fw-bold text-center">${game.score_player2}</h5></div>
+						</div>
+					</div>   
+					<div class="col-2"><img src="${game.avatar2}" class="img-fluid rounded float-right"></div>
+				</div>
+			`
+		}
+	}
+	else {
+		html += `<div class="container p-3 border fs-3 border-primary border-rounded border-3 bg-dark text-danger">No games played yet</div>`
 	}
 	html +=`
 		</div>
