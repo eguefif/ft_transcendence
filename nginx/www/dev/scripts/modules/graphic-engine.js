@@ -238,11 +238,14 @@ export class Renderer{
 	{
 		this.pointLight = new THREE.PointLight( 0xebfde7, 10 )
 		this.pointLight3 = new THREE.PointLight( 0xffffff, 10 )
+		this.pointLight4 = new THREE.PointLight( 0xffffff, 10 )
 		this.pointLight.position.set(2, 2, 2)
 		this.pointLight3.position.set(0, 0, 19)
+		this.pointLight4.position.set(0, 0, -19)
 		this.pointLight.intensity = 1
-		this.pointLight3.intensity = 100
-		this.scene.add(this.pointLight, this.pointLight3);
+		this.pointLight3.intensity = 95
+		this.pointLight4.intensity = 95
+		this.scene.add(this.pointLight, this.pointLight3, this.pointLight4);
 	}
 
 	initCameraPos()
