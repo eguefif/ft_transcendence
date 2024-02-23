@@ -74,7 +74,7 @@ class Ball {
         this.dir = new Vector(Math.random() * 2 - 1, 0.5)
 		if (this.dir.x < 0)
 			this.dir.x = Math.min(-0.5)
-		else 
+		else
 			this.dir.x = Math.max(0.5)
         this.dir.norm()
 	}
@@ -137,7 +137,7 @@ class Vector {
     }
     norm(){
         let  mag = Math.sqrt((this.x * this.x) + (this.y * this.y))
-        
+
         if (mag != 0)
         {
             this.x /= mag
@@ -177,7 +177,7 @@ class Paddle {
             this.y -= this.paddle_speed * Math.abs(ball_dir_y)
         else if (this.move_down)
             this.y += this.paddle_speed * Math.abs(ball_dir_y)
-        
+
         this.top = this.y
         this.bottom = this.y - this.paddleHeight / 2
     }

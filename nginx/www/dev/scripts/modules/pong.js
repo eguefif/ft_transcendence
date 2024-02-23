@@ -41,6 +41,39 @@ export function initLocalGame() {
 export function render_game_board() {
 	let main_frame = document.getElementById("pongDiv")
 	main_frame.innerHTML = `
+			<div id="pong_menu" class="row m-5">
+			</div>
+			<div class="row">
+				<div class="col">
+					<canvas id="board"></canvas>
+					<canvas id="background"></canvas>
+					  <script type="vertex" id="vertexshader">
+
+						  varying vec2 vUv;
+
+						  void main() {
+
+							  vUv = uv;
+
+							  gl_Position = projectionMatrix * modelViewMatrix * vec4( position, 1.0 );
+
+						  }
+					  </script>
+					  <script type="fragment" id="fragmentshader">
+
+						  uniform sampler2D baseTexture;
+						  uniform sampler2D bloomTexture;
+
+						  varying vec2 vUv;
+
+						  void main() {
+
+							  gl_FragColor = ( texture2D( baseTexture, vUv ) + vec4( 1.0 ) * texture2D( bloomTexture, vUv ) );
+
+						  }
+					  </script>
+				</div>
+			</div>
 		<div id="pong_menu" class="row m-5">
 		</div>
 		<div class="row">
@@ -82,5 +115,5 @@ function render_pong_menu_button() {
 		</div>
 
 		`
-		
+
 }

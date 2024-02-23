@@ -11978,6 +11978,10 @@ text:hover {
   cursor: pointer;
 }
 
+#connectionModal, #settingsModal {
+  color: #2FF924;
+}
+
 #profile {
   max-height: 100%;
   overflow: auto;
