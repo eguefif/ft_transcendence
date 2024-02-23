@@ -53,9 +53,9 @@ export class RemoteController {
 			return
 		}
 
-			this.websocket.addEventListener("open", async (e) => {
-				fetcher.sendToken(this.websocket)
-			})
+		this.websocket.addEventListener("open", async (e) => {
+			fetcher.sendToken(this.websocket)
+		})
 
 		this.websocket.error = (e) => {
 			console.log("Error: ", e)
