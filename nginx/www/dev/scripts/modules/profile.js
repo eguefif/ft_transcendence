@@ -2,11 +2,10 @@ import { fetcher } from "./fetcher.js"
 import { renderer } from "./graphic-engine.js"
 
 export async function profile() {
-	renderer.hideBoard()
-	let msg = await fetcher.get("/api/userinfo")
+	hidePong()
+	const username = await getUsername()
 	let games ={}
-	let username = msg.data.username
-	if (msg.status >= 300)
+	if (username >= "error")
 		games = {"error": "Problem while fetching data"}
 	else
 		games = await getData(username)
@@ -18,6 +17,22 @@ export async function profile() {
 		renderStats(games)
 		renderHistory(games)
 	}
+}
+
+function hidePong() {
+	renderer.hideBoard()
+	let pongMenu = document.getElementById("pongMenu")
+	pongMenu.innerHTML = ""
+}
+
+async function getUsername() {
+	let msg = await fetcher.get("/api/userinfo")
+	let username = ""
+	if (msg.status >= 200 && msg.status < 300)
+		username = msg.data.username
+	else
+		username = "error"
+	return username
 }
 
 function getData(username) {
