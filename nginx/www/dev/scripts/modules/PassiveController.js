@@ -176,7 +176,7 @@ class Paddle {
         if (this.move_up)
             this.y -= this.paddle_speed * Math.abs(ball_dir_y)
         else if (this.move_down)
-            this.y += this.paddle_speed
+            this.y += this.paddle_speed * Math.abs(ball_dir_y)
 
         this.top = this.y
         this.bottom = this.y - this.paddleHeight / 2
