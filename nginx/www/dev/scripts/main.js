@@ -5,7 +5,6 @@ import { initSettings } from "./modules/settings.js";
 import { initRouter } from "./modules/router.js";
 import { createNavBar } from "./modules/navbar.js";
 import { generateModal } from "./modules/modal.js";
-import { initSidebar } from "./modules/friendSidebar.js";
 
 import { render_game_board } from "./modules/pong.js";
 
@@ -16,5 +15,4 @@ import { render_game_board } from "./modules/pong.js";
 	await createNavBar();
 	initSettings();
 	initRouter();
-	initSidebar();
 })();
