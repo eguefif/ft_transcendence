@@ -41,6 +41,7 @@ body {
   transform: translate(-50%, -50%);
   z-index: -1;
   width: 30em;
+  pointer-events: none;
 }
 
 #choose2PlayerButton {
@@ -50,11 +51,8 @@ body {
   transform: translate(-50%, -50%);
 }
 
-#chooseRemoteButton {
-  position: absolute;
-  top: 70%;
-  left: 50%;
-  transform: translate(-50%, -50%);
+#remotegamebtn {
+  pointer-events: auto;
 }
 
 #chooseTouramentButton {
@@ -11982,7 +11980,22 @@ text:hover {
   color: #2FF924;
 }
 
-#profile {
-  max-height: 100%;
-  overflow: auto;
+::-webkit-scrollbar {
+  width: 10px;
+}
+
+/* Track */
+::-webkit-scrollbar-track {
+  background: #36454F;
+}
+
+/* Handle */
+::-webkit-scrollbar-thumb {
+  background: #2FF924;
+}
+
+#match-history {
+  overflow-y: scroll;
+  height: 38em;
+  scrollbar-color: #2FF924 #36454F;
 }
