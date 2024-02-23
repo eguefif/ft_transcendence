@@ -1,7 +1,6 @@
 import { authLogout } from "./auth.js";
 import { fetcher } from "./fetcher.js";
 import { getSVG } from "./iconSVG.js";
-import { initRouter } from "./router.js";
 
 
 export async function createButton () {
@@ -17,12 +16,12 @@ export async function createButton () {
 
 function createModalBtn(btnClasses="", btnName="", srcImg="", name ="") {
 	return `
-			<li class="${btnClasses}" id="${btnName}Button"
+			<div class="${btnClasses} mx -3" id="${btnName}Button"
 				data-bs-toggle="modal"
 				data-bs-target="#${btnName}Modal">
 				${srcImg}
 				<text>${name}</text>
-			</li>
+			</div>
 		`
 }
 
@@ -30,19 +29,17 @@ function createBtns() {
 	let nav = document.getElementById("navBarButton")
 	nav.innerHTML = `
 		<div class="d-flex navbar-nav ms-auto">
-			<a id="profileButton" class="nav-item mx-2" href="/profile" data-link>
+			<a id="profileButton" class="nav-item mx-3" href="/profile" data-link>
 				${getSVG.navbarSVG.profile}
 			</a>
-			<a class="nav-item btn-primary mx-2" id="settingsButton"
+			<a class="nav-item btn-primary mx-3" id="settingsButton"
 				data-bs-toggle="modal"
 				data-bs-target="#settingsModal">
 				${getSVG.navbarSVG.settings}
 			</a>
-
-			<a id="logoutButton" class ="nav-item btn-primary mx-2" href="">
-			${getSVG.navbarSVG.logout}
+			<a id="logoutButton" class ="nav-item btn-primary mx-3" href="">
+				${getSVG.navbarSVG.logout}
 			</a>
 		</div>
 	`
 }
-//

@@ -39,7 +39,7 @@ export class RemoteController {
 			startTimer: this.startTimer
 		}
 	}
-	 
+
 	async init() {
 		await this.initSocket()
 		this.init_event()
@@ -52,10 +52,10 @@ export class RemoteController {
 		if (this.websocket == undefined) {
 			return
 		}
-			
-			this.websocket.addEventListener("open", async (e) => {
-				fetcher.sendToken(this.websocket)
-			})
+
+		this.websocket.addEventListener("open", async (e) => {
+			fetcher.sendToken(this.websocket)
+		})
 
 		this.websocket.error = (e) => {
 			console.log("Error: ", e)
@@ -63,7 +63,6 @@ export class RemoteController {
 
 		this.websocket.onclose = (e) => {
 			this.localMsg = "Connection lost"
-			console.log("disconnection")
 		}
 
 		this.websocket.onmessage = (e) => {
@@ -71,7 +70,6 @@ export class RemoteController {
 			console.log(msg)
 			switch (msg.command) {
 				case "authsucess":
-					console.log("authentification success")
 					this.running = "authenticated"
 					break
 				case "serverfull":
@@ -104,24 +102,20 @@ export class RemoteController {
 		}
 
 		document.addEventListener("keydown", (e) => {
-			console.log(this.state)
 			if (this.state == "running") {
-				console.log("sending arrow direction")
 				if (e.key == 'ArrowDown')
 					this.websocket.send("down")
-				else if (e.key == 'ArrowUp') 
+				else if (e.key == 'ArrowUp')
 					this.websocket.send("up")
 			    }
 			})
 
 		document.addEventListener("keyup", (e) => {
 			if (this.state == "running") {
-				console.log("sending stop")
 				this.websocket.send("stop")
 			}
 			if (e.code == 'Space' && this.state == "getready"){
 				this.websocket.send("ready")
-				console.log("sending ready")
 				this.state = "running"
 				}
 		})
@@ -130,7 +124,7 @@ export class RemoteController {
         if (this.websocket.readyState != 3)
             return true
         return false
-	}	
+	}
 
 }
 
@@ -165,7 +159,7 @@ class Paddle{
             this.y -= this.paddle_speed
         else if (this.move_down)
             this.y += this.paddle_speed
-        
+
         this.top = this.y
         this.bottom = this.y - this.paddleHeight / 2
     }

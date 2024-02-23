@@ -6,10 +6,9 @@ import { PassiveController } from "./PassiveController.js"
 import { renderer } from "./graphic-engine.js";
 
 export async function pongMenu() {
+	hideProfile()
 	let controller = new PassiveController()
 	let game = new Game(controller)
-	let profile = document.getElementById("profileDiv")
-	profile.innerHTML = ``
 
 	if (await fetcher.isAuthenticated())
 		render_pong_menu_connected()
@@ -18,6 +17,11 @@ export async function pongMenu() {
 	game.run()
 }
 
+function hideProfile() {
+	let profile = document.getElementById("profileDiv")
+	if (profile != undefined)
+		profile.innerHTML = "" 
+}
 
 export async function initRemoteGame() {
 	if (!await fetcher.isAuthenticated()) {
@@ -41,12 +45,15 @@ export function initLocalGame() {
 export function render_game_board() {
 	let main_frame = document.getElementById("pongDiv")
 	main_frame.innerHTML = `
-		<div id="pong_menu" class="row m-5">
-		</div>
-		<div class="row">
-			<div class="col">
-				<canvas id="board"></canvas>
-				<canvas id="background"></canvas>
+		<div class="container">
+			<div id="pongMenu" class="row m-5">
+er
+			</div>
+			<div class="row">
+				<div class="col">
+					<canvas id="board"></canvas>
+					<canvas id="background"></canvas>
+				</div>
 			</div>
 		</div>
 	`
@@ -54,7 +61,7 @@ export function render_game_board() {
 }
 
 function render_pong_menu_connected() {
-	const row_menu = document.getElementById("pong_menu")
+	const row_menu = document.getElementById("pongMenu")
 	row_menu.innerHTML = `
 		<div class="col">
 			<a id="localgamebtn" href="/localgame" class="btn btn-primary m-5" data-link>local game</a>
@@ -66,7 +73,7 @@ function render_pong_menu_connected() {
 }
 
 function render_pong_menu_not_connected() {
-	const row_menu = document.getElementById("pong_menu")
+	const row_menu = document.getElementById("pongMenu")
 	row_menu.innerHTML = `
 		<div class="col">
 			<a id="localgamebtn" href="/localgame" class="btn btn-primary m-5" data-link>local game</a>
@@ -75,12 +82,12 @@ function render_pong_menu_not_connected() {
 }
 
 function render_pong_menu_button() {
-	const row_menu = document.getElementById("pong_menu")
+	const row_menu = document.getElementById("pongMenu")
 	row_menu.innerHTML = `
 		<div class="col">
 			<a id="menubtn" href="/" class="btn btn-primary m-5 bt-primary" data-link>Menu</a>
 		</div>
 
 		`
-		
+
 }
