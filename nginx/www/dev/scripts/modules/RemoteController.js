@@ -17,12 +17,14 @@ export class RemoteController {
 	}
 
 	cleanup(){
-		this.websocket.close()
+		try {
+			this.websocket.close()
+		}
+		catch (error)
+		{}
 		this.stop = true
 	}
 	update (){
-		if (this.stop == true)
-			this.websocket.close()
 		if (this.serverMsg.command == "data" || this.serverMsg.command == "ending")
 			return this.serverMsg
 		if (this.serverMsg.player1Score == 3 || this.serverMsg.player2Score == 3){
@@ -58,7 +60,6 @@ export class RemoteController {
 		})
 
 		this.websocket.error = (e) => {
-			console.log("Error: ", e)
 		}
 
 		this.websocket.onclose = (e) => {
