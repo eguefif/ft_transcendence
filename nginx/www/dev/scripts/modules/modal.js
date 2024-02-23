@@ -85,7 +85,7 @@ function createFormLogin() {
 		<button form="loginForm" type="submit" class="btn btn-primary">Submit</button>
 		<button class="btn btn-primary">Login with 42</button>
 		<div class="modal-footer">
-			<a id="btnOpenRegister">Create Account</a>
+			<a id="btnOpenRegister">Register</a>
 		</div>
 	</div>
 	`
@@ -126,7 +126,7 @@ function createFormRegister() {
 			<button type="submit" value="Register" class="btn btn-primary">Submit</button>
 		</form>
 		<div class="modal-footer">
-			<a id="btnOpenLogin">Has an account</a>
+			<a id="btnOpenLogin">Login</a>
 		</div>
 	</div>
 		`

@@ -23,15 +23,23 @@
   //   z-index: -100;
 
   // }
-  
-  #background{
+   #background{
     position: absolute;
     top: 50%;
     left: 50%;
     transform: translate(-50%, -50%);
     z-index: -100;
   }
-  
+
+  #board{
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    z-index: -1;
+    width: 30em;
+  }
+ 
   // #gameBoard {
   //   /* background-image: linear-gradient( 
   //           to right, #8a2727ef, #cb0202);  */

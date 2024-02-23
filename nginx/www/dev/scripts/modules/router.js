@@ -4,18 +4,18 @@ import { initLocalGame } from "./pong.js"
 import { pongMenu } from "./pong.js"
 import { profile } from "./profile.js"
 
-export function initRouter(renderer) {
+export function initRouter() {
 	const navigateTo = url => {
 		history.pushState(null, null, url)
 		router()
 	}
 
-	async function router(renderer) {
+	async function router() {
 		const routes = [
-			{ path: "/", view: () => pongMenu(renderer) },
-			{ path: "/remotegame", view: () => initRemoteGame(renderer) },
-			{ path: "/localgame", view: () => initLocalGame(renderer) },
-			{ path: "/profile", view: () => profile(renderer) },
+			{ path: "/", view: () => pongMenu() },
+			{ path: "/remotegame", view: () => initRemoteGame() },
+			{ path: "/localgame", view: () => initLocalGame() },
+			{ path: "/profile", view: () => profile() },
 		]
 		
 		const potentialMatches = routes.map((route) => {
@@ -44,5 +44,5 @@ export function initRouter(renderer) {
 			navigateTo(e.target.href)
 		}
 	})
-	router(renderer)
+	router()
 }

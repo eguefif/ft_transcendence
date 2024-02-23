@@ -1,5 +1,10 @@
+
 li {
 	margin: 2rem;
+}
+
+body {
+	overflow: hidden;
 }
 
 #profilePictureContainer {
@@ -12,3 +17,4 @@ li {
 @import './imports/pong.scss';
 @import './imports/bootstrap.scss';
 @import './imports/auth.scss';
+@import './imports/profile.scss';

@@ -3,8 +3,8 @@ import { fetcher } from "../modules/fetcher.js";
 
 export class PassiveController {
 	constructor(){
-		this.player1Score = 0
-		this.player2Score = 0
+		this.player1Score = undefined
+		this.player2Score = undefined
 		this.startTimer = 0
 		this.winnerMessage = ""
 		this.paddle1 = new Paddle("player1", "right")

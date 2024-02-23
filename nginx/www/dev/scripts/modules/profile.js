@@ -1,11 +1,13 @@
 import { fetcher } from "./fetcher.js"
+import { renderer } from "./graphic-engine.js"
 
 export async function profile() {
+	renderer.hideBoard()
 	let msg = await fetcher.get("/api/userinfo")
 	let games ={}
 	let username = msg.data.username
-	if (msg.status >= 200 && msg.status < 300)
-		games = {"error": "problem while fetching data"}
+	if (msg.status >= 300)
+		games = {"error": "Problem while fetching data"}
 	else
 		games = await getData(username)
 	if ("error" in games) {
@@ -24,9 +26,9 @@ function getData(username) {
 	return games
 }
 
-function showSpinner() {
-	let main_frame = document.getElementById("main_frame")
-	main_frame.innerHTML = `
+export function showSpinner() {
+	let profile = document.getElementById("profileDiv")
+	profile.innerHTML = `
 		<div class="d-flex justify-content-center mt-5">
 			<div class="spinner-border text-primary" role="status">
 				<span class="visually-hidden"></span>
@@ -42,9 +44,9 @@ async function getGameHistoryData(username) {
 		games = retval.data
 	else {
 		games = {"error": "Impossible to load data"}
-		return data
+		return games
 	}
-	games = setStatusGame(data, username)
+	games = setStatusGame(games, username)
 	if ("error" in games)
 		return games
 	games = transformDate(games)
@@ -68,14 +70,14 @@ function setStatusGame(games, username) {
 				game["status"] = loss
 		}
 	}
-	return data
+	return games
 }
 
-function transformDate(data) {
+function transformDate(games) {
 	let time = 0
 	let minutes = 0
 	let minutesStr = ''
-	for (const [key, game] of Object.entries(data)) {
+	for (const [key, game] of Object.entries(games)) {
 		time = new Date(game["time"] * 1000)
         minutes = time.getMinutes()
         minutesStr = ``
@@ -85,60 +87,63 @@ function transformDate(data) {
             minutesStr = `${minutes}`
 		game["time"] = `${time.getMonth()}/${time.getDay()}/${time.getFullYear()} - ${time.getHours()}:${minutesStr}`
 	}
-	return data
+	return games
 }
 
 function renderProfileStructure(username) {
-	let main_frame = document.getElementById("main_frame")
-	main_frame.innerHTML = `
-    <h3 class="text-primary fs-1 fw-bold text-center">${username}</h3>
-    <div id="stats" class="p-4">
-    </div> 
-    <hr class="w-25 mx-auto"/>
-    <div id="history" class="p-4">
+	let profile = document.getElementById("profileDiv")
+	profile.innerHTML = `
+	<div id="profile">
+		<h3 class="text-primary py-3 fs-1 fw-bold text-center">${username}</h3>
+		<hr class="w-25 border border-1 border-primary mx-auto text-primary"/>
+        <h3 class="text-primary fs-2 fw-bold px-5">Stats</h3>
+		<div id="stats" class="p-4">
+		</div> 
+		<hr class="w-25 border border-1 border-primary mx-auto text-primary"/>
+        <h3 class="text-primary p-2 fs-2 fw-bold px-5">History</h3>
+		<div id="history" class="p-4">
+		</div>
 	</div>
 	`
 }
 
-function displayErrorProfile(data) {
-	let main_frame = document.getElementById("main_frame")
-	main_frame.innerHTML = `
+function displayErrorProfile(games) {
+	let profile = document.getElementById("profileDiv")
+	profile.innerHTML = `
 		<div class="d-flex justify-content-center mt-5">
-			<h5 class="text-danger fs-2 fw-bold text-center">${data.error}</h5>
+			<h5 class="text-danger fs-2 fw-bold text-center">${games.error}</h5>
 		<div>
 	`
 }
 
 function renderStats(games) {
-	let stats = document.getElementById("stats")
-	let data = getStats(games)
-	stats.innerHTML = `
-        <h3 class="text-primary fs-2 fw-bold px-5">Stats</h3>
+	let stats_div = document.getElementById("stats")
+	let stats = getStats(games)
+	stats_div.innerHTML = `
         <div id="profile-stats" class="container text-center">
- 
             <div class="d-flex justify-content-around">
-                <div class="card border bg-light border-primary rounded-pill" style="width: 10rem">
-                    <div class="card-body">
+                <div class="card border border-3 bg-dark custom-opacity border-primary rounded-pill" style="width: 10rem">
+                    <div class="card-body text-secondary">
                         <h5 class="card-title">Winrate</h5>
-                        <p class="card-body">${data.winrate}%</p>
+                        <p class="card-body fs-4">${stats.winrate}%</p>
                     </div>
                 </div>
-                <div class="card border bg-light border-primary rounded-pill" style="width: 10rem">
-                    <div class="card-body">
-                        <h5 class="card-title">Games played</h5>
-                        <p class="card-body">${data.nbr_games}</p>
+                <div class="card border border-3 bg-dark custom-opacity border-primary rounded-pill" style="width: 10rem">
+                    <div class="card-body text-secondary">
+                        <h5 class="card-title">Games</h5>
+                        <p class="card-body fs-4">${stats.nbr_games}</p>
                     </div>
                 </div>
-                <div class="card border bg-light border-primary rounded-pill" style="width: 10rem">
-                    <div class="card-body">
+                <div class="card border border-3 bg-dark custom-opacity border-primary rounded-pill" style="width: 10rem">
+                    <div class="card-body text-secondary">
                         <h5 class="card-title">Wins</h5>
-                        <p class="card-body">${data.wins}</p>
+                        <p class="card-body fs-4">${stats.wins}</p>
                     </div>
                 </div>
-                <div class="card border bg-light border-primary rounded-pill" style="width: 10rem">
-                    <div class="card-body">
-                        <h5 class="card-title">Loss</h5>
-                        <p class="card-body">${data.losses}</p>
+                <div class="card border border-3 bg-dark custom-opacity border-primary rounded-pill" style="width: 10rem">
+                    <div class="card-body text-secondary">
+                        <h5 class="card-title">Losses</h5>
+                        <p class="card-body fs-4">${stats.losses}</p>
                     </div>
                 </div>
             </div>
@@ -147,13 +152,13 @@ function renderStats(games) {
 		`
 }
 
-function getStats(data) {
+function getStats(games) {
 	let winrate = 0
 	let nbr_games = 0
 	let losses = 0
 	let wins = 0
 	
-	for (const [key, game] of Object.entries(data)) {
+	for (const [key, game] of Object.entries(games)) {
 		nbr_games++
 		if (game["status"].includes("win"))
 			wins++
@@ -174,12 +179,11 @@ function getStats(data) {
 function renderHistory(games) {
 	let history = document.getElementById("history")
 	let html = `
-        <h3 class="text-primary fs-2 fw-bold px-5">History</h3>
         <div class="container text-center">
 	`
 	for (const [key, game] of Object.entries(games)) {
 		html += `
-            <div class="row  align-items-center bg-light justify-content-around border border-primary rounded p-2 m-2">
+            <div class="row align-items-center bg-dark custom-opacity justify-content-around border border-primary border-3 rounded p-2 m-2">
                 <div class="col-2"><img src="${game.avatar1}" class="img-fluid rounded float-left"></div>
                 <div class="col-3">
                     <div class="d-flex flex-column">
@@ -190,7 +194,7 @@ function renderHistory(games) {
                 <div class="col-2">
                     <div class="d-flex align-items-center flex-column">
                         <div class="p-1">${game.status}</h5></div>
-                        <div class="p-1"><h5 class="fs-6 text-center">${game.time}</h5></div>
+                        <div class="p-1"><h5 class="fs-6 text-center text-secondary">${game.time}</h5></div>
                     </div>
                 </div>
                 <div class="col-3">
@@ -203,5 +207,8 @@ function renderHistory(games) {
             </div>
 		`
 	}
+	html +=`
+		</div>
+		`
 	history.innerHTML = html
 }
