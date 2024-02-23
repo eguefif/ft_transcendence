@@ -15,16 +15,6 @@ from pathlib import Path
 
 env = os.environ
 
-"""
-with open("./transcendence/.env", "r") as f:
-    lines = f.readlines()
-    for line in lines:
-        line = line.strip()
-        if len(line) and line[0] != "#":
-            key, data = line.split("=")
-            env[key] = data
-"""
-
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
