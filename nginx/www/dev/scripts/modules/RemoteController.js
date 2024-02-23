@@ -25,6 +25,8 @@ export class RemoteController {
 		this.stop = true
 	}
 	update (){
+		if (this.stop)
+			return
 		if (this.serverMsg.command == "data" || this.serverMsg.command == "ending")
 			return this.serverMsg
 		if (this.serverMsg.player1Score == 3 || this.serverMsg.player2Score == 3){
