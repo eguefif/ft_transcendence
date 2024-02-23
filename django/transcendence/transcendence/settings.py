@@ -13,15 +13,9 @@ https://docs.djangoproject.com/en/5.0/ref/settings/
 import os
 from pathlib import Path
 
-env = {}
+env = os.environ
 
-with open("./transcendence/.env", "r") as f:
-    lines = f.readlines()
-    for line in lines:
-        line = line.strip()
-        if len(line) and line[0] != "#":
-            key, data = line.split("=")
-            env[key] = data
+
 
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
@@ -39,15 +33,20 @@ SECRET_KEY = env["SECRET"]
 DEBUG = env["DEBUG"]
 
 #ALLOWED_HOSTS = [env["HOSTNAME"]]
-ALLOWED_HOSTS = ["localhost", "c1r7p8.42quebec.com", "django"]
+if env["DEBUG"]:
+    ALLOWED_HOSTS = ["localhost", env["HOSTNAME"], "django"]
+else:
+    ALLOWED_HOSTS = [env["HOSTNAME"], "django"]
 
 
 # Application definition
 
 INSTALLED_APPS = [
+    'channels',
     'gamesManager',
     'authentication',
     'userprofile',
+    'friends',
     'usrProfile',
     'rest_framework',
     'rest_framework.authtoken',
@@ -58,6 +57,8 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
 ]
+
+ASGI_APPLICATION = 'transcendence.asgi.application'
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
@@ -94,7 +95,6 @@ TEMPLATES = [
 ]
 
 WSGI_APPLICATION = 'transcendence.wsgi.application'
-
 
 # Database
 # https://docs.djangoproject.com/en/5.0/ref/settings/#databases

@@ -1,20 +1,16 @@
-from django.shortcuts import render, get_object_or_404
 from django.contrib.auth.models import User
-from django.http import HttpResponse, FileResponse
+from django.http import FileResponse
+from django.shortcuts import get_object_or_404
 from authentication.decorator import require_authorization
-from rest_framework import status, permissions
+from rest_framework import status
 from rest_framework.decorators import api_view
-from rest_framework.views import APIView
 from rest_framework.response import Response
-from rest_framework.renderers import JSONRenderer
-from rest_framework.authtoken.models import Token
-from rest_framework.decorators import authentication_classes, permission_classes
-from rest_framework.authentication import SessionAuthentication, TokenAuthentication
-from rest_framework.permissions import IsAuthenticated
 import os
 
 from userprofile.serializers import UserProfileSerializer
 from authentication.manageTokens import get_token_user
+
+from gamesManager.models import Game
 
 @api_view(['GET'])
 @require_authorization
@@ -51,8 +47,6 @@ def update_profile(request):
 @api_view(['POST'])
 @require_authorization
 def upload_image(request):
-    print(request.headers)
-    
     username = get_token_user(request.headers["Authorization"])
     user = User.objects.get(username=username)
     profile = user.profile

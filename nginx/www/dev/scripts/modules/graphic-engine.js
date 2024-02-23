@@ -238,11 +238,14 @@ export class Renderer{
 	{
 		this.pointLight = new THREE.PointLight( 0xebfde7, 10 )
 		this.pointLight3 = new THREE.PointLight( 0xffffff, 10 )
+		this.pointLight4 = new THREE.PointLight( 0xffffff, 10 )
 		this.pointLight.position.set(2, 2, 2)
 		this.pointLight3.position.set(0, 0, 19)
+		this.pointLight4.position.set(0, 0, -19)
 		this.pointLight.intensity = 1
-		this.pointLight3.intensity = 100
-		this.scene.add(this.pointLight, this.pointLight3);
+		this.pointLight3.intensity = 95
+		this.pointLight4.intensity = 95
+		this.scene.add(this.pointLight, this.pointLight3, this.pointLight4);
 	}
 
 	initCameraPos()
@@ -299,17 +302,22 @@ export class graphicEngine
 		this.width = this.board.width
 		this.height = this.board.height
 		this.mid = this.board.width / 2
-		this.scoreScale = this.height / 4
+		this.textColor = "rgb(43, 194, 14)"
+
+		this.scoreScale = this.height / 5
 		this.scoreMarginRight = (this.mid + this.width / 4) - (this.scoreScale * 0.2)
 		this.scoreMarginLeft = (this.mid - this.width / 4) - (this.scoreScale * 0.2)
-		this.scoreMarginTop = this.board.height / 3
+		this.scoreMarginTop = this.board.height / 2.3
+
 		this.messageCenter = this.mid - this.width / 7
 		this.messageMargin = this.height / 2 + this.height / 4
 		this.messageScale = this.width / 15
+
 		this.startTimerMargin = this.height / 2 + this.height / 4
 		this.startTimerScale = this.height / 3
 		this.startTimerCenter = this.mid  - (this.startTimerScale * 0.2)
-		this.textColor = "rgb(43, 194, 14)"
+
+		this.marginNames = this.board.height / 5
 		
 		this.Renderer = renderer
 		this.Renderer.showBoard()
@@ -326,6 +334,7 @@ export class graphicEngine
 			this.displayPaddle2(model.paddle2.x, model.paddle2.y)
 			this.displayScore(model.player1Score, model.player2Score)
 			this.displayMessage(model.message)
+			this.displayNames(model.player1, model.player2)
 		}
 		// render()
 		this.ctx.stroke()
@@ -371,6 +380,20 @@ export class graphicEngine
 		this.ctx.fillText(message, this.mid - len * this.messageScale * 0.2, this.messageMargin)
 	}
 
+	displayNames(player1, player2)
+	{
+		if (player1 == undefined)
+			player1 = "Player 1"
+		if (player2 == undefined)
+			player2 = "Player 2"
+		const len1 = player1.length
+		const len2 = player2.length
+		this.ctx.font = "".concat(`${this.messageScale}`, "px Impact, fantasy")
+		this.ctx.fillStyle = this.textColor;
+		this.ctx.fillText(player1, (this.mid - this.width / 4) - (this.messageScale * 0.2 * len1), this.marginNames)
+		this.ctx.fillText(player2, (this.mid + this.width / 4) - (this.messageScale * 0.2 * len2), this.marginNames)
+	}
+
 	displayStartTimer(timeToWait)
 	{
 		if (timeToWait <= 0)
@@ -380,6 +403,5 @@ export class graphicEngine
 		this.ctx.fillStyle = this.textColor;
 		this.ctx.fillText(display, this.startTimerCenter, this.startTimerMargin)
 	}
-
 }
 

@@ -2,22 +2,37 @@ import { fetcher } from "./fetcher.js"
 import { renderer } from "./graphic-engine.js"
 
 export async function profile() {
-	renderer.hideBoard()
-	let msg = await fetcher.get("/api/userinfo")
+	hidePong()
+	const username = await getUsername()
 	let games ={}
-	let username = msg.data.username
-	if (msg.status >= 300)
+	if (username == "error") {
 		games = {"error": "Problem while fetching data"}
-	else
-		games = await getData(username)
-	if ("error" in games) {
 		displayErrorProfile(games)
 	}
 	else {
+		games = await getData(username)
 		renderProfileStructure(username)
 		renderStats(games)
 		renderHistory(games)
 	}
+}
+
+function hidePong() {
+	renderer.hideBoard()
+	let pongMenu = document.getElementById("pongMenu")
+	pongMenu.innerHTML = ""
+}
+
+async function getUsername() {
+	let msg = await fetcher.get("/api/userinfo")
+	let username = ""
+	if (msg.status >= 200 && msg.status < 300)
+		username = msg.data.username
+	else{
+		username = "error"
+		console.log("Error in getuesrname")
+	}
+	return username
 }
 
 function getData(username) {
@@ -43,7 +58,7 @@ async function getGameHistoryData(username) {
 	if (retval.status >= 200 && retval.status < 300)
 		games = retval.data
 	else {
-		games = {"error": "Impossible to load data"}
+		games = retval.data
 		return games
 	}
 	games = setStatusGame(games, username)
@@ -167,6 +182,17 @@ function getStats(games) {
 	}
 	winrate = Math.round(wins / nbr_games * 100)
 
+	if (!("error" in games)) {
+		for (const [key, game] of Object.entries(games)) {
+			nbr_games++
+			if (game["status"].includes("win"))
+				wins++
+			else
+				losses++
+		}
+		winrate = Math.round(wins / nbr_games * 100)
+	}
+
 	let retval = {
 		"winrate": winrate,
 		"nbr_games": nbr_games,
@@ -179,7 +205,7 @@ function getStats(games) {
 function renderHistory(games) {
 	let history = document.getElementById("history")
 	let html = `
-        <div class="container text-center">
+        <div id="match-history" class="container text-center">
 	`
 	for (const [key, game] of Object.entries(games)) {
 		html += `
@@ -193,7 +219,7 @@ function renderHistory(games) {
                 </div>
                 <div class="col-2">
                     <div class="d-flex align-items-center flex-column">
-                        <div class="p-1"><h5>${game.status}</h5></div>
+                        <div class="p-1">${game.status}</h5></div>
                         <div class="p-1"><h5 class="fs-6 text-center text-secondary">${game.time}</h5></div>
                     </div>
                 </div>

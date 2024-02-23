@@ -28,7 +28,9 @@ export class PassiveController {
 			player1Score: this.player1Score,
 			player2Score: this.player2Score,
 			message: this.message,
-			startTimer: this.startTimer
+			startTimer: this.startTimer,
+			player1: "",
+			player2: ""
 		}
 	}
 
@@ -97,7 +99,7 @@ class Ball {
 
 	checkTopWallCollision()
 	{
-		if (this.y <= this.radius || this.y >= 1 - this.radius)
+		if ((this.y <= this.radius && this.dir.y <= 0) || (this.y >= 1 - this.radius && this.dir.y >= 0))
 			this.dir.y *= -1
 	}
 
