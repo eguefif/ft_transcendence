@@ -51,10 +51,6 @@ body {
   transform: translate(-50%, -50%);
 }
 
-#pong_menu {
-  pointer-events: none;
-}
-
 #remotegamebtn {
   pointer-events: auto;
 }
