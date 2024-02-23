@@ -67,6 +67,7 @@ export class RemoteController {
 
 		this.websocket.onmessage = (e) => {
 			const msg = JSON.parse(e.data)
+			console.log(msg)
 			switch (msg.command) {
 				case "authsucess":
 					this.running = "authenticated"
