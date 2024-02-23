@@ -53,7 +53,7 @@ class Ball:
         return self.sideWallCollision()
 
     def wallTopBottomCollision(self):
-        if self.y <= self.radius or self.y >= 1 - self.radius:
+        if (self.y <= self.radius and self.dir.y <= 0) or (self.y >= 1 - self.radius and self.dir.y >= 0):
             self.dir.y *= -1
             self.dir.norm()
 

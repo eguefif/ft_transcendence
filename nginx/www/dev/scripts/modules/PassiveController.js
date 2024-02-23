@@ -99,7 +99,7 @@ class Ball {
 
 	checkTopWallCollision()
 	{
-		if (this.y <= this.radius || this.y >= 1 - this.radius)
+		if ((this.y <= this.radius && this.dir.y <= 0) || (this.y >= 1 - this.radius && this.dir.y >= 0))
 			this.dir.y *= -1
 	}
 
