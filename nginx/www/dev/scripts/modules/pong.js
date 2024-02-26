@@ -44,7 +44,7 @@ export function initLocalGame() {
 	let controller = new LocalController()
 	render_pong_menu_button()
 	controller.init()
-	let game = new Game(controller, )
+	let game = new Game(controller)
 	game.run()
 }
 
