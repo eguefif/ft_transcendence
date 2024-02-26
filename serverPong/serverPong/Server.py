@@ -210,6 +210,8 @@ class serverPong:
                     return True
                 timeout -= 1
                 if timeout == 0:
+                    if await self.send_msg(websocket, {"command": "timeout"}, player):
+                        return False
                     logging.error(f"Timeout for {player}, ({websocket})")
                     return False
                 await asyncio.sleep(0.5)

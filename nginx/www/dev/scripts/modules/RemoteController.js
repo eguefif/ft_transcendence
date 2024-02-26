@@ -14,6 +14,7 @@ export class RemoteController {
 		this.serverMsg = {}
 		this.localMsg= ""
 		this.stop = false
+		this.timeout = false
 	}
 
 	cleanup(){
@@ -65,11 +66,13 @@ export class RemoteController {
 		}
 
 		this.websocket.onclose = (e) => {
-			this.localMsg = "Connection lost"
+			if (this.timeout == false)
+				this.localMsg = "Connection lost"
 		}
 
 		this.websocket.onmessage = (e) => {
 			const msg = JSON.parse(e.data)
+			console.log(msg)
 			switch (msg.command) {
 				case "authsucess":
 					this.running = "authenticated"
@@ -77,6 +80,11 @@ export class RemoteController {
 				case "serverfull":
 					this.localMsg = "Server full, retry later"
 					this.state = "ending"
+					break
+				case "timeout":
+					this.localMsg = "You waited too long to press space"
+					this.state = "ending"
+					this.timeout = true
 					break
 				case "wait":
                     this.websocket.send("wait")

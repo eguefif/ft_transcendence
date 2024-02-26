@@ -30,6 +30,7 @@ export async function initRemoteGame() {
 	if (!await fetcher.isAuthenticated()) {
 		return
 	}
+	hideProfile()
 	render_pong_menu_button()
 	initSidebar();
 	let controller = new RemoteController()
@@ -39,6 +40,7 @@ export async function initRemoteGame() {
 }
 
 export function initLocalGame() {
+	hideProfile()
 	let controller = new LocalController()
 	render_pong_menu_button()
 	controller.init()
