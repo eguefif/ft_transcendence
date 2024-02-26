@@ -9,6 +9,7 @@ import { Tournament } from "./tournament.js";
 
 export async function pongMenu() {
 	hideProfile()
+	renderer.hideBracket()
 	let controller = new PassiveController()
 	let game = new Game(controller)
 	const pongTournament = document.getElementById("playerForm")
