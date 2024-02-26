@@ -35,12 +35,13 @@ export class Tournament {
 				this.runGame()
 		})
 		document.addEventListener("endGame", (e) => {
-			if (this.game == 1)
-				this.winnerSemi1 = e.detail["winner"]
+			console.log("winner is ", e.detail)
 			if (this.game == 2)
-				this.winnerSemi2 = e.detail["winner"]
+				this.winnerSemi1 = e.detail
 			if (this.game == 3)
-				this.winner = e.detail["winner"]
+				this.winnerSemi2 = e.detail
+			if (this.state == "end")
+				this.winner = e.detail
 			this.displayBracket()
 		})
 	}
@@ -67,11 +68,13 @@ export class Tournament {
 
 	runGame() {
 		renderer.hideBracket()
+		if (this.state == "end")
+			return
 		if (this.game === 1) {
 			let controller = new LocalController(this.players[1], this.players[2])
+			controller.init()
 			const game = new Game(controller)
 			game.run()
-			console.log("Game between: ", this.players[1], this.players[2])
 			this.winnerSemi1 = this.players[2]
 			this.game = 2
 			return
@@ -79,19 +82,19 @@ export class Tournament {
 		else if (this.game == 2) {
 			let controller = new LocalController(this.players[3], this.players[4])
 			const game = new Game(controller)
+			controller.init()
 			game.run()
-			console.log("Game between: ", this.players[3], this.players[4])
 			this.winnerSemi2 = this.players[3]
 			this.game = 3
 			this.state = "final"
 			return
 		}
-		else if (this.game == 2) {
-			let controller = new LocalController(this.winnerSmi1, this.winnerSemi2)
+		else if (this.game == 3) {
+			let controller = new LocalController(this.winnerSemi1, this.winnerSemi2)
 			const game = new Game(controller)
+			controller.init()
 			game.run()
-			console.log("Game between: ", this.winnerSemi1, this.winnerSemi2)
-			this.game = 3
+			this.game = 4
 			return
 		}
 	}
@@ -101,8 +104,23 @@ export class Tournament {
 		pongTournament.innerHTML = ""
 
 		renderer.hideBoard()
-		if (this.game == 1)
-		renderer.showBracket(this.players[1], this.players[2], this.players[3], this.players[4])
+		if (this.state == "end") {
+			console.log("winner is ", this.winner)
+		}
+		if (this.game == 1){ 
+			renderer.showBracket(this.players[1], this.players[2], this.players[3], this.players[4])
+			console.log("Game between: ", this.players[1], this.players[2])
+		}
+		if (this.game == 2) {
+			renderer.showBracket(this.players[1], this.players[2], this.players[3], this.players[4],
+									this.winnerSemi1)
+			console.log("Game between: ", this.players[3], this.players[4])
+		}
+		if (this.game == 3){
+			renderer.showBracket(this.players[1], this.players[2], this.players[3], this.players[4],
+			this.winnerSemi1, this.winnerSemi2)
+			console.log("Game between: ", this.winnerSemi1, this.winnerSemi2)
+		}
 	}
 
 	formErrorTournament() {

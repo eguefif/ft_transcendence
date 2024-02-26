@@ -43,7 +43,7 @@ export class LocalController {
 	}
 
 	getWinner() {
-		if (paddle.player1Score == 3)
+		if (this.player1Score == 3)
 			return this.paddle1.name
 		else
 			return this.paddle2.name

@@ -14,10 +14,15 @@ export class Game {
 
 	run() {
 		const update = () => {
-			console.log(this.controller.stop)
-			if (!this.running || this.controller.stop == true) {
-				const endGameEvent = new CustomEvent("endGame", {detail: "test"}) //this.controller.getWinner()})
+			if (this.controller.running == false) {
+				console.log(this.controller.running)
+				console.log(this.running)
+				const endGameEvent = new CustomEvent("endGame", {detail: this.controller.getWinner()}) //this.controller.getWinner()})
 				document.dispatchEvent(endGameEvent)
+				this.graphicEngine.clearFrame()
+				return
+			}
+			if (!this.running) {
 				return
 			}
 			let data = this.controller.update()
@@ -37,10 +42,10 @@ export class Game {
 
 		document.addEventListener("click", (e) => {
 			if (e.target.matches("[data-link]")) {
-					this.running = false
-					this.controller.cleanup()
-					this.graphicEngine.clearFrame()
-					this.controller.stop = true
+				this.running = false
+				this.controller.cleanup()
+				this.graphicEngine.clearFrame()
+				this.controller.stop = true
 			}
 			})
 
