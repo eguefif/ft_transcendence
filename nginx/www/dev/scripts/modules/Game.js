@@ -27,12 +27,14 @@ export class Game {
 			})
 
 		const logoutBtn = document.getElementById("logoutButton")
-		logoutBtn.addEventListener("click", (e) => {
-			this.runnintg = false
-			this.controller.cleanup()
-			this.graphicEngine.clearFrame()
-			this.controller.stop = true
-		})
+		if (logoutBtn != undefine) {
+			logoutBtn.addEventListener("click", (e) => {
+				this.runnintg = false
+				this.controller.cleanup()
+				this.graphicEngine.clearFrame()
+				this.controller.stop = true
+			})
+		}
 	}
 
 	run() {
