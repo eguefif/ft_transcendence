@@ -48,3 +48,13 @@ def end_game(request, format=None):
     game.score_player2 = data["score_player2"]
     game.save()
     return Response({}, status.HTTP_200_OK)
+
+@api_view(["POST"])
+def drop_game(request, format=None):
+    data = json.loads(request.data)
+    try:
+        game = Game.objects.get(pk=data["gameid"])
+    except ObjectDoesNotExist:
+        return Response({}, status=status.HTTP_400_BAD_REQUEST)
+    game.delete()
+    return Response({}, status.HTTP_200_OK)
