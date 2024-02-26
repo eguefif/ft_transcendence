@@ -1,5 +1,7 @@
 from math import sqrt
 from random import random
+import logging
+import time
 
 
 class Vector:
@@ -17,6 +19,7 @@ class Vector:
 class Ball:
     def __init__(self):
         self.init()
+        self.timer_speed = 0
 
     def init(self):
         self.x = 0.5
@@ -24,8 +27,16 @@ class Ball:
         self.resetPosition()
         self.speed = 1 / 120
         self.radius = 1 / 40
+        self.timer_speed = time.time() + 5
+
+    def increase_speed(self):
+        now = time.time()
+        if self.speed < self.radius - 0.003 and now >= self.timer_speed:
+            self.speed += 0.0005
+            self.timer_speed = time.time() + 5
 
     def resetPosition(self):
+        self.speed = 1 / 120
         self.dir = Vector(random() * 2 - 1, 0)
         if self.dir.x < 0:
             self.dir.x = min(-0.5, self.dir.x)
@@ -42,7 +53,7 @@ class Ball:
         return self.sideWallCollision()
 
     def wallTopBottomCollision(self):
-        if self.y <= self.radius or self.y >= 1 - self.radius:
+        if (self.y <= self.radius and self.dir.y <= 0) or (self.y >= 1 - self.radius and self.dir.y >= 0):
             self.dir.y *= -1
             self.dir.norm()
 

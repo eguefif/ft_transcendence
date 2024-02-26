@@ -2,6 +2,7 @@ import { fetcher } from "./fetcher.js"
 import { initRemoteGame } from "./pong.js"
 import { initLocalGame } from "./pong.js"
 import { pongMenu } from "./pong.js"
+import { profile } from "./profile.js"
 
 export function initRouter() {
 	const navigateTo = url => {
@@ -11,9 +12,10 @@ export function initRouter() {
 
 	async function router() {
 		const routes = [
-			{path: "/", view: () => pongMenu()},
-			{path: "/remotegame", view: () => initRemoteGame()},
-			{path: "/localgame", view: () => initLocalGame()},
+			{ path: "/", view: () => pongMenu() },
+			{ path: "/remotegame", view: () => initRemoteGame() },
+			{ path: "/localgame", view: () => initLocalGame() },
+			{ path: "/profile", view: () => profile() },
 		]
 		
 		const potentialMatches = routes.map((route) => {
@@ -36,13 +38,11 @@ export function initRouter() {
 
 	window.addEventListener("popstate", router)
 
-	document.addEventListener("DOMContentLoaded", () => {
-		document.body.addEventListener("click", e => {
-			if (e.target.matches("[data-link]")) {
-				e.preventDefault()
-				navigateTo(e.target.href)
-			}
-		})
+	document.addEventListener("click", e => {
+		if (e.target.matches("[data-link]")) {
+			e.preventDefault()
+			navigateTo(e.target.href)
+		}
 	})
 	router()
 }

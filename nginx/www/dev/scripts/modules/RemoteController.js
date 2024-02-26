@@ -1,4 +1,3 @@
-
 import { fetcher } from "../modules/fetcher.js";
 
 export class RemoteController {
@@ -7,9 +6,8 @@ export class RemoteController {
 		this.player2Score = 0
 		this.startTimer = 0
 		this.winnerMessage = ""
-		this.username = username
-		this.paddle1 = new Paddle("player1", 1)
-		this.paddle2 = new Paddle("player2", 2)
+		this.paddle1 = new Paddle("player1", "right")
+		this.paddle2 = new Paddle("player2", "left")
 		this.ball = new Ball()
 		this.address = window.location.hostname
 		this.running = true
@@ -19,11 +17,16 @@ export class RemoteController {
 	}
 
 	cleanup(){
-		this.websocket.close()
+		try {
+			this.websocket.close()
+		}
+		catch (error)
+		{}
+		this.stop = true
 	}
 	update (){
-		if (this.stop == true)
-			this.websocket.close()
+		if (this.stop)
+			return
 		if (this.serverMsg.command == "data" || this.serverMsg.command == "ending")
 			return this.serverMsg
 		if (this.serverMsg.player1Score == 3 || this.serverMsg.player2Score == 3){
@@ -40,7 +43,7 @@ export class RemoteController {
 			startTimer: this.startTimer
 		}
 	}
-	 
+
 	async init() {
 		await this.initSocket()
 		this.init_event()
@@ -53,35 +56,31 @@ export class RemoteController {
 		if (this.websocket == undefined) {
 			return
 		}
-			
-			this.websocket.addEventListener("open", async (e) => {
-				fetcher.sendToken(this.websocket)
-			})
+
+		this.websocket.addEventListener("open", async (e) => {
+			fetcher.sendToken(this.websocket)
+		})
 
 		this.websocket.error = (e) => {
-			console.log("Error: ", e)
 		}
 
 		this.websocket.onclose = (e) => {
-			this.localMessage = "Connection lost"
-			console.log("disconnection")
+			this.localMsg = "Connection lost"
 		}
 
 		this.websocket.onmessage = (e) => {
 			const msg = JSON.parse(e.data)
-			//console.log(msg)
 			switch (msg.command) {
 				case "authsucess":
-					console.log("authentification success")
 					this.running = "authenticated"
 					break
 				case "serverfull":
-					this.localMessage = "Server full, retry later"
+					this.localMsg = "Server full, retry later"
 					this.state = "ending"
 					break
 				case "wait":
                     this.websocket.send("wait")
-					this.localMessage = "Wait for another player"
+					this.localMsg = "Wait for another player"
 					this.state = "waiting"
 					this.serverMsg = msg
 					break;
@@ -90,7 +89,7 @@ export class RemoteController {
 						this.websocket.send("getready")
 						this.state = "getready"
 					}
-					this.localMessage = "Press space to space the game"
+					this.localMsg = "Press space to space the game"
 					this.serverMsg = msg
 					break;
 				case "data":
@@ -105,24 +104,20 @@ export class RemoteController {
 		}
 
 		document.addEventListener("keydown", (e) => {
-			console.log(this.state)
 			if (this.state == "running") {
-				console.log("sending arrow direction")
 				if (e.key == 'ArrowDown')
 					this.websocket.send("down")
-				else if (e.key == 'ArrowUp') 
+				else if (e.key == 'ArrowUp')
 					this.websocket.send("up")
 			    }
 			})
 
 		document.addEventListener("keyup", (e) => {
 			if (this.state == "running") {
-				console.log("sending stop")
 				this.websocket.send("stop")
 			}
 			if (e.code == 'Space' && this.state == "getready"){
 				this.websocket.send("ready")
-				console.log("sending ready")
 				this.state = "running"
 				}
 		})
@@ -131,7 +126,7 @@ export class RemoteController {
         if (this.websocket.readyState != 3)
             return true
         return false
-	}	
+	}
 
 }
 
@@ -166,7 +161,7 @@ class Paddle{
             this.y -= this.paddle_speed
         else if (this.move_down)
             this.y += this.paddle_speed
-        
+
         this.top = this.y
         this.bottom = this.y - this.paddleHeight / 2
     }
@@ -174,8 +169,8 @@ class Paddle{
 class Ball {
     constructor() {
 		this.radius = 1 / 50
-		this.x = 0
-		this.y = 0
+		this.x = 0.5
+		this.y = 0.5
         this.speed = 1 / 120
 		this.in_play = false
     }

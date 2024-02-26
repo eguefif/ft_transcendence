@@ -2,3 +2,37 @@
     font-size: small;
     color:rgb(255, 0, 0);
 }
+
+nav {
+    a {
+        color: $primary;
+        transition: 0.25s;
+        &:hover {
+            transition: 0.25s;
+            color: $light;
+        }
+    }
+    svg {
+        min-width: 2rem;
+        min-height: 2rem;
+    }
+    .noclick {
+        pointer-events: none;
+    }
+}
+
+text {
+    &:hover {
+        transition: 0.25s;
+        color: $light;
+        cursor: pointer;
+    }
+    font-size: larger;
+    color: $primary;
+    transition: 0.25s;
+
+}
+
+#connectionModal, #settingsModal {
+    color: $primary;
+}

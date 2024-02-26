@@ -1,82 +1,397 @@
+import * as THREE from 'three';
+
+import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
+import { RenderPass } from 'three/addons/postprocessing/RenderPass.js';
+import { EffectComposer } from 'three/addons/postprocessing/EffectComposer.js';
+import { UnrealBloomPass } from 'three/addons/postprocessing/UnrealBloomPass.js';
+import { OutputPass } from 'three/addons/postprocessing/OutputPass.js'
+import { ShaderPass } from 'three/addons/postprocessing/ShaderPass.js'
+
+
+export class Renderer{
+	constructor(){
+		this.boardWidth = 4
+		this.boardHeight = 3
+		this.boardStartX = (this.boardWidth / 2) * -1
+		this.boardStartY = (this.boardHeight / 2)
+		this.paddleMarging_x = this.boardWidth / 12
+
+		this.windowWidth = window.innerWidth
+		this.windowHeight = window.innerHeight
+	}
+
+	init (){
+
+		this.initRenderer()
+		this.initBloom()
+		this.initMaterials()
+		this.initGameBoard()
+		this.initStars()
+		this.initPaddles()
+		this.initBall()
+		this.initSun()
+		this.initLight()
+		this.initCameraPos()
+		this.initListener()
+
+		this.renderer.setAnimationLoop(this.render.bind(this))
+	}
+	initRenderer()
+	{
+		this.canva = document.getElementById('background');
+		this.scene = new THREE.Scene();
+		this.camera = new THREE.PerspectiveCamera(75, this.windowWidth / this.windowHeight, 0.1, 1000);
+		this.renderer = new THREE.WebGLRenderer({ canvas: this.canva, antialias: true })
+
+		this.renderer.setSize(this.windowWidth, this.windowHeight);
+		this.renderer.setClearColor( 0x000000, 1);
+		document.body.appendChild(this.renderer.domElement);
+		this.renderer.toneMapping = THREE.CineonToneMapping
+		this.renderer.toneMappingExposure = 1.5
+		this.renderer.outputColorSpace = THREE.SRGBColorSpace
+		
+	}
+
+	initBloom()
+	{
+		//Bloom
+		this.renderPass = new RenderPass(this.scene, this.camera)
+		this.composer = new EffectComposer(this.renderer)
+		this.composer.addPass(this.renderPass)
+		const fragment_shader = `
+		uniform sampler2D baseTexture;
+		uniform sampler2D bloomTexture;
+		varying vec2 vUv;
+		void main() {
+			gl_FragColor = ( texture2D( baseTexture, vUv ) + vec4( 1.0 ) * texture2D( bloomTexture, vUv ) );
+		}
+		`
+		const vertex_shader = `
+		varying vec2 vUv;	
+		void main() {
+		
+			vUv = uv;
+		
+			gl_Position = projectionMatrix * modelViewMatrix * vec4( position, 1.0 );
+		
+		}	
+		`
+		this.bloomPass = new UnrealBloomPass( 
+		    new THREE.Vector2(this.windowWidth, this.windowHeight),
+		    0.3, //bloom intensity
+		    0.1, // bloom radius
+		    0.1 // pixel bloom? (experiment)
+		    )
+		this.composer.addPass(this.bloomPass)
+		this.composer.renderToScreen = false
+		
+		this.mixPass = new ShaderPass(
+			new THREE.ShaderMaterial({
+				uniforms:{
+					baseTexture: {value: null},
+		            bloomTexture: {value: this.composer.renderTarget2.texture}
+		        },
+				vertexShader: vertex_shader,
+				fragmentShader: fragment_shader
+		    }), 'baseTexture'
+		    )
+	
+		this.finalComposer = new EffectComposer(this.renderer)
+		this.finalComposer.addPass(this.renderPass)
+		this.finalComposer.addPass(this.mixPass)
+		this.outputPass = new OutputPass()//2min
+		this.finalComposer.addPass(this.outputPass)
+		
+		//SELECT BLOOM
+		this.BLOOM_SCENE = 1
+		this.bloomLayer = new THREE.Layers()
+		this.bloomLayer.set(this.BLOOM_SCENE)
+		this.darkMaterial = new THREE.MeshBasicMaterial({color: 0x000000})
+		this.materials = {}
+		
+	}
+
+	nonBloomed(obj)
+	{
+		if (obj.isMesh && this.bloomLayer.test(obj.layers) === false){
+			this.materials[obj.uuid] = obj.material
+			obj.material = this.darkMaterial
+		}
+	}
+
+	restoreMaterial(obj)
+	{
+		if (this.materials[obj.uuid])
+		{
+			obj.material = this.materials[obj.uuid]
+			delete this.materials[obj.uuid]
+		}
+	}
+
+	initGameBoard()
+	{
+		const boardGeometry = new THREE.BoxGeometry(this.boardWidth, this.boardHeight, 0.05)
+		const LipGeometry = new THREE.BoxGeometry(this.boardWidth, 0.027, 0.04);
+		const vertBoarderGeo = new THREE.BoxGeometry(0.015, this.boardHeight, 0.0001);
+
+		this.topLip = new THREE.Mesh(LipGeometry, this.greenGlowMat);
+		this.bottomLip = new THREE.Mesh(LipGeometry, this.greenGlowMat);
+		this.gameboard = new THREE.Mesh(boardGeometry, this.calizStella_mat)
+
+	    const vertBoarderMat = new THREE.MeshBasicMaterial({ color: 0x000604 })
+	    this.vertBoarderLeft = new THREE.Mesh(vertBoarderGeo, vertBoarderMat);
+	    this.vertBoarderRight = new THREE.Mesh(vertBoarderGeo, vertBoarderMat);
+
+	    this.vertBoarderLeft.position.set(this.boardWidth / 2, 0, 0)
+	    this.vertBoarderRight.position.set((this.boardWidth / -2), 0, 0)
+
+		this.topLip.position.set(0, this.boardHeight / 2, 0.05)
+		this.bottomLip.position.set(0, this.boardHeight / -2, 0.05)
+		this.gameboard.position.set(0,0,0)
+
+		this.topLip.layers.toggle(this.BLOOM_SCENE)
+		this.bottomLip.layers.toggle(this.BLOOM_SCENE)
+		this.gameboard.layers.disable(20)
+
+	}
+	showBoard()
+	{
+		this.scene.add(this.topLip, this.bottomLip, this.gameboard, this.vertBoarderLeft, this.vertBoarderRight, this.ball, this.paddle1, this.paddle2)
+	}
+	hideBoard()
+	{
+		this.scene.remove(this.topLip, this.bottomLip, this.gameboard, this.vertBoarderLeft, this.vertBoarderRight, this.ball, this.paddle1, this.paddle2)
+	}
+
+	initMaterials()
+	{
+		this.greenGlowMat = new THREE.MeshStandardMaterial({ color: 0x0FFF50, emissive: 0x2BC20E });
+
+		this.calizStella_mat = new THREE.MeshLambertMaterial({
+			color: 0x2BC20E,
+			transparent: true,
+			opacity: 0.2,
+		});
+	}
+
+	initStars()
+	{
+		var stars = new Array(0);
+		for ( var i = 0; i < 20000; i ++ ) {
+			let x = THREE.MathUtils.randFloatSpread( 1500 );
+			let y = THREE.MathUtils.randFloatSpread( 1500 );
+			let z = THREE.MathUtils.randFloat( -2000, 2000 );
+			if (!(x > -100 && x < 100 && y < 100 && y > -100 && z > -100 && z <100))
+				stars.push(x, y, z);
+		}
+		var starsGeometry = new THREE.BufferGeometry();
+		starsGeometry.setAttribute(
+			"position", new THREE.Float32BufferAttribute(stars, 3)
+			);
+			var starsMaterial = new THREE.PointsMaterial( { color: 0xbbf9af } );//0x888888
+			this.starField = new THREE.Points( starsGeometry, starsMaterial );
+			this.scene.add( this.starField );
+	}
+	initPaddles()
+	{
+		this.hlf_pdl_height = 1/16
+
+		let paddleGeometry = new THREE.BoxGeometry(0.05, this.boardHeight / 8, 0.05);
+		this.paddle1 = new THREE.Mesh(paddleGeometry, this.greenGlowMat);
+		this.paddle1.position.set(this.boardStartX + this.paddleMarging_x, 0, 0.1)
+		this.paddle1.layers.toggle(this.BLOOM_SCENE)
+
+		this.paddle2 = new THREE.Mesh(paddleGeometry, this.greenGlowMat);
+
+		this.paddle2.position.set(this.boardStartX + this.boardWidth - this.paddleMarging_x, 0, 0.1)
+		this.paddle2.layers.toggle(this.BLOOM_SCENE)
+		// this.scene.add(this.paddle1, this.paddle2)
+	}
+
+	initBall()
+	{
+		let ballGeometry = new THREE.SphereGeometry(0.05, 32, 16)
+		this.ball = new THREE.Mesh(ballGeometry, this.greenGlowMat);
+		this.ball.position.set(this.boardStartX + this.boardWidth / 2, this.boardStartY + this.boardHeight / 2, 0.1)
+		this.ball.layers.toggle(this.BLOOM_SCENE)
+		// this.scene.add(this.ball)
+	}
+
+	initSun()
+	{
+		let sunGeometry = new THREE.SphereGeometry(1, 32, 16)
+		let sunmaterial = new THREE.MeshStandardMaterial({ color: 0xFDB813, emissive: 0xff5400 })
+		this.sun = new THREE.Mesh(sunGeometry, sunmaterial);
+		this.sun.position.set(-100,45, -100)
+		this.sun.layers.toggle(this.BLOOM_SCENE)
+		this.scene.add(this.sun)
+		this.sunLight = new THREE.PointLight( 0xff5400, 10 )
+		this.sunLight.position.set(-100, 45, -80)
+		this.sunLight.intensity = 100000
+		this.sunLight.layers.disableAll()
+		this.sunLight.layers.enable(20)
+		this.camera.layers.enable(20)
+		this.scene.add(this.sunLight)
+	}
+
+	initLight()
+	{
+		this.pointLight = new THREE.PointLight( 0xebfde7, 10 )
+		this.pointLight3 = new THREE.PointLight( 0xffffff, 10 )
+		this.pointLight4 = new THREE.PointLight( 0xffffff, 10 )
+		this.pointLight.position.set(2, 2, 2)
+		this.pointLight3.position.set(0, 0, 19)
+		this.pointLight4.position.set(0, 0, -19)
+		this.pointLight.intensity = 1
+		this.pointLight3.intensity = 95
+		this.pointLight4.intensity = 95
+		this.scene.add(this.pointLight, this.pointLight3, this.pointLight4);
+	}
+
+	initCameraPos()
+	{
+		this.camera.position.set(0, 0, 4);
+		this.controls = new OrbitControls( this.camera, this.renderer.domElement );
+	}
+	
+	render() {
+		this.controls.update()
+		this.starField.translateX(0.01)
+		this.starField.translateY(0.005)
+		this.sunLight.translateX(0.003)
+		this.sunLight.translateY(0.0002)
+		this.sun.translateX(0.003)
+		this.sun.translateY(0.0002)
+		this.scene.traverse(this.nonBloomed.bind(this))
+		this.pointLight.intensity = (Math.sin(Date.now() / 1000) + 1) * 0.025
+		this.sunLight.intensity = 8000 * (Math.sin(Date.now() / 5000) + 3)
+		this.composer.render()
+		
+		
+		this.scene.traverse(this.restoreMaterial.bind(this))
+		this.finalComposer.render()
+	};
+
+	initListener()
+	{
+		window.addEventListener("resize", (function (e) {
+			this.windowWidth = window.innerWidth
+			this.windowHeight = window.innerHeight
+
+			this.camera.aspect = this.windowWidth / this.windowHeight;
+			this.camera.updateProjectionMatrix();
+			this.renderer.setSize(this.windowWidth, this.windowHeight);
+			this.composer.setSize(this.windowWidth, this.windowHeight);
+			this.finalComposer.setSize(this.windowWidth, this.windowHeight);
+		}).bind(this));
+	}
+
+}
+
+export const renderer = new Renderer()
+
 export class graphicEngine
 {
-	constructor(mode="basic"){
-		this.ctx =  board.getContext("2d")
+	constructor(){
 		this.board = document.getElementById("board")
+		this.ctx =  this.board.getContext("2d")
 
+		
+		// this.generalTopMargin = this.height / 10;
+		this.board.style.top = '35%'
 		this.width = this.board.width
 		this.height = this.board.height
-		this.mid = board.width / 2
-		this.scoreMarginRight = this.mid + this.width / 10
-		this.scoreMarginLeft = this.mid - this.width / 10
-		this.scoreMarginTop = this.height / 6
-		this.NameMarginTop = this.height / 14
-		this.scoreScale = this.height / 16
-		this.winnerMessageCenter = this.width / 2 - this.width / 7
-		this.winnerMessageMargin = this.height / 4.8
-		this.startTimerCenter = this.width / 2 - this.width / 48
-		this.startTimerMargin = this.height / 4
-		this.startTimerScale = this.height / 6
+		this.mid = this.board.width / 2
+		this.textColor = "rgb(43, 194, 14)"
 
-		this.paddleHeigt = 1 / 8
+		this.scoreScale = this.height / 5
+		this.scoreMarginRight = (this.mid + this.width / 4) - (this.scoreScale * 0.2)
+		this.scoreMarginLeft = (this.mid - this.width / 4) - (this.scoreScale * 0.2)
+		this.scoreMarginTop = this.board.height / 2.3
+
+		this.messageCenter = this.mid - this.width / 7
+		this.messageMargin = this.height / 2 + this.height / 4
+		this.messageScale = this.width / 15
+
+		this.startTimerMargin = this.height / 2 + this.height / 4
+		this.startTimerScale = this.height / 3
+		this.startTimerCenter = this.mid  - (this.startTimerScale * 0.2)
+
+		this.marginNames = this.board.height / 5
+		
+		this.Renderer = renderer
+		this.Renderer.showBoard()
 	}
 
 	display(model) {
-		if (model == "none")
-			return
-		this.clearFrame()
-		this.displayStartTimer(model.startTimer)
-		this.displayBall(model.ball.x, model.ball.y, model.ball.radius)
-		this.displayPaddle(model.paddle1.x, model.paddle1.y)
-		this.displayPaddle(model.paddle2.x, model.paddle2.y)
-		this.displayScore(model.player1Score, model.player2Score)
-		this.displayWinner(model.message)
-		this.displayNames(model.player1, model.player2)
 
+		if (model != "none" && model != undefined)
+		{
+			this.clearFrame()
+			this.displayStartTimer(model.startTimer)
+			this.displayBall(model.ball.x, model.ball.y, model.ball.radius)
+			this.displayPaddle1(model.paddle1.x, model.paddle1.y)
+			this.displayPaddle2(model.paddle2.x, model.paddle2.y)
+			this.displayScore(model.player1Score, model.player2Score)
+			this.displayMessage(model.message)
+			this.displayNames(model.player1, model.player2)
+		}
+		// render()
 		this.ctx.stroke()
 	}
 
 	clearFrame(){
-		this.ctx.clearRect(0, 0, board.width, board.height)
+		this.ctx.clearRect(0, 0, this.board.width, this.board.height)
 	}
 
 	displayBall(ball_x, ball_y, ball_radius){
-		this.ctx.beginPath()
-		this.ctx.arc(ball_x * this.width, ball_y * this.height, ball_radius * this.height, 0, 2 * Math.PI)
+		this.Renderer.ball.position.set(this.Renderer.boardStartX + ball_x * this.Renderer.boardWidth, this.Renderer.boardStartY - (ball_y * this.Renderer.boardHeight) , 0.1)
+		this.Renderer.pointLight.position.set(this.Renderer.boardStartX + ball_x * this.Renderer.boardWidth, this.Renderer.boardStartY - (ball_y * this.Renderer.boardHeight) , 0.2)
 	}
 
-	displayPaddle(paddle_x, paddle_y){
-		this.ctx.moveTo(paddle_x * this.width, paddle_y * this.height)
-		this.ctx.lineTo(paddle_x * this.width, (paddle_y + this.paddleHeigt) * this.height)
+	displayPaddle1(paddle_x, paddle_y){
+		this.Renderer.paddle1.position.set(this.Renderer.boardStartX + (paddle_x) * this.Renderer.boardWidth, this.Renderer.boardStartY - ((paddle_y + this.Renderer.hlf_pdl_height) * this.Renderer.boardHeight), 0.1)
+	}
+	displayPaddle2(paddle_x, paddle_y){
+		this.Renderer.paddle2.position.set(this.Renderer.boardStartX + (paddle_x) * this.Renderer.boardWidth, this.Renderer.boardStartY - ((paddle_y + this.Renderer.hlf_pdl_height) * this.Renderer.boardHeight), 0.1)
 	}
 
 	displayScore(player1Score, player2Score)
 	{
+		if (player1Score == undefined || player2Score == undefined)
+			return
 		const dis1 = `${player1Score}`
 		const dis2 = `${player2Score}`
-		this.ctx.font = "".concat(`${this.scoreScale}`, "px Arial")
+		this.ctx.font = "".concat(`${this.scoreScale}`, "px Impact, fantasy")
+		this.ctx.fillStyle = this.textColor;
+
 		this.ctx.fillText(dis1, this.scoreMarginLeft, this.scoreMarginTop)
+
 		this.ctx.fillText(dis2, this.scoreMarginRight, this.scoreMarginTop)
 	}
 
-	displayNames(player1Name, player2Name)
+	displayMessage(message)
 	{
-		if (player1Name == undefined || player1Name == "")
-			player1Name = "player1"
-		if (player2Name == undefined || player1Name == "")
-			player2Name = "player2"
-		this.ctx.font = "".concat(`${this.scoreScale}`, "px Arial")
-		this.ctx.fillText(player1Name, this.scoreMarginLeft - 50, this.NameMarginTop)
-		this.ctx.fillText(player2Name, this.scoreMarginRight  - 50, this.NameMarginTop)
+		if (message == "" || message == undefined)
+			return
+		const len = message.length
+		this.ctx.font = "".concat(`${this.messageScale}`, "px Impact, fantasy")
+		this.ctx.fillStyle = this.textColor;
+		this.ctx.fillText(message, this.mid - len * this.messageScale * 0.2, this.messageMargin)
 	}
 
-	displayWinner(winnerMessage)
+	displayNames(player1, player2)
 	{
-		if (winnerMessage == "")
-			return
-		const y = 50
-		this.ctx.font = "".concat(`${this.scoreScale}`, "px Arial")
-		this.ctx.fillText(winnerMessage, this.winnerMessageCenter, this.winnerMessageMargin)
+		if (player1 == undefined)
+			player1 = "Player 1"
+		if (player2 == undefined)
+			player2 = "Player 2"
+		const len1 = player1.length
+		const len2 = player2.length
+		this.ctx.font = "".concat(`${this.messageScale}`, "px Impact, fantasy")
+		this.ctx.fillStyle = this.textColor;
+		this.ctx.fillText(player1, (this.mid - this.width / 4) - (this.messageScale * 0.2 * len1), this.marginNames)
+		this.ctx.fillText(player2, (this.mid + this.width / 4) - (this.messageScale * 0.2 * len2), this.marginNames)
 	}
 
 	displayStartTimer(timeToWait)
@@ -84,7 +399,9 @@ export class graphicEngine
 		if (timeToWait <= 0)
 			return
 		let display = `${timeToWait}`
-		this.ctx.font = "".concat(`${this.startTimerScale}`, "px Arial")
+		this.ctx.font = "".concat(`${this.startTimerScale}`, "px Impact, fantasy")
+		this.ctx.fillStyle = this.textColor;
 		this.ctx.fillText(display, this.startTimerCenter, this.startTimerMargin)
 	}
 }
+

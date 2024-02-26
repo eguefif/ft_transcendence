@@ -3,7 +3,7 @@ import time
 import logging
 
 
-from djangoInterface import create_game_db_django, end_game_db_django
+from djangoInterface import ModelGame
 from Paddle import Paddle
 from Ball import Ball
 
@@ -28,6 +28,7 @@ class Game:
         self.djangoid = -1
         self.message = ""
         self.disconnection = False
+        self.db = ModelGame()
 
     async def add_player(self, player, websocket):
         self.player2 = player
@@ -35,7 +36,8 @@ class Game:
         self.p2_websocket = websocket
         self.state = "getready"
         self.time = 4
-        #self.djangoId = await create_game_db_django(self.player1, self.player2, self.time)
+        now = time.time()
+        self.djangoId = await self.db.create_game_db_django(self.player1, self.player2, now)
 
     def is_ready_to_be_remove(self):
         return self.p1_disconnected and self.p2_disconnected
@@ -89,12 +91,14 @@ class Game:
                 }
         if self.time != 0 and self.state == "running":
             if self.player1 == player:
-                await asyncio.sleep(1)
+                if self.time < 4:
+                    await asyncio.sleep(1)
                 self.time -= 1
-            retval["startTimer"] = self.time - 1
+            retval["startTimer"] = self.time
 
         if self.state == "running" and not self.is_end_game() and self.time == 0:
             result = self.move()
+            self.ball.increase_speed()
             if result is not None:
                 self.init_game()
                 self.update_score(result)
@@ -110,7 +114,6 @@ class Game:
 
     async def get_ending_message(self):
         if self.disconnection == True and not self.is_end_game():
-            logging.info(f"disconnetion {self.disconnection}, and end: {self.is_end_game()}")
             msg = {"command": "ending",
                     "startTimer": 0,
                     "ball": self.ball.getPosition(),
@@ -138,7 +141,7 @@ class Game:
         else:
             self.winner = self.player2
         msg["message"] = "The winner is " + self.winner
-        #await end_game_db_django(self.djangoId, self.winner, self.score["player1"], self.score["player2"])
+        await self.db.end_game_db_django(self.djangoId, self.winner, self.score["player1"], self.score["player2"])
         return msg
 
     def init_game(self):

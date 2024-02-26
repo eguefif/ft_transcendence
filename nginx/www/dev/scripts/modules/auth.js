@@ -1,16 +1,27 @@
 import { fetcher } from "./fetcher.js"
 import { pongMenu } from "./pong.js"
+import { closeModal } from "./modal.js";
+import { createButton } from "./buttonNav.js";
 
-function authLogout()
+export async function initAuth() {
+	if (await fetcher.isAuthenticated()) {
+		authLogout();
+		profileInfo();
+		changeProfile();
+		authUpdateProfile();
+	}
+}
+
+export function authLogout()
 {
 	const logoutBtn = document.querySelector("#logoutButton")
 	logoutBtn.addEventListener("click", async function(e){
+		e.preventDefault()
 		const result = await fetcher.post("/api/auth/logout", {})
 		if (result.status >= 200 && result.status < 300) {
 			localStorage.removeItem("refreshExpiry")
 			fetcher.reset()
-
-			showLogin()
+			await createButton()
 			await pongMenu()
 		}
 		else {
@@ -19,71 +30,17 @@ function authLogout()
 	});
 }
 
-function validateInput(textBox, validationBox, errorMessage) {
-    textBox.addEventListener('focusout', (event) => {
-		event.preventDefault()
-        const value = textBox.value;
-        if ( value.length < 4) {
-            validationBox.classList.add("error");
-            validationBox.innerHTML = errorMessage;
-        }
-		else {
-			validationBox.classList.remove("error");
-            validationBox.innerHTML = "";
-		}
-    });
-}
-
-/*
-function validatePassword(textBox, validationBox) {
-	textBox.addEventListener('focusout', (e) => {
-		e.preventDefault()
-		const value = textBox.value
-		if (value.length < 4) {
-			validationBox.classList.add("error")
-			validationBox.innerHTML = "Password is too short"
-		} else {
-			validationBox.classList.remove("error");
-            validationBox.innerHTML = "";
-		}
-	})
-}
-
-function validatePasswordCheck(passTextBox, confirmTextBox, confirmValidationBox) {
-	confirmTextBox.addEventListener('focusout', (e) => {
-		const passValue = passTextBox.value
-		const passCheckValue = confirmTextBox.value
-		if (passValue != passCheckValue) {
-			confirmValidationBox.classList.add("error")
-			confirmValidationBox.innerHTML = "Passwords don't match"
-		} else {
-			confirmValidationBox.classList.remove("error")
-			confirmValidationBox.innerHTML = ""
-		}
-	})
-}
-*/
-
-const textBoxName = document.getElementById('username');
-const textBoxEmail = document.getElementById('email');
-const textBoxPassword = document.getElementById('password');
-const textBoxPasswordCheck = document.getElementById('password-check');
-
-const usernameValidationBox = document.getElementById('usernameValidation');
-const emailValidationBox = document.getElementById('emailValidation');
-const passwordValidationBox = document.getElementById('passwordValidation');
-const passwordCheckValidationBox = document.getElementById('password-checkValidation');
-
-validateInput(textBoxName, usernameValidationBox, "This field is the wrong size.");
-validateInput(textBoxEmail, emailValidationBox, "This field is the wrong size.");
-// validatePassword(textBoxPassword, passwordValidationBox);
-// validatePasswordCheck(textBoxPassword, textBoxPasswordCheck, passwordCheckValidationBox);
-
-function authRegister()
+export function authRegister()
 {
-	const registrationForm = document.querySelector("#registrationForm")
-	registrationForm.addEventListener("submit", function(e){
-		e.preventDefault()
+	const formsRegister = document.querySelectorAll('.needs-validation');
+	Array.from(formsRegister).forEach(form => {
+		form.addEventListener('submit', e => {
+		  if (!form.checkValidity()) {
+			e.preventDefault();
+			e.stopPropagation();
+		  }
+		  else {
+			e.preventDefault()
 			const data = new FormData(e.target);
 			const url = e.target.action
 			const body = {
@@ -93,23 +50,37 @@ function authRegister()
 				'password': data.get('password'),
 			}
 			sendRegistrationRequest(url, body)
-	})
+		  }
+
+		  form.classList.add('was-validated');
+		}, false);
+	  });
 }
 
-function authLogin()
+export function authLogin()
 {
-	const registrationForm = document.querySelector("#loginForm")
-	registrationForm.addEventListener("submit", function(e){
-		e.preventDefault()
-		const data = new FormData(e.target);
-		const url = e.target.action
-		const body = {
-			'formType': "login",
-			'username': data.get('username'),
-			'password': data.get('password'),
+	const formsLogin = document.querySelectorAll('.needs-validation');
+	Array.from(formsLogin).forEach(form => {
+	  form.addEventListener('submit', e => {
+		if (!form.checkValidity()) {
+		  e.preventDefault();
+		  e.stopPropagation();
 		}
-		sendLoginRequest(url, body)
-	})
+		else {
+			e.preventDefault();
+			const data = new FormData(e.target);
+			const url = e.target.action
+			const body = {
+				'formType': "login",
+				'username': data.get('username'),
+				'password': data.get('password'),
+			}
+			sendLoginRequest(url, body)
+		}
+
+		form.classList.add('was-validated');
+	  }, false);
+	});
 }
 
 function authUpdateProfile()
@@ -129,7 +100,7 @@ function authUpdateProfile()
 
 function profileInfo()
 {
-	const profileBtn = document.querySelector("#profileButton")
+	const profileBtn = document.querySelector("#settingsButton")
 	profileBtn.addEventListener("click", async function (e) {
 		document.querySelector("#profileUsername").disabled = true
 		document.querySelector("#profileEmail").disabled = true
@@ -137,30 +108,7 @@ function profileInfo()
 		document.querySelector("#profileImageContainer").classList.add("d-none")
 		document.querySelector("#modifyProfile").classList.remove("d-none")
 		const imgElement = document.getElementById("profilePicture")
-
 		imgElement.src = "images/default-user-picture.png"
-
-		// fetch("/api/userpicture/", {
-		// 	method: "GET",
-		// 	credentials: "same-origin",
-		// 	headers: {'Authorization': 'Token ' + csrf}
-		// })
-		// 	.then(response => {
-		// 		if (!response.ok) {
-		// 			throw new Error('No image')
-		// 		}
-		// 		return response.blob()
-		// 	})
-		// 	.then(blob => {
-		// 		console.log(blob)
-		// 		const imageURL = URL.createObjectURL(blob)
-		// 		imgElement.src = imageURL
-		// 		imgElement.onload = () => {
-		// 			URL.revokeObjectURL(blob)
-		// 		}
-		// 	})
-		// 	.catch(function (err) { console.error(err) })
-
 		const imageReply = await fetcher.get("api/userpicture/")
 		if (imageReply.status == 200) {
 			const imageURL = URL.createObjectURL(imageReply.data)
@@ -169,33 +117,12 @@ function profileInfo()
 				URL.revokeObjectURL(imageReply.data)
 			}
 		}
-
 		const res = await fetcher.get("api/userinfo/")
 		if (res.status == 200) {
-			
+
 			document.querySelector("#profileUsername").value = res.data['username']
 			document.querySelector("#profileEmail").value = res.data['email']
 		}
-
-		// try {
-		// 	const res = await fetch("/api/userinfo/", {
-		// 		method: "GET",
-		// 		credentials: "same-origin",
-		// 		headers: {"Content-Type": "application/json", 'Authorization': 'Token ' + csrf}
-		// 	})
-		// 	const data = await res.json()
-		// 	if (res.status == 200)
-		// 	{
-		// 		document.querySelector("#profileUsername").value = data['username']
-		// 		document.querySelector("#profileEmail").value = data['email']
-		// 	}
-		// 	else if (res.status == 403) //forbidden, retour a la page de connection
-		// 	{
-
-		// 	}
-		// } catch (error) {
-		// 	console.log("Profile: could not get user info")
-		// }
 	})
 }
 
@@ -217,7 +144,7 @@ function resetFormInput(form) {
 	const inputs = form.querySelectorAll("input")
 	inputs.forEach(input => {
 		input.classList.remove("is-invalid")
-		//input.classList.add("is-valid")
+		input.classList.add("is-valid")
 	})
 	// Reset validations
 }
@@ -241,7 +168,7 @@ async function sendUpdateProfileRequest(url, body)
 		profileUsername.disabled = true
 		profileEmail.disabled = true
 		// alert test
-		document.querySelector("#modalProfile").insertAdjacentHTML("afterbegin", `
+		document.querySelector("#settingsModal").insertAdjacentHTML("afterbegin", `
 		<div class="alert alert-success alert-dismissible fade show" role="alert">
 			<strong>Success!</strong> Your information has been saved.
 			<button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
@@ -282,10 +209,8 @@ async function sendLoginRequest(url, body)
 		else if (result.data.accessToken) {
 			localStorage.setItem("refreshExpiry", `${refreshExpiry}`)
 			fetcher.setAccess(result.data.accessToken);
-			validation.innerHTML = ""
-			document.querySelector("#modalLogin").classList.remove("show")
-			document.querySelector(".modal-backdrop").classList.remove("show")
-			showLobby()
+			closeModal('connectionModal')
+		  	await createButton()
 			await pongMenu()
 		}
 		else {
@@ -295,7 +220,6 @@ async function sendLoginRequest(url, body)
 	else
 	{
 		document.getElementById("loginPassword").value = ""
-		validation.innerHTML = "Wrong credentials"
 	}
 	return ;
 }
@@ -327,8 +251,6 @@ async function sendRegistrationRequest(url, body)
 		input.classList.remove("is-invalid")
 		input.classList.add("is-valid")
 	})
-
-
 	const refreshExpiry = Date.now() + fetcher.refreshDuration;
 	const result = await fetcher.post(url, body);
 	if (result.status >= 400 && result.status < 500)
@@ -346,36 +268,11 @@ async function sendRegistrationRequest(url, body)
 	{
 		localStorage.setItem("refreshExpiry", `${refreshExpiry}`)
 		fetcher.setAccess(result.data.accessToken);
-		document.querySelector("#modalRegistration").classList.remove("show")
-		document.querySelector(".modal-backdrop").classList.remove("show")
-		showLobby()
+		await createButton()
+		closeModal('connectionModal')
 		await pongMenu()
 		return true
 	}
-}
-
-function showLobby()
-{
-		let loginButton = document.getElementById("loginButton")
-		let logoutButton = document.getElementById("logoutButton")
-		let registerButton = document.getElementById("registerButton")
-		let profileButton = document.getElementById("profileButton")
-		loginButton.classList.add('d-none')
-		registerButton.classList.add('d-none')
-		logoutButton.classList.remove('d-none')
-		profileButton.classList.remove('d-none')
-}
-
-function showLogin()
-{
-		let loginButton = document.getElementById("loginButton")
-		let logoutButton = document.getElementById("logoutButton")
-		let registerButton = document.getElementById("registerButton")
-		let profileButton = document.getElementById("profileButton")
-		loginButton.classList.remove('d-none')
-		registerButton.classList.remove('d-none')
-		logoutButton.classList.add('d-none')
-		profileButton.classList.add('d-none')
 }
 
 // THIS IS A TEMPORARY SETUP TO VALIDATE BACKEND AND NEEDS TO BE IMPLEMENTED PROPERLY
@@ -387,7 +284,7 @@ function activateOtp() {
 		const result = await fetcher.post("/api/auth/otp/activate");
 		const qrcode = document.createElement("div")
 		let qrcodeSvq = result.data.otpCode;
-		qrcode.innerHTML = result.data.otpCode; 
+		qrcode.innerHTML = result.data.otpCode;
 		document.querySelector("body").appendChild(qrcode);
 		setTimeout(() => {
 			qrcode.remove();
@@ -419,22 +316,4 @@ export async function tryAuthenticating() {
 	if (! await fetcher.isTryingOauth()) {
 		await fetcher.isAuthenticated()
 	}
-}
-export async function initAuth() {
-	if (await fetcher.isAuthenticated()) {
-		showLobby()
-		activateOtp()
-	}
-	else
-	{
-		showOAuth();
-		showLogin();
-	}
-
-	authRegister();
-	authLogin();
-	authLogout();
-	authUpdateProfile();
-	profileInfo();
-	changeProfile();
 }

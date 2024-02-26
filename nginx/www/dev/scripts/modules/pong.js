@@ -2,28 +2,36 @@ import { fetcher } from "./fetcher.js"
 import { Game } from "./Game.js"
 import { LocalController } from "./LocalController.js"
 import { RemoteController } from "./RemoteController.js"
+import { PassiveController } from "./PassiveController.js"
+import { renderer } from "./graphic-engine.js";
+import { initSidebar } from "./friendSidebar.js";
 
 export async function pongMenu() {
-	let remoteGameBtn = document.querySelector("#remotegamebtn")
-	let localGameBtn= document.querySelector("#localgamebtn")
-	let menu = document.querySelector("#menubtn")
+	hideProfile()
+	let controller = new PassiveController()
+	let game = new Game(controller)
 
-	menu.classList.add('d-none')
-	if (await fetcher.isAuthenticated())
-		remoteGameBtn.classList.remove('d-none')
-	if (!await fetcher.isAuthenticated())
-		remoteGameBtn.classList.add('d-none')
-	localGameBtn.classList.remove('d-none')
+	if (await fetcher.isAuthenticated()) {
+		render_pong_menu_connected()
+		initSidebar()
+		}
+	else 
+		render_pong_menu_not_connected()
+	game.run()
+}
+
+function hideProfile() {
+	let profile = document.getElementById("profileDiv")
+	if (profile != undefined)
+		profile.innerHTML = "" 
 }
 
 export async function initRemoteGame() {
 	if (!await fetcher.isAuthenticated()) {
-		let remoteGameBtn = document.querySelector("#remotegamebtn")
-		remoteGameBtn.classList.remove('d-none')
 		return
 	}
-	show_and_init_event_for_menu_button()
-	hideMainMenu()
+	render_pong_menu_button()
+	initSidebar();
 	let controller = new RemoteController()
 	await controller.init()
 	let game = new Game(controller)
@@ -31,28 +39,61 @@ export async function initRemoteGame() {
 }
 
 export function initLocalGame() {
-	show_and_init_event_for_menu_button()
-	hideMainMenu()
 	let controller = new LocalController()
+	render_pong_menu_button()
 	controller.init()
-	let game = new Game(controller)
+	let game = new Game(controller, )
 	game.run()
 }
 
-function hideMainMenu(){
-	let remoteGameBtn = document.querySelector("#remotegamebtn")
-	let localGameBtn= document.querySelector("#localgamebtn")
-	let menu = document.querySelector("#menubtn")
-
-	remoteGameBtn.classList.add('d-none')
-	localGameBtn.classList.add('d-none')
+export function render_game_board() {
+	let main_frame = document.getElementById("pongDiv")
+	main_frame.innerHTML = `
+		<div class="container">
+			<div id="pongMenu" class="row m-5">
+er
+			</div>
+			<div class="row">
+				<div class="col">
+					<canvas id="board"></canvas>
+					<canvas id="background"></canvas>
+				</div>
+			</div>
+		</div>
+	`
+	renderer.init()
 }
 
-function show_and_init_event_for_menu_button() {
-	let menu = document.querySelector("#menubtn")
-	menu.classList.remove("d-none")
-	menu.addEventListener("click", (e) => {
-		e.preventDefault()
-		history.back()
-		})
+function render_pong_menu_connected() {
+	const row_menu = document.getElementById("pongMenu")
+	row_menu.innerHTML = `
+	 	<div class="col" id="addFriendList"></div>
+		<div class="col">
+			<a id="localgamebtn" href="/localgame" class="btn btn-primary m-5" data-link>local game</a>
+		</div>
+		<div class="col">
+			<a id="remotegamebtn" href="/remotegame" class="btn btn-primary m-5" data-link>Remote game</a>
+		</div>
+		`
+}
+
+function render_pong_menu_not_connected() {
+	const row_menu = document.getElementById("pongMenu")
+	row_menu.innerHTML = `
+		<div class="col">
+			<a id="localgamebtn" href="/localgame" class="btn btn-primary m-5" data-link>local game</a>
+		</div>
+		`
+}
+
+function render_pong_menu_button() {
+	const row_menu = document.getElementById("pongMenu")
+	row_menu.innerHTML = `
+	 	<div class="col" id="addFriendList"></div>
+		<div class="col">
+			<a id="menubtn" href="/" class="btn btn-primary m-5 bt-primary" data-link>Menu</a>
+		</div>
+
+		`
+
 }
