@@ -4,6 +4,8 @@ class Paddle:
         self.height = 0.1
         self.init()
         self.speed = 0
+        self.margin_x = 1 / 32
+        self.margin_y = 1 / 32
         if side == 1:
             self.x = 0.05
         else:
@@ -16,14 +18,14 @@ class Paddle:
 
     def update(self, direction):
         if direction == "up":
-            self.speed = -0.01
+            self.speed = -0.005
         elif direction == "down":
-            self.speed = 0.01
+            self.speed = 0.005
         elif direction == "stop":
             self.speed = 0
 
     def move(self):
-        if (self.y + self.speed) <= 0 or (self.y + self.height + self.speed >= 1):
+        if (self.y + self.speed - self.margin_y) <= 0 or (self.y + self.margin_y + self.height + self.speed >= 1):
             return self.y
         self.y += self.speed
 
