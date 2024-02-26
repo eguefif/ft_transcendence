@@ -210,6 +210,8 @@ class serverPong:
                     return True
                 timeout -= 1
                 if timeout == 0:
+                    if await self.send_msg(websocket, {"command": "timeout"}, player):
+                        return False
                     logging.error(f"Timeout for {player}, ({websocket})")
                     return False
                 await asyncio.sleep(0.5)
@@ -286,7 +288,7 @@ class serverPong:
 
     async def producer_handler(self, websocket, gameid, player):
         while self.get_game_state(gameid) != "ending":
-            tick = int(time.time() * 1000 + 0.033 * 1000)
+            tick = int(time.time() * 1000 + 0.016 * 1000)
             try:
                 message = await self.games[gameid].run(player)
             except Exception as e:

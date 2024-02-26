@@ -14,15 +14,20 @@ export class RemoteController {
 		this.serverMsg = {}
 		this.localMsg= ""
 		this.stop = false
+		this.timeout = false
 	}
 
 	cleanup(){
-		this.websocket.close()
+		try {
+			this.websocket.close()
+		}
+		catch (error)
+		{}
 		this.stop = true
 	}
 	update (){
-		if (this.stop == true)
-			this.websocket.close()
+		if (this.stop)
+			return
 		if (this.serverMsg.command == "data" || this.serverMsg.command == "ending")
 			return this.serverMsg
 		if (this.serverMsg.player1Score == 3 || this.serverMsg.player2Score == 3){
@@ -58,16 +63,15 @@ export class RemoteController {
 		})
 
 		this.websocket.error = (e) => {
-			console.log("Error: ", e)
 		}
 
 		this.websocket.onclose = (e) => {
-			this.localMsg = "Connection lost"
+			if (this.timeout == false)
+				this.localMsg = "Connection lost"
 		}
 
 		this.websocket.onmessage = (e) => {
 			const msg = JSON.parse(e.data)
-			console.log(msg)
 			switch (msg.command) {
 				case "authsucess":
 					this.running = "authenticated"
@@ -75,6 +79,11 @@ export class RemoteController {
 				case "serverfull":
 					this.localMsg = "Server full, retry later"
 					this.state = "ending"
+					break
+				case "timeout":
+					this.localMsg = "You waited too long to press space"
+					this.state = "ending"
+					this.timeout = true
 					break
 				case "wait":
                     this.websocket.send("wait")
@@ -100,6 +109,7 @@ export class RemoteController {
 					break
 			}
 		}
+
 
 		document.addEventListener("keydown", (e) => {
 			if (this.state == "running") {

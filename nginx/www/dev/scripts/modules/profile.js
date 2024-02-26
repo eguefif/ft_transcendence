@@ -5,7 +5,7 @@ export async function profile() {
 	hidePong()
 	const username = await getUsername()
 	let games ={}
-	if (username >= "error") {
+	if (username == "error") {
 		games = {"error": "Problem while fetching data"}
 		displayErrorProfile(games)
 	}
@@ -196,7 +196,7 @@ function getStats(games) {
 function renderHistory(games) {
 	let history = document.getElementById("history")
 	let html = `
-        <div class="container text-center">
+        <div id="match-history" class="container text-center">
 	`
 	if (!("error" in games)) {
 		for (const [key, game] of Object.entries(games)) {

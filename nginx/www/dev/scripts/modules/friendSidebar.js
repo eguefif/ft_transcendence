@@ -89,12 +89,12 @@ export async function initSidebar() {
     if (!await fetcher.isAuthenticated())
         return
 
-    const sidebar = document.querySelector("#sidebarContainer")
+    const friendBtn = document.querySelector("#addFriendList")
 
     let friendList = await getFriendList()
     let friendRequests = await getFriendRequests()
 
-    sidebar.innerHTML = `
+    friendBtn.innerHTML = `
         <div class="collapse collapse-horizontal" id="sidebarCollapse" style="position: absolute; height: 80%;">	
             <div id="friendSidebar" class="d-flex flex-column align-items-stretch flex-shrink-0 text-bg-dark overflow-auto" style="width: 350px; height: 100%">
                 <h1>Friends</h1>
@@ -109,7 +109,6 @@ export async function initSidebar() {
             </div>
         </div>
         <button class="btn btn-primary" type="button" data-bs-toggle="collapse" data-bs-target="#sidebarCollapse">Friends</button>
-        
         <form id="formFriendRequest">
             <label for="sendFriendRequest">username</label>
             <input type="text" name="username" class="form-control" type="button" id="sendFriendRequest"></input>
@@ -126,7 +125,7 @@ export async function initSidebar() {
     })
 
     // initFriendRequestsEventListeners()
-    const inputs = sidebar.querySelectorAll(".btn-friend-request")
+    const inputs = friendBtn.querySelectorAll(".btn-friend-request")
     inputs.forEach(input => {
         let name = input.name
         const action = name.split('-')[0]
@@ -145,7 +144,7 @@ export async function initSidebar() {
     })
 
     // initDeleteEventListeners()
-    const deleteButtons = sidebar.querySelectorAll(".btn-delete-friend")
+    const deleteButtons = friendBtn.querySelectorAll(".btn-delete-friend")
     deleteButtons.forEach(btn => {
         btn.addEventListener("click", async function (e) {
             const name = btn.name

@@ -80,11 +80,11 @@ export class LocalController {
 						this.player1Score++
 					else
 					this.player2Score++
-					if (this.player1Score == 1) {
+					if (this.player1Score == 3) {
 						this.message = "The winner is " + this.player1
 						this.running = false
 					}
-					else if (this.player2Score == 1) {
+					else if (this.player2Score == 3) {
 						this.message = "The winner is " + this.player2
 						this.running = false
 					}
@@ -146,7 +146,7 @@ class Ball {
 
 	checkTopWallCollision()
 	{
-		if (this.y <= this.radius || this.y >= 1 - this.radius)
+		if ((this.y <= this.radius && this.dir.y <= 0) || (this.y >= 1 - this.radius && this.dir.y >= 0))
 			this.dir.y *= -1
 	}
 
@@ -170,12 +170,12 @@ class Ball {
 
 	isCollidingLeftPaddle(paddle)
 	{
-		return this.x - this.radius <= paddle.x && this.y >= paddle.y && this.y <= paddle.y + paddle.paddleHeight && this.dir.x < 0
+		return this.x - this.radius <= paddle.x && this.x - this.radius > paddle.paddle_margin_x / 2 && this.y + (this.radius / 2) >= paddle.y && this.y - (this.radius / 2) <= paddle.y + paddle.paddleHeight && this.dir.x < 0
 	}
 
 	isCollidingRightPaddle(paddle)
 	{
-		return this.x + this.radius >= paddle.x && this.y >= paddle.y && this.y <= paddle.y + paddle.paddleHeight && this.dir.x > 0
+		return this.x + this.radius >= paddle.x && this.x + this.radius < 1 - (paddle.paddle_margin_x / 2) && this.y + (this.radius / 2)  >= paddle.y && this.y - (this.radius / 2) <= paddle.y + paddle.paddleHeight && this.dir.x > 0
 	}
 }
 
