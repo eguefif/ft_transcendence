@@ -19,12 +19,20 @@ export class Game {
 
 		document.addEventListener("click", (e) => {
 			if (e.target.matches("[data-link]")) {
-				this.running = false
-				this.controller.cleanup()
-				this.graphicEngine.clearFrame()
-				this.controller.stop = true
-				}
+					this.running = false
+					this.controller.cleanup()
+					this.graphicEngine.clearFrame()
+					this.controller.stop = true
+			}
 			})
+
+		const logoutBtn = document.getElementById("logoutButton")
+		logoutBtn.addEventListener("click", (e) => {
+			this.runnintg = false
+			this.controller.cleanup()
+			this.graphicEngine.clearFrame()
+			this.controller.stop = true
+		})
 	}
 
 	run() {

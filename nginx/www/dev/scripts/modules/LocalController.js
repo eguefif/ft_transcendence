@@ -80,11 +80,11 @@ export class LocalController {
 						this.player1Score++
 					else
 					this.player2Score++
-					if (this.player1Score == 1) {
+					if (this.player1Score == 3) {
 						this.message = "The winner is " + this.player1
 						this.running = false
 					}
-					else if (this.player2Score == 1) {
+					else if (this.player2Score == 3) {
 						this.message = "The winner is " + this.player2
 						this.running = false
 					}
