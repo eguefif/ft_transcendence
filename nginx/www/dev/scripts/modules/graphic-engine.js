@@ -405,7 +405,7 @@ export class graphicEngine
 		this.marginNames = this.board.height / 5
 		
 		this.Renderer = renderer
-		this.Renderer.showBracket()
+		this.Renderer.showBoard()
 	}
 
 	display(model) {
