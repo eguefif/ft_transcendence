@@ -18,7 +18,11 @@ def get_otp_token(username):
                }
     return encode(payload, secret, algorithm="HS256")
 
-def get_oauth_42_token(username, status):
+def get_oauth_42_token(user_info, status):
+    try:
+        username = user_info['username']
+    except:
+        username = ""
     payload = {"username": username,
                "type": "oauth-42",
                "status": status,

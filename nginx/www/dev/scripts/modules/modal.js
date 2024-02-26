@@ -83,7 +83,7 @@ function createFormLogin() {
 			</div>
 		</form>
 		<button form="loginForm" type="submit" class="btn btn-primary">Submit</button>
-		<button class="btn btn-primary">Login with 42</button>
+		<button id="login-42" class="btn btn-primary">Login with 42</button>
 		<div class="modal-footer">
 			<a id="btnOpenRegister">Register</a>
 		</div>

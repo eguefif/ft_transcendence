@@ -81,6 +81,14 @@ export function authLogin()
 		form.classList.add('was-validated');
 	  }, false);
 	});
+	const login42 = document.querySelector("#login-42");
+	login42.addEventListener("click", async function() {
+		let result = await fetcher.post("/api/auth/oauth/42");
+		if (result.status >= 200 && result.status < 300) {
+			localStorage.setItem("oauth-42", "I'm a ninja"); 
+			window.location.href = result.data.redirect
+		}
+	});
 }
 
 function authUpdateProfile()
