@@ -27,7 +27,7 @@ export class Game {
 			})
 
 		const logoutBtn = document.getElementById("logoutButton")
-		if (logoutBtn != undefine) {
+		if (logoutBtn != undefined) {
 			logoutBtn.addEventListener("click", (e) => {
 				this.runnintg = false
 				this.controller.cleanup()
