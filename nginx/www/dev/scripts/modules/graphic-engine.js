@@ -200,16 +200,35 @@ export class Renderer{
 		this.verticalBracketRight.layers.toggle(this.BLOOM_SCENE)
 	}
 	
-	showBracket()
+	showBracket(player1 = "", player2 = "", player3 = "", player4 = "", finalist1 = "", finalist2 = "", winner = "")
 	{
-		const text = "allo! :)"
+		const lenWinner = winner.length
+		const lenPlayer1 = player1.length
+		const lenPlayer2 = player2.length
+		const lenPlayer3 = player3.length
+		const lenPlayer4 = player4.length
+		const nextGame = "Press Space to start next game!"
+		const lenNextGame = nextGame.length
+		const lenFinalist1 = finalist1.length
+		const lenFinalist2 = finalist2.length
 
+		
+		const scale = 0.2 * 90
 		this.scene.add(this.bracketMiddle, this.entryBL, this.entryBR, this.entryTL, this.entryTR, this.verticalBracketLeft, this.verticalBracketRight)
-		this.ctx.font = "".concat(100, "px Impact, fantasy")
+		this.ctx.font = "".concat(90, "px Impact, fantasy")
 		this.ctx.fillStyle = this.textColor;
-		this.ctx.fillText(text, this.bracket.width / 2, this.bracket.height / 2)
-		// this.ctx.fillText(player2, (this.mid + this.width / 4) - (this.messageScale * 0.2 * len2), this.marginNames)
+		this.ctx.fillText(winner, (this.bracket.width / 2) - (scale * lenWinner), this.bracket.height / 2 - this.bracket.height / 6)
+		this.ctx.fillText(player1, (this.bracket.width / 2 - this.bracket.width / 4.5) - (scale * lenPlayer1), this.bracket.height / 2 - this.bracket.height / 4 - scale)
+		this.ctx.fillText(player2, (this.bracket.width / 2 - this.bracket.width / 4.5) - (scale * lenPlayer2), this.bracket.height / 2 + this.bracket.height / 4 -  3 * scale)
+		this.ctx.fillText(player3, (this.bracket.width / 2 + this.bracket.width / 4.5) - (scale * lenPlayer3), this.bracket.height / 2 - this.bracket.height / 4 - scale)
+		this.ctx.fillText(player4, (this.bracket.width / 2 + this.bracket.width / 4.5) - (scale * lenPlayer4), this.bracket.height / 2 + this.bracket.height / 4 -  3 * scale)
+		this.ctx.fillText(finalist1, (this.bracket.width / 2) - (scale * lenFinalist1), this.bracket.height / 2 - this.bracket.height / 20 + 3.5 *scale)
+		this.ctx.fillText(finalist2, (this.bracket.width / 2) - (scale * lenFinalist2), this.bracket.height / 2 + this.bracket.height / 20)
 		this.ctx.stroke()
+		this.ctx.fillStyle = "rgb(238, 36, 249)"
+		this.ctx.fillText(nextGame, (this.bracket.width / 2) - (scale * lenNextGame), this.bracket.height -  this.bracket.height / 8)
+		this.ctx.stroke()
+
 	}
 	hideBracket()
 	{
@@ -386,7 +405,7 @@ export class graphicEngine
 		this.marginNames = this.board.height / 5
 		
 		this.Renderer = renderer
-		this.Renderer.showBoard()
+		this.Renderer.showBracket()
 	}
 
 	display(model) {
