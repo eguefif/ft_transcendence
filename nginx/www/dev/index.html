@@ -39,17 +39,17 @@
 				<div class="modal-body">
 					<form id="profileForm" action="api/updateprofile/" method="PATCH">
 						<div id="profileImageContainer" class="mb-3 d-none">
-							<label for="formFile" class="form-label">Profile picture</label>
+							<label for="profileImageField" class="form-label">Profile picture</label>
 							<input class="form-control" type="file" id="profileImageField">
 							<div id="pictureUploadValidation" class="error text-danger"></div>
 						</div>
 						<div class="mb-3">
-							<label for="username" class="col-md-3 col-form-label">Username</label>
+							<label for="profileUsername" class="col-md-3 col-form-label">Username</label>
 							<input type="username" name="username" id="profileUsername" class="form-control" placeholder="username" disabled>
 							<div id="profileUsernameValidation"></div>
 						</div>
 						<div class="mb-3">
-							<label for="email" class="col-md-3 col-form-label">Email</label>
+							<label for="profileEmail" class="col-md-3 col-form-label">Email</label>
 							<input type="email" name="email" id="profileEmail" class="form-control" placeholder="email" disabled>
 							<div id="profileEmailValidation"></div>
 						</div>

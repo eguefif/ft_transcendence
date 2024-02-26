@@ -10,7 +10,7 @@ export async function createButton () {
 	}
 	else {
 		const element = document.getElementById("navBarButton")
-		element.innerHTML = createModalBtn("nav-item btn-primary", "connection","" , "Connexion");
+		element.innerHTML = createModalBtn("nav-item btn-primary", "connection","" , "Login / Register");
 	}
 }
 
