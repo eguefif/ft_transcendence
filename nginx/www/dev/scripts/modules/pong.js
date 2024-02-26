@@ -5,6 +5,7 @@ import { RemoteController } from "./RemoteController.js"
 import { PassiveController } from "./PassiveController.js"
 import { renderer } from "./graphic-engine.js";
 import { initSidebar } from "./friendSidebar.js";
+import { Tournament } from "./tournament.js";
 
 export async function pongMenu() {
 	hideProfile()
@@ -18,6 +19,14 @@ export async function pongMenu() {
 	else 
 		render_pong_menu_not_connected()
 	game.run()
+}
+
+export async function initTournament() {
+	hideProfile()
+	render_pong_menu_button()
+	renderer.hideBoard()
+	const tournament = new Tournament()
+	tournament.run()
 }
 
 function hideProfile() {
@@ -74,6 +83,9 @@ function render_pong_menu_connected() {
 			<a id="localgamebtn" href="/localgame" class="btn btn-primary m-5" data-link>local game</a>
 		</div>
 		<div class="col">
+			<a id="tournamentbtn" href="/tournament" class="btn btn-primary m-5" data-link>Tournament</a>
+		</div>
+		<div class="col">
 			<a id="remotegamebtn" href="/remotegame" class="btn btn-primary m-5" data-link>Remote game</a>
 		</div>
 		`
@@ -84,6 +96,9 @@ function render_pong_menu_not_connected() {
 	row_menu.innerHTML = `
 		<div class="col">
 			<a id="localgamebtn" href="/localgame" class="btn btn-primary m-5" data-link>local game</a>
+		</div>
+		<div class="col">
+			<a id="tournamentbtn" href="/tournament" class="btn btn-primary m-5" data-link>Tournament</a>
 		</div>
 		`
 }
