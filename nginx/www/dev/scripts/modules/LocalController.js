@@ -170,12 +170,12 @@ class Ball {
 
 	isCollidingLeftPaddle(paddle)
 	{
-		return this.x - this.radius <= paddle.x && this.y >= paddle.y && this.y <= paddle.y + paddle.paddleHeight && this.dir.x < 0
+		return this.x - this.radius <= paddle.x && this.x - this.radius > paddle.paddle_margin_x / 2 && this.y + (this.radius / 2) >= paddle.y && this.y - (this.radius / 2) <= paddle.y + paddle.paddleHeight && this.dir.x < 0
 	}
 
 	isCollidingRightPaddle(paddle)
 	{
-		return this.x + this.radius >= paddle.x && this.y >= paddle.y && this.y <= paddle.y + paddle.paddleHeight && this.dir.x > 0
+		return this.x + this.radius >= paddle.x && this.x + this.radius < 1 - (paddle.paddle_margin_x / 2) && this.y + (this.radius / 2)  >= paddle.y && this.y - (this.radius / 2) <= paddle.y + paddle.paddleHeight && this.dir.x > 0
 	}
 }
 

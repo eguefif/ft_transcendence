@@ -10,7 +10,23 @@ export class Game {
 		this.graphicEngine = new graphicEngine()
 		this.running = true
 		let menu = document.querySelector("#menubtn")
+		this.initListeners()
+	}
 
+	run() {
+		const update = () => {
+			if (!this.running) {
+				return
+			}
+			let data = this.controller.update()
+			this.graphicEngine.display(data)
+			requestAnimationFrame(update)
+		}
+		update();
+	}
+
+	initListeners()
+	{
 		window.addEventListener("popstate", (e) => {
 			this.running = false
 			this.controller.cleanup()
@@ -25,17 +41,5 @@ export class Game {
 				this.controller.stop = true
 				}
 			})
-	}
-
-	run() {
-		const update = () => {
-			if (!this.running) {
-				return
-			}
-			let data = this.controller.update()
-			this.graphicEngine.display(data)
-			requestAnimationFrame(update)
-		}
-		update();
 	}
 }
