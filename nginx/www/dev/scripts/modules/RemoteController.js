@@ -103,6 +103,7 @@ export class RemoteController {
 			}
 		}
 
+
 		document.addEventListener("keydown", (e) => {
 			if (this.state == "running") {
 				if (e.key == 'ArrowDown')
