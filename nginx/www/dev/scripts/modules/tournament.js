@@ -95,6 +95,7 @@ export class Tournament {
 			controller.init()
 			game.run()
 			this.game = 4
+			this.state = "end"
 			return
 		}
 	}
@@ -103,12 +104,12 @@ export class Tournament {
 		const pongTournament = document.getElementById("playerForm")
 		pongTournament.innerHTML = ""
 
+		renderer.hideBoard()
 		if (this.state == "end") {
 			renderer.showBracket(this.players[1], this.players[2], this.players[3], this.players[4],
 			this.winnerSemi1, this.winnerSemi2, `The winner is ${this.winner}`)
 			return
 		}
-		renderer.hideBoard()
 		if (this.game == 1){ 
 			renderer.showBracket(this.players[1], this.players[2], this.players[3], this.players[4])
 			console.log("Game between: ", this.players[1], this.players[2])
