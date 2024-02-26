@@ -84,13 +84,13 @@ export function authLogin()
 {
 	const formsLogin = document.querySelectorAll('.needs-validation');
 	Array.from(formsLogin).forEach(form => {
-	  form.addEventListener('submit', e => {
-		if (!form.checkValidity()) {
-		  e.preventDefault();
-		  e.stopPropagation();
-		}
-		else {
-			e.preventDefault();
+		form.addEventListener('submit', e => {
+			if (!form.checkValidity()) {
+				e.preventDefault();
+				e.stopPropagation();
+			}
+			else {
+				e.preventDefault();
 			const data = new FormData(e.target);
 			const url = e.target.action
 			const body = {
@@ -110,7 +110,7 @@ async function sendLoginRequest(url, body)
 {
 	const refreshExpiry = Date.now() + fetcher.refreshDuration;
 	const result = await fetcher.post(url, body);
-	const validation = document.getElementById("loginValidation")
+	const validationPass = document.getElementById("loginPassword")
 	if (result.status >= 200 && result.status < 300)
 	{
 		if (result.data.otpToken) {
@@ -126,12 +126,16 @@ async function sendLoginRequest(url, body)
 			await pongMenu()
 		}
 		else {
-			validation.innerHTML = "Something went wrong";
+			validationPass.innerHTML = "Something went wrong";
 		}
 	}
 	else
 	{
+		const validation = document.querySelectorAll(".invalid-feedback")
+		document.getElementById("loginUsername").value = ""
+		validation[0].innerText = "Wrong credentials"
 		document.getElementById("loginPassword").value = ""
+		validation[1].innerText = "Wrong credentials"
 	}
 	return ;
 }
