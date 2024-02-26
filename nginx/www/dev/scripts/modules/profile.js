@@ -19,8 +19,10 @@ export async function profile() {
 
 function hidePong() {
 	renderer.hideBoard()
-	let pongMenu = document.getElementById("pongMenu")
+	const pongMenu = document.getElementById("pongMenu")
+	const pongTournament = document.getElementById("playerForm")
 	pongMenu.innerHTML = ""
+	pongTournament.innerHTML = ""
 }
 
 async function getUsername() {

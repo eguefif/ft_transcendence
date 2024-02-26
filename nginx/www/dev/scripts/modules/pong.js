@@ -11,6 +11,8 @@ export async function pongMenu() {
 	hideProfile()
 	let controller = new PassiveController()
 	let game = new Game(controller)
+	const pongTournament = document.getElementById("playerForm")
+	pongTournament.innerHTML = ""
 
 	if (await fetcher.isAuthenticated()) {
 		render_pong_menu_connected()
@@ -26,7 +28,6 @@ export async function initTournament() {
 	render_pong_menu_button()
 	renderer.hideBoard()
 	const tournament = new Tournament()
-	tournament.run()
 }
 
 function hideProfile() {
@@ -40,6 +41,8 @@ export async function initRemoteGame() {
 		return
 	}
 	hideProfile()
+	const pongTournament = document.getElementById("playerForm")
+	pongTournament.innerHTML = ""
 	render_pong_menu_button()
 	initSidebar();
 	let controller = new RemoteController()
@@ -50,6 +53,8 @@ export async function initRemoteGame() {
 
 export function initLocalGame() {
 	hideProfile()
+	const pongTournament = document.getElementById("playerForm")
+	pongTournament.innerHTML = ""
 	let controller = new LocalController()
 	render_pong_menu_button()
 	controller.init()
@@ -64,6 +69,7 @@ export function render_game_board() {
 			<div id="pongMenu" class="row m-5">
 er
 			</div>
+			<div id="playerForm" class="row m-5 "></div>
 			<div class="row">
 				<div class="col">
 					<canvas id="board"></canvas>

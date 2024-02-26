@@ -96,7 +96,7 @@ export class RemoteController {
 						this.websocket.send("getready")
 						this.state = "getready"
 					}
-					this.localMsg = "Press space to space the game"
+					this.localMsg = "Press space to start the game"
 					this.serverMsg = msg
 					break;
 				case "data":
