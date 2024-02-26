@@ -14,7 +14,10 @@ export class Game {
 
 	run() {
 		const update = () => {
-			if (!this.running) {
+			console.log(this.controller.stop)
+			if (!this.running || this.controller.stop == true) {
+				const endGameEvent = new CustomEvent("endGame", {detail: "test"}) //this.controller.getWinner()})
+				document.dispatchEvent(endGameEvent)
 				return
 			}
 			let data = this.controller.update()

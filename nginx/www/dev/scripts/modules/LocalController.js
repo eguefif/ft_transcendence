@@ -13,7 +13,6 @@ export class LocalController {
 		this.running = true
 		this.stop = false
 		this.ball.in_play = false
-
 		this.restartTimestamp = 0
 	}
 
@@ -41,6 +40,13 @@ export class LocalController {
 			else if (e.key == 'ArrowUp') 
 				this.paddle2.move_up = false
 			})
+	}
+
+	getWinner() {
+		if (paddle.player1Score == 3)
+			return this.paddle1.name
+		else
+			return this.paddle2.name
 	}
 
 	countdown()
@@ -81,11 +87,11 @@ export class LocalController {
 					else
 					this.player2Score++
 					if (this.player1Score == 3) {
-						this.message = "The winner is " + this.player1
+						this.message = "The winner is " + this.paddle1.name
 						this.running = false
 					}
 					else if (this.player2Score == 3) {
-						this.message = "The winner is " + this.player2
+						this.message = "The winner is " + this.paddle2.name
 						this.running = false
 					}
 					this.ball.in_play = false
@@ -98,6 +104,8 @@ export class LocalController {
 			ball: this.ball,
 			paddle1: this.paddle1,
 			paddle2: this.paddle2,
+			player1: this.paddle1.name,
+			player2: this.paddle2.name,
 			player1Score: this.player1Score,
 			player2Score: this.player2Score,
 			message: this.message,

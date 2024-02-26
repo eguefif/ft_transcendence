@@ -27,6 +27,7 @@ export async function initTournament() {
 	hideProfile()
 	render_pong_menu_button()
 	renderer.hideBoard()
+	renderer.hideBracket()
 	const tournament = new Tournament()
 }
 
