@@ -5,7 +5,7 @@ class Paddle:
         self.init()
         self.speed = 0
         self.margin_x = 1 / 32
-        self.margin_y = 1 / 48
+        self.margin_y = 1 / 32
         if side == 1:
             self.x = 0.05
         else:
