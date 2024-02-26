@@ -4,8 +4,7 @@ import { renderer } from "./graphic-engine.js"
 
 export class Game {
 	constructor(controller) {
-		renderer.showBoard()
-		renderer.hideBoard()
+		renderer.showBoard
 		this.controller = controller
 		this.graphicEngine = new graphicEngine()
 		this.running = true
