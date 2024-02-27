@@ -42,12 +42,36 @@ function makeFriendRequestElement(username) {
     `
 }
 
+function createStatusBage(onlineStatus) {
+    let colorClasses = ""
+    switch (onlineStatus) {
+        case "Online":
+            colorClasses = "text-bg-success"
+            break;
+        case "Offline":
+            colorClasses = "text-bg-light"
+            break;
+        case "Away":
+            colorClasses = "text-bg-warning"
+            break;
+        case "In Game":
+            colorClasses = "text-bg-info"
+            break;
+        default:
+            break;
+    }
+
+    return `
+        <span class="badge rounded-pill ${colorClasses}">${onlineStatus}</span>
+    `
+}
+
 function makeFriendElement(username, onlineStatus) {
     return `
         <li class="nav-item" style="margin: 0px;">
             <div class="row align-items-center">
                 <div class="col-auto">
-                    <a href="#" class="nav-link" aria-current="page">${username} <span class="badge rounded-pill text-dark bg-light">(Not implemented)</span></a>
+                    <a href="#" class="nav-link" aria-current="page">${username} ${createStatusBage(onlineStatus)}</a>
                 </div>
                 <div class="col">
                     <a name="delete-${username}" class="btn btn-sm btn-danger btn-delete-friend">Delet</a>
@@ -85,14 +109,53 @@ async function getFriendList() {
     return friendsListElements
 }
 
-export async function initSidebar() {
-    if (!await fetcher.isAuthenticated())
-        return
+function connectWebsocket() {
+    let ws = new WebSocket("wss://localhost/online_status/")
 
+	ws.onopen = async function(e) {
+		console.log('Connection established')
+		await fetcher.sendToken(ws)
+	}
+
+	ws.onmessage = async function(e) {
+		console.log(e.data)
+        await updateSidebar()
+	}
+
+	ws.onerror = function(e) {
+		console.log("Error")
+	}
+
+	ws.onclose = function(e) {
+		console.log("Connection closed")
+	}
+
+    return ws
+}
+
+async function updateSidebar() {
     const friendBtn = document.querySelector("#addFriendList")
+    const friendListContainer = document.querySelector("#friendListContainer")
+    const friendRequestContainer = document.querySelector("#friendRequestContainer")
+    
+    if (friendListContainer) {
+        const friendListContent = await getFriendList()
+        friendListContainer.innerHTML = friendListContent
+    }
 
-    let friendList = await getFriendList()
-    let friendRequests = await getFriendRequests()
+    if (friendRequestContainer) {
+        const friendRequestContent = await getFriendRequests()
+        friendRequestContainer.innerHTML = friendRequestContent
+    }
+
+    initDeleteEventListeners(friendBtn)
+    initFriendRequestsEventListeners(friendBtn)
+}
+
+async function createSidebar() {
+    const friendBtn = document.querySelector("#addFriendList")
+    const friendList = await getFriendList()
+    const friendRequests = await getFriendRequests()
 
     friendBtn.innerHTML = `
         <div class="collapse collapse-horizontal" id="sidebarCollapse" style="position: absolute; height: 80%;">	
@@ -100,15 +163,17 @@ export async function initSidebar() {
                 <h1>Friends</h1>
                 <hr>
                     <ul class="nav nav-pills flex-column mb-auto">
-                        ${friendList}
+                        <div id="friendListContainer">${friendList}</div>
                         <h1>Requests</h1>
                         <hr>
-                        ${friendRequests}
+                        <div id="friendRequestContainer">${friendRequests}</div>
                     </ul>
                 <button class="btn btn-primary" type="button" data-bs-toggle="collapse" data-bs-target="#sidebarCollapse">Collapse</button>
             </div>
         </div>
-        <button class="btn btn-primary" type="button" data-bs-toggle="collapse" data-bs-target="#sidebarCollapse">Friends</button>
+        <button class="btn btn-primary" type="button" data-bs-toggle="collapse" data-bs-target="#sidebarCollapse">
+            Friends
+        </button>
         <form id="formFriendRequest">
             <label for="sendFriendRequest">username</label>
             <input type="text" name="username" class="form-control" type="button" id="sendFriendRequest"></input>
@@ -116,7 +181,6 @@ export async function initSidebar() {
         </form>
     `
 
-    // DELETE THIS after testing
     const formFriendRequest = document.getElementById("formFriendRequest")
     formFriendRequest.addEventListener("submit", async function (e) {
         e.preventDefault()
@@ -124,7 +188,11 @@ export async function initSidebar() {
         const res = await sendFriendRequest(data.get('username'))
     })
 
-    // initFriendRequestsEventListeners()
+    initFriendRequestsEventListeners(friendBtn)
+    initDeleteEventListeners(friendBtn)
+}
+
+function initFriendRequestsEventListeners(friendBtn) {
     const inputs = friendBtn.querySelectorAll(".btn-friend-request")
     inputs.forEach(input => {
         let name = input.name
@@ -132,18 +200,18 @@ export async function initSidebar() {
         const username = name.split('-')[1]
         input.addEventListener("click", async function (e) {
             e.preventDefault()
-            console.log(action + " " + username)
             let success = false
             if (action == "accept")
                 success = await acceptFriendRequest(username)
             else if (action == "decline")
                 success = await declineFriendRequest(username)
             if (success)
-                initSidebar()
+                updateSidebar()
         })
     })
+}
 
-    // initDeleteEventListeners()
+function initDeleteEventListeners(friendBtn) {
     const deleteButtons = friendBtn.querySelectorAll(".btn-delete-friend")
     deleteButtons.forEach(btn => {
         btn.addEventListener("click", async function (e) {
@@ -152,7 +220,22 @@ export async function initSidebar() {
             e.preventDefault()
             console.log("Delete " + username)
             await deleteFriendship(username)
-            initSidebar()
+            updateSidebar()
         })
     })
+}
+
+export async function initSidebar() {
+    if (!await fetcher.isAuthenticated())
+        return
+
+    let ws = connectWebsocket()
+
+    window.addEventListener("click", function (e) {
+        ws.send(JSON.stringify({
+            "message": "online",
+        }))
+    })
+
+    await createSidebar()
 }

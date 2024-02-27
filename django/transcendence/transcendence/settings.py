@@ -60,6 +60,13 @@ INSTALLED_APPS = [
 
 ASGI_APPLICATION = 'transcendence.asgi.application'
 
+# TODO CHANGER pour un vrai backend en prod
+CHANNEL_LAYERS = {
+    "default": {
+        "BACKEND": "channels.layers.InMemoryChannelLayer"
+    }
+}
+
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
