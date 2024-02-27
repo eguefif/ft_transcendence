@@ -14,7 +14,9 @@ import requests
 import json
 from os import environ
 from django.contrib.auth.models import User
+from django.core.files.base import ContentFile
 from authentication.utils import get_available_username
+from userprofile.models import generate_image_uuid
 
 OAUTH_UID = environ.get('OAUTH_UID')
 OAUTH_SECRET = environ.get('OAUTH_SECRET')
@@ -106,14 +108,23 @@ def link_42_user(data):
     return data
 
 def create_42_user(data):
-        user = User.objects.create_user(username=data['user_info']['username'],
-                                        email=data['user_info']['email'],
-                                        password=OAUTH_FILL_PASS)
-        user.profile.oauth_42_active = True
-        user.profile.oauth_42_access = data['tokens']['access_token']
-        user.profile.oauth_42_refresh = data['tokens']['refresh_token']
-        
-        user.save()
+    user = User.objects.create_user(username=data['user_info']['username'],
+                                    email=data['user_info']['email'],
+                                    password=OAUTH_FILL_PASS)
+    user.profile.oauth_42_active = True
+    user.profile.oauth_42_access = data['tokens']['access_token']
+    user.profile.oauth_42_refresh = data['tokens']['refresh_token']
+    image = fetch_42_profile_picture(data['user_info']['profile_picture'])
+    if image:
+        filename = generate_image_uuid({}, data['user_info']['profile_picture'])
+        user.profile.profile_picture.save(filename, ContentFile(image))
+    user.save()
+
+def fetch_42_profile_picture(path):
+    response = requests.get(path)
+    if response.status_code >= 200 and response.status_code < 300:
+        return response.content
+    return {}
 
 def refresh_42_tokens(user):
     url = 'https://api.intra.42.fr/oauth/token'
@@ -126,7 +137,6 @@ def refresh_42_tokens(user):
         content = json.loads(content_str)
         user.profile.oauth_42_access = content['access_token']
         user.profile.oauth_42_refresh = content['refresh_token']
-        user.profile.profile_picture.path = content['profile_picture']
         user.save()
         return True
     except:
