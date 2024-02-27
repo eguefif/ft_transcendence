@@ -35,6 +35,7 @@ export class Tournament {
 
 		document.addEventListener("keyup", (e) => {
 			if (e.code == "Space" && (this.state == "semi" || this.state == "final") && this.runninGame == false) {
+				console.log("hi 1")
 				this.runGame()
 				this.runninGame = true
 		}
