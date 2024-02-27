@@ -161,19 +161,19 @@ export class Tournament {
 
 		renderer.hideBoard()
 		if (this.state == "end") {
-			renderer.showBracket(this.players[1], this.players[2], this.players[3], this.players[4],
-			this.winnerSemi1, this.winnerSemi2, `The winner is ${this.winner}`)
+			renderer.showBracket(this.game, this.players[1], this.players[2], this.players[3], this.players[4],
+			this.winnerSemi1, this.winnerSemi2, `🏆 The winner is ${this.winner} 🏆`)
 			return
 		}
 		if (this.game == 1){ 
-			renderer.showBracket(this.players[1], this.players[2], this.players[3], this.players[4])
+			renderer.showBracket(this.game, this.players[1], this.players[2], this.players[3], this.players[4])
 		}
 		if (this.game == 2) {
-			renderer.showBracket(this.players[1], this.players[2], this.players[3], this.players[4],
+			renderer.showBracket(this.game, this.players[1], this.players[2], this.players[3], this.players[4],
 									this.winnerSemi1)
 		}
 		if (this.game == 3){
-			renderer.showBracket(this.players[1], this.players[2], this.players[3], this.players[4],
+			renderer.showBracket(this.game, this.players[1], this.players[2], this.players[3], this.players[4],
 			this.winnerSemi1, this.winnerSemi2)
 		}
 	}
