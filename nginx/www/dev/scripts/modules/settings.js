@@ -47,7 +47,7 @@ export function profileInfo()
 			document.querySelector("#profileImageContainer").classList.add("d-none")
 			document.querySelector("#modifyProfile").classList.remove("d-none")
 			const imgElement = document.getElementById("profilePicture")
-			imgElement.src = "images/default-user-picture.png"
+			imgElement.src = "images/avatar.png"
 			const imageReply = await fetcher.get("api/profile/userpicture/")
 			if (imageReply.status == 200) {
 				const imageURL = URL.createObjectURL(imageReply.data)

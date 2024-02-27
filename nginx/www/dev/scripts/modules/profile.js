@@ -27,13 +27,13 @@ function hidePong() {
 }
 
 export async function getUsername() {
-	let msg = await fetcher.get("/api/userinfo")
+	let msg = await fetcher.get("/api/profile/userinfo")
 	let username = ""
 	if (msg.status >= 200 && msg.status < 300)
 		username = msg.data.username
 	else{
 		username = "error"
-		console.log("Error in getuesrname")
+		console.log("Error in getusername")
 	}
 	return username
 }
@@ -56,11 +56,11 @@ export function showSpinner() {
 }
 
 async function getGameHistoryData(username) {
-	let retval = await fetcher.get("/api/profile/getprofile")
+	let retval = await fetcher.get("/api/profile/games")
 	let games = {}
 	if (retval.status >= 200 && retval.status < 300)
 		games = retval.data
-	else {
+	else if (retval.status >= 300 && retval.status < 500) {
 		games = retval.data
 		return games
 	}

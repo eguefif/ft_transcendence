@@ -1,5 +1,6 @@
 from django.contrib.auth.models import User
 from django.http import FileResponse
+from django.db.models import Q
 from django.shortcuts import get_object_or_404
 from rest_framework import status
 from rest_framework.decorators import api_view
@@ -30,7 +31,7 @@ def user_picture(request):
         image_path = user.profile.profile_picture.path
         return FileResponse(open(image_path, 'rb'))
     except:
-        return Response({'error': 'No image found'}, status=status.HTTP_400_BAD_REQUEST)
+        return Response({'error': 'No image found'}, status=status.HTTP_202_ACCEPTED)
     
 
 @api_view(['POST'])
@@ -73,8 +74,7 @@ def get_image(user):
     if not profile_user.profile_picture:
         usrImg = "/images/avatar.png"
     else:
-        usrImg = profile_user.profile_picture
-    usrImg = "/images/avatar.png"
+        usrImg = profile_user.profile_picture.url
     return usrImg
 
 def get_games_history(games, user):
@@ -113,7 +113,7 @@ def get_games_history(games, user):
 
 @api_view(["GET"])
 @require_authorization
-def get_profile(request):
+def get_games(request):
     try:
         username = get_token_user(request.headers["Authorization"])
     except Exception as e:
