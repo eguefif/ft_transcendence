@@ -10,7 +10,7 @@ async function preview_image() {
 
     formData.append('image', file)
 
-    const res = await fetcher.post("api/uploadimage/", formData)
+    const res = await fetcher.post("api/profile/uploadimage/", formData)
     if (res.status == 201) {
         img.src = URL.createObjectURL(file)
         img.width = 150
@@ -48,7 +48,7 @@ export function profileInfo()
 			document.querySelector("#modifyProfile").classList.remove("d-none")
 			const imgElement = document.getElementById("profilePicture")
 			imgElement.src = "images/default-user-picture.png"
-			const imageReply = await fetcher.get("api/userpicture/")
+			const imageReply = await fetcher.get("api/profile/userpicture/")
 			if (imageReply.status == 200) {
 				const imageURL = URL.createObjectURL(imageReply.data)
 				imgElement.src = imageURL
@@ -56,7 +56,7 @@ export function profileInfo()
 					URL.revokeObjectURL(imageReply.data)
 				}
 			}
-			const res = await fetcher.get("api/userinfo/")
+			const res = await fetcher.get("api/profile/userinfo/")
 			if (res.status == 200) {
 
 				document.querySelector("#profileUsername").value = res.data['username']
