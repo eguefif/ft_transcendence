@@ -103,7 +103,19 @@ function transformDate(games) {
             minutesStr = `0${minutes}`
         else
             minutesStr = `${minutes}`
-		game["time"] = `${time.getMonth()}/${time.getDay()}/${time.getFullYear()} - ${time.getHours()}:${minutesStr}`
+        let months = time.getMonth() + 1
+        let monthsStr = ``
+        if (months < 10)
+            monthsStr = `0${months}`
+        else
+            monthsStr = `${months}`
+        let days = time.getDate()
+        let daysStr = ``
+        if (days < 10)
+            daysStr = `0${days}`
+        else
+            daysStr = `${days}`
+		game["time"] = `${monthsStr}/${daysStr}/${time.getFullYear()} - ${time.getHours()}:${minutesStr}`
 	}
 	return games
 }

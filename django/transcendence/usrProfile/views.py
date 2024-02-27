@@ -78,7 +78,7 @@ def get_profile(request):
         retval = {"error": "no such username in database"}
         return Response(retval, status.HTTP_400_BAD_REQUEST)
     games = Game.objects.all().filter(Q(player1__id=user.id) |
-                                    Q(player2__id=user.id))
+                                    Q(player2__id=user.id)).order_by('-time')
     if len(games) == 0:
         retval = {}
         retval = {"error": "no games with that username"}
