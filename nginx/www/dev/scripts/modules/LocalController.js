@@ -104,8 +104,6 @@ export class LocalController {
 				}
 			}	
 		}
-		// else
-		// 	this.startTimer = ""
 		return {
 			ball: this.ball,
 			paddle1: this.paddle1,
