@@ -3,6 +3,7 @@ import { initRemoteGame } from "./pong.js"
 import { initLocalGame } from "./pong.js"
 import { pongMenu } from "./pong.js"
 import { profile } from "./profile.js"
+import { initTournament } from "./pong.js"
 
 export function initRouter() {
 	const navigateTo = url => {
@@ -16,6 +17,7 @@ export function initRouter() {
 			{ path: "/remotegame", view: () => initRemoteGame() },
 			{ path: "/localgame", view: () => initLocalGame() },
 			{ path: "/profile", view: () => profile() },
+			{ path: "/tournament", view: () => initTournament() },
 		]
 		
 		const potentialMatches = routes.map((route) => {

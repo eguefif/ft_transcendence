@@ -16,8 +16,21 @@ export class Renderer{
 		this.boardStartY = (this.boardHeight / 2)
 		this.paddleMarging_x = this.boardWidth / 12
 
+		this.bracket = document.getElementById("bracket")
+		this.ctx =  this.bracket.getContext("2d")
+
+		let dpi = window.devicePixelRatio;
+		let style_height = +getComputedStyle(this.bracket).getPropertyValue("height").slice(0, -2);
+		let style_width = +getComputedStyle(this.bracket).getPropertyValue("width").slice(0, -2);
+		this.bracket.setAttribute('height', style_height * dpi);
+		this.bracket.setAttribute('width', style_width * dpi);
+
+
+		// window.devicePixelRatio=2;
 		this.windowWidth = window.innerWidth
 		this.windowHeight = window.innerHeight
+		this.textColor = "rgb(43, 194, 14)"
+
 	}
 
 	init (){
@@ -29,6 +42,7 @@ export class Renderer{
 		this.initStars()
 		this.initPaddles()
 		this.initBall()
+		this.initBracket()
 		this.initSun()
 		this.initLight()
 		this.initCameraPos()
@@ -152,7 +166,102 @@ export class Renderer{
 		this.topLip.layers.toggle(this.BLOOM_SCENE)
 		this.bottomLip.layers.toggle(this.BLOOM_SCENE)
 		this.gameboard.layers.disable(20)
+		
+	}
 
+	initBracket()
+	{
+		const MiddleGeometry = new THREE.BoxGeometry(this.boardWidth / 2, 0.027, 0.04);
+		const EntryGeometry = new THREE.BoxGeometry(this.boardWidth / 4, 0.027, 0.04);
+		const verticalGeometry = new THREE.BoxGeometry(0.027, this.boardHeight, 0.04);
+
+		this.bracketMiddle = new THREE.Mesh(MiddleGeometry, this.greenGlowMat);
+		this.entryTL = new THREE.Mesh(EntryGeometry, this.greenGlowMat);
+		this.entryTR = new THREE.Mesh(EntryGeometry, this.greenGlowMat);
+		this.entryBL = new THREE.Mesh(EntryGeometry, this.greenGlowMat);
+		this.entryBR = new THREE.Mesh(EntryGeometry, this.greenGlowMat);
+		this.verticalBracketLeft = new THREE.Mesh(verticalGeometry, this.greenGlowMat);
+		this.verticalBracketRight = new THREE.Mesh(verticalGeometry, this.greenGlowMat);
+
+		this.bracketMiddle.position.set(0, 0, 0)
+		this.entryTL.position.set((this.boardWidth / -2) + this.boardWidth / 8, this.boardHeight / -2, 0)
+		this.entryBL.position.set((this.boardWidth / -2) + this.boardWidth / 8, this.boardHeight / 2, 0)
+		this.entryTR.position.set((this.boardWidth / 2) - this.boardWidth / 8, this.boardHeight / -2, 0)
+		this.entryBR.position.set((this.boardWidth / 2) - this.boardWidth / 8, this.boardHeight / 2, 0)
+		this.verticalBracketLeft.position.set((this.boardWidth / -2) + this.boardWidth / 4, 0, 0)
+		this.verticalBracketRight.position.set((this.boardWidth / 2) - this.boardWidth / 4, 0, 0)
+
+		this.bracketMiddle.layers.toggle(this.BLOOM_SCENE)
+		this.entryTL.layers.toggle(this.BLOOM_SCENE)
+		this.entryTR.layers.toggle(this.BLOOM_SCENE)
+		this.entryBL.layers.toggle(this.BLOOM_SCENE)
+		this.entryBR.layers.toggle(this.BLOOM_SCENE)
+		this.verticalBracketLeft.layers.toggle(this.BLOOM_SCENE)
+		this.verticalBracketRight.layers.toggle(this.BLOOM_SCENE)
+	}
+	
+	showBracket(gameid = 1, player1 = "", player2 = "", player3 = "", player4 = "", finalist1 = "TBD", finalist2 = "TBD", winner = "")
+	{
+		this.ctx.clearRect(0, 0, this.bracket.width, this.bracket.height)
+		// player1 = "player1"
+		// player2 = "player1"
+		// player3 = "player1"
+		// player4 = "player1"
+		const lenWinner = winner.length
+		const lenPlayer1 = player1.length
+		const lenPlayer2 = player2.length
+		const lenPlayer3 = player3.length
+		const lenPlayer4 = player4.length
+		const nextGame = "Press Space to start next game!"
+		const lenNextGame = nextGame.length
+		const lenFinalist1 = finalist1.length
+		const lenFinalist2 = finalist2.length
+
+		
+		const scale = 0.2 * 90
+		this.scene.add(this.bracketMiddle, this.entryBL, this.entryBR, this.entryTL, this.entryTR, this.verticalBracketLeft, this.verticalBracketRight)
+		this.ctx.font = "".concat(90, "px Impact, fantasy")
+		this.ctx.fillStyle = this.textColor;
+		// this.ctx.fillText(winner, (this.bracket.width / 2) - (scale * lenWinner), this.bracket.height / 2 - this.bracket.height / 6)
+		this.ctx.fillText(player1, (this.bracket.width / 2 - this.bracket.width / 4.5) - (scale * lenPlayer1), this.bracket.height / 2 - this.bracket.height / 4 - scale)
+		this.ctx.fillText(player2, (this.bracket.width / 2 - this.bracket.width / 4.5) - (scale * lenPlayer2), this.bracket.height / 2 + this.bracket.height / 4 +  4.5 * scale)
+		this.ctx.fillText(player3, (this.bracket.width / 2 + this.bracket.width / 4.5) - (scale * lenPlayer3), this.bracket.height / 2 - this.bracket.height / 4 - scale)
+		this.ctx.fillText(player4, (this.bracket.width / 2 + this.bracket.width / 4.5) - (scale * lenPlayer4), this.bracket.height / 2 + this.bracket.height / 4 +  4.5 * scale)
+		this.ctx.fillText(finalist1, (this.bracket.width / 2) - (scale * lenFinalist1), this.bracket.height / 2 - this.bracket.height / 20 + 3.5 *scale)
+		this.ctx.fillText(finalist2, (this.bracket.width / 2) - (scale * lenFinalist2), this.bracket.height / 2 + this.bracket.height / 20)
+		this.ctx.stroke()
+		this.ctx.fillStyle = "rgb(238, 36, 249)"
+		if (gameid != 4)
+		{
+			this.ctx.fillText(nextGame, (this.bracket.width / 2) - (scale * lenNextGame), this.bracket.height -  this.bracket.height / 8)
+			this.ctx.stroke()
+		}
+		if (gameid == 1)
+		{
+			this.ctx.fillText(player1, (this.bracket.width / 2 - this.bracket.width / 4.5) - (scale * lenPlayer1), this.bracket.height / 2 - this.bracket.height / 4 - scale)
+			this.ctx.fillText(player2, (this.bracket.width / 2 - this.bracket.width / 4.5) - (scale * lenPlayer2), this.bracket.height / 2 + this.bracket.height / 4 +  4.5 * scale)
+		}
+		else if (gameid == 2)
+		{
+			this.ctx.fillText(player3, (this.bracket.width / 2 + this.bracket.width / 4.5) - (scale * lenPlayer3), this.bracket.height / 2 - this.bracket.height / 4 - scale)
+			this.ctx.fillText(player4, (this.bracket.width / 2 + this.bracket.width / 4.5) - (scale * lenPlayer4), this.bracket.height / 2 + this.bracket.height / 4 +  4.5 * scale)
+		}
+		else if (gameid == 3)
+		{
+			this.ctx.fillText(finalist1, (this.bracket.width / 2) - (scale * lenFinalist1), this.bracket.height / 2 - this.bracket.height / 20 + 3.5 *scale)
+			this.ctx.fillText(finalist2, (this.bracket.width / 2) - (scale * lenFinalist2), this.bracket.height / 2 + this.bracket.height / 20)
+		}
+		else if (gameid == 4)
+		{
+			this.ctx.fillText(winner, (this.bracket.width / 2) - (scale * lenWinner), this.bracket.height / 2 - this.bracket.height / 3.5)
+		}
+		this.ctx.stroke()
+
+	}
+	hideBracket()
+	{
+		this.scene.remove(this.bracketMiddle, this.entryBL, this.entryBR, this.entryTL, this.entryTR, this.verticalBracketLeft, this.verticalBracketRight)
+		this.ctx.clearRect(0, 0, this.bracket.width, this.bracket.height)
 	}
 	showBoard()
 	{
@@ -285,7 +394,6 @@ export class Renderer{
 			this.finalComposer.setSize(this.windowWidth, this.windowHeight);
 		}).bind(this));
 	}
-
 }
 
 export const renderer = new Renderer()
@@ -296,9 +404,14 @@ export class graphicEngine
 		this.board = document.getElementById("board")
 		this.ctx =  this.board.getContext("2d")
 
+		let dpi = window.devicePixelRatio;
+		let style_height = +getComputedStyle(this.board).getPropertyValue("height").slice(0, -2);
+		let style_width = +getComputedStyle(this.board).getPropertyValue("width").slice(0, -2);
+		this.board.setAttribute('height', style_height * dpi);
+		this.board.setAttribute('width', style_width * dpi);
 		
 		// this.generalTopMargin = this.height / 10;
-		this.board.style.top = '35%'
+		this.board.style.top = 'calc(30% + 5em)'
 		this.width = this.board.width
 		this.height = this.board.height
 		this.mid = this.board.width / 2
