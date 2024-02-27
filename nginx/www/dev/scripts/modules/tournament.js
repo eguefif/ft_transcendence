@@ -37,7 +37,6 @@ export class Tournament {
 				this.runGame()
 		})
 		document.addEventListener("endGame", (e) => {
-			console.log("winner is ", e.detail)
 			if (this.game == 2)
 				this.winnerSemi1 = e.detail
 			if (this.game == 3)
@@ -94,7 +93,14 @@ export class Tournament {
 		this.setInvalidInput()
 	}
 
-	setInvalidInput() {
+	async setInvalidInput() {
+		if (!await fetcher.isAuthenticated()) {
+			if (this.players.filter(x => x == this.players[1]).length > 1) {
+				const input = document.getElementById("player1Tournament")
+				const value = input.value
+				input.setCustomValidity('${value} is a duplicate')
+			}
+		}
 		if (this.players.filter(x => x == this.players[2]).length > 1) {
 			const input = document.getElementById("player2Tournament")
 			const value = input.value
@@ -159,17 +165,14 @@ export class Tournament {
 		}
 		if (this.game == 1){ 
 			renderer.showBracket(this.players[1], this.players[2], this.players[3], this.players[4])
-			console.log("Game between: ", this.players[1], this.players[2])
 		}
 		if (this.game == 2) {
 			renderer.showBracket(this.players[1], this.players[2], this.players[3], this.players[4],
 									this.winnerSemi1)
-			console.log("Game between: ", this.players[3], this.players[4])
 		}
 		if (this.game == 3){
 			renderer.showBracket(this.players[1], this.players[2], this.players[3], this.players[4],
 			this.winnerSemi1, this.winnerSemi2)
-			console.log("Game between: ", this.winnerSemi1, this.winnerSemi2)
 		}
 	}
 
@@ -190,7 +193,7 @@ function tournamentForm() {
 	return `
 	<div class="d-flex justify-content-center">
 		<form id="tournamentForm" class="bg-dark m-2 p-4 border border-3 border-rounded border-primary" style="width: 400px;" novalidate>
-			<h4 class="text-primary fs-3 fw-bold text-center">Enter pseudos</h4>
+			<h4 class="text-primary fs-3 fw-bold text-center">Enter aliases</h4>
 			<div class="mb-3">
 				<label for="player1Tournament" class="form-label text-secondary">Player1</label>
 				<input type="text" class="form-control" id="player1Tournament" required minlength=4 maxlength=24/>
