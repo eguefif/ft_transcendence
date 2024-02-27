@@ -203,10 +203,6 @@ export class Renderer{
 	showBracket(gameid = 1, player1 = "", player2 = "", player3 = "", player4 = "", finalist1 = "TBD", finalist2 = "TBD", winner = "")
 	{
 		this.ctx.clearRect(0, 0, this.bracket.width, this.bracket.height)
-		// player1 = "player1"
-		// player2 = "player1"
-		// player3 = "player1"
-		// player4 = "player1"
 		const lenWinner = winner.length
 		const lenPlayer1 = player1.length
 		const lenPlayer2 = player2.length
@@ -219,10 +215,10 @@ export class Renderer{
 
 		
 		const scale = 0.2 * 90
-		this.scene.add(this.bracketMiddle, this.entryBL, this.entryBR, this.entryTL, this.entryTR, this.verticalBracketLeft, this.verticalBracketRight)
+		this.scene.add(this.bracketMiddle, this.entryBL, this.entryBR, this.entryTL, this.entryTR, this.verticalBracketLeft, this.verticalBracketRight, this.bracketLight)
+		
 		this.ctx.font = "".concat(90, "px Impact, fantasy")
 		this.ctx.fillStyle = this.textColor;
-		// this.ctx.fillText(winner, (this.bracket.width / 2) - (scale * lenWinner), this.bracket.height / 2 - this.bracket.height / 6)
 		this.ctx.fillText(player1, (this.bracket.width / 2 - this.bracket.width / 4.5) - (scale * lenPlayer1), this.bracket.height / 2 - this.bracket.height / 4 - scale)
 		this.ctx.fillText(player2, (this.bracket.width / 2 - this.bracket.width / 4.5) - (scale * lenPlayer2), this.bracket.height / 2 + this.bracket.height / 4 +  4.5 * scale)
 		this.ctx.fillText(player3, (this.bracket.width / 2 + this.bracket.width / 4.5) - (scale * lenPlayer3), this.bracket.height / 2 - this.bracket.height / 4 - scale)
@@ -256,11 +252,10 @@ export class Renderer{
 			this.ctx.fillText(winner, (this.bracket.width / 2) - (scale * lenWinner), this.bracket.height / 2 - this.bracket.height / 3.5)
 		}
 		this.ctx.stroke()
-
 	}
 	hideBracket()
 	{
-		this.scene.remove(this.bracketMiddle, this.entryBL, this.entryBR, this.entryTL, this.entryTR, this.verticalBracketLeft, this.verticalBracketRight)
+		this.scene.remove(this.bracketMiddle, this.entryBL, this.entryBR, this.entryTL, this.entryTR, this.verticalBracketLeft, this.verticalBracketRight, this.bracketLight)
 		this.ctx.clearRect(0, 0, this.bracket.width, this.bracket.height)
 	}
 	showBoard()
@@ -314,7 +309,6 @@ export class Renderer{
 
 		this.paddle2.position.set(this.boardStartX + this.boardWidth - this.paddleMarging_x, 0, 0.1)
 		this.paddle2.layers.toggle(this.BLOOM_SCENE)
-		// this.scene.add(this.paddle1, this.paddle2)
 	}
 
 	initBall()
@@ -323,7 +317,6 @@ export class Renderer{
 		this.ball = new THREE.Mesh(ballGeometry, this.greenGlowMat);
 		this.ball.position.set(this.boardStartX + this.boardWidth / 2, this.boardStartY + this.boardHeight / 2, 0.1)
 		this.ball.layers.toggle(this.BLOOM_SCENE)
-		// this.scene.add(this.ball)
 	}
 
 	initSun()
@@ -348,12 +341,15 @@ export class Renderer{
 		this.pointLight = new THREE.PointLight( 0xebfde7, 10 )
 		this.pointLight3 = new THREE.PointLight( 0xffffff, 10 )
 		this.pointLight4 = new THREE.PointLight( 0xffffff, 10 )
+		this.bracketLight = new THREE.PointLight( 0xffffff, 10 )
 		this.pointLight.position.set(2, 2, 2)
 		this.pointLight3.position.set(0, 0, 19)
 		this.pointLight4.position.set(0, 0, -19)
+		this.bracketLight.position.set(2, 2, 2)
 		this.pointLight.intensity = 1
 		this.pointLight3.intensity = 95
 		this.pointLight4.intensity = 95
+		this.bracketLight.intensity = 13
 		this.scene.add(this.pointLight, this.pointLight3, this.pointLight4);
 	}
 
@@ -364,6 +360,7 @@ export class Renderer{
 	}
 	
 	render() {
+		this.bracketLight.position.set(2 * Math.sin(Date.now() /1000), 2 * Math.cos(Date.now() / 1000), 2)
 		this.controls.update()
 		this.starField.translateX(0.01)
 		this.starField.translateY(0.005)
@@ -489,7 +486,7 @@ export class graphicEngine
 			return
 		const len = message.length
 		this.ctx.font = "".concat(`${this.messageScale}`, "px Impact, fantasy")
-		this.ctx.fillStyle = this.textColor;
+		this.ctx.fillStyle = "rgb(238, 36, 249)"
 		this.ctx.fillText(message, this.mid - len * this.messageScale * 0.2, this.messageMargin)
 	}
 
