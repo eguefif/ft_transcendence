@@ -112,19 +112,22 @@ def create_42_user(data):
         user.profile.oauth_42_active = True
         user.profile.oauth_42_access = data['tokens']['access_token']
         user.profile.oauth_42_refresh = data['tokens']['refresh_token']
+        
         user.save()
 
-def refresh_42_tokens(token):
+def refresh_42_tokens(user):
     url = 'https://api.intra.42.fr/oauth/token'
     payload = {'grant_type': 'refresh_token',
-            'refresh_token': token
+            'refresh_token': user.profile.oauth_42_refresh
             }
     result = requests.post(url, data=payload)
     try:
         content_str = result.content.decode('utf-8')
         content = json.loads(content_str)
-        access_token = content['access_token']
-        refresh_token = content['refresh_token']
+        user.profile.oauth_42_access = content['access_token']
+        user.profile.oauth_42_refresh = content['refresh_token']
+        user.profile.profile_picture.path = content['profile_picture']
+        user.save()
+        return True
     except:
-        return {}
-    return  {'access_token': access_token, 'refresh_token': refresh_token}
+        return False

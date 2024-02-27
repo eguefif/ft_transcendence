@@ -6,7 +6,7 @@ from rest_framework import status
 from rest_framework.response import Response
 from authentication.decorator import require_authorization, require_otp_token
 from authentication.manageTokens import get_token_user, get_oauth_42_token, get_decoded_token
-from authentication.oauth import get_42_oauth_redirect, authenticate_42_user 
+from authentication.oauth import get_42_oauth_redirect, authenticate_42_user, refresh_42_tokens
 from authentication.otp import get_new_otp_key, get_key_qr_code, get_current_code
 from authentication.serializers import UserSerializer
 from authentication.utils import get_otp_response, get_authenticated_response
@@ -61,6 +61,9 @@ def refresh(request):
         return response
     try:
         if decoded_token["type"] == "refresh":
+            if user.profile.oauth_42_active and not refresh_42_tokens(user):
+                response.status_code = status.HTT_401_UNAUTHORIZED
+                return response
             return  get_authenticated_response(user, status.HTTP_200_OK)
     except:
         response.status_code = status.HTTP_401_UNAUTHORIZED
