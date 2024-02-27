@@ -63,7 +63,6 @@ def refresh(request):
         if decoded_token["type"] == "refresh":
             if user.profile.oauth_42_active and not refresh_42_tokens(user):
                 response.status_code = status.HTT_401_UNAUTHORIZED
-                print("hi")
                 return response
             return  get_authenticated_response(user, status.HTTP_200_OK)
     except:
