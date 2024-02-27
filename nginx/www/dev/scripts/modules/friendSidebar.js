@@ -232,9 +232,11 @@ export async function initSidebar() {
     let ws = connectWebsocket()
 
     window.addEventListener("click", function (e) {
-        ws.send(JSON.stringify({
-            "message": "online",
-        }))
+        if (ws.readyState == ws.OPEN) {
+            ws.send(JSON.stringify({
+                "message": "online",
+            }))
+        }
     })
 
     await createSidebar()
