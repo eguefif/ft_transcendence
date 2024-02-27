@@ -36,3 +36,12 @@ text {
 #connectionModal, #settingsModal {
     color: $primary;
 }
+
+.tooltip-inner {
+    background-color: $dark;
+    color: $primary;
+}
+
+button {
+    margin-bottom: 1rem;
+}

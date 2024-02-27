@@ -1,16 +1,20 @@
 import { authLogout } from "./auth.js";
 import { fetcher } from "./fetcher.js";
 import { getSVG } from "./iconSVG.js";
+import { initSettings, profileInfo, changeProfile, authUpdateProfile } from "./settings.js";
 
 
 export async function createButton () {
 	if (await fetcher.isAuthenticated()) {
 		createBtns()
 		authLogout()
+		initSettings()
+		profileInfo()
+		changeProfile()
 	}
 	else {
 		const element = document.getElementById("navBarButton")
-		element.innerHTML = createModalBtn("nav-item btn-primary", "connection","" , "Connexion");
+		element.innerHTML = createModalBtn("nav-item btn-primary", "connection","" , "Login / Register");
 	}
 }
 

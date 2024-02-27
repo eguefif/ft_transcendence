@@ -25,7 +25,7 @@ class Ball:
         self.x = 0.5
         self.y = 0.5
         self.resetPosition()
-        self.speed = 1 / 120
+        self.speed = 1 / 300
         self.radius = 1 / 40
         self.timer_speed = time.time() + 5
 
@@ -78,14 +78,14 @@ class Ball:
             self.dir.norm()
 
     def isRightPaddleCollision(self, paddle):
-        return (self.x + self.radius >= paddle.x and
-                self.y >= paddle.y and self.y <= paddle.y + paddle.height and
-                self.dir.x > 0)
+	    return (self.x + self.radius >= paddle.x and self.x + self.radius < 1 - (paddle.margin_x / 2) and
+                self.y + (self.radius / 2)  >= paddle.y and self.y - (self.radius / 2) <= paddle.y + paddle.height
+                and self.dir.x > 0)
 
     def isLeftPaddleCollision(self, paddle):
-        return (self.x - self.radius <= paddle.x and
-                self.y >= paddle.y and self.y <= paddle.y + paddle.height and
-                self.dir.x < 0)
+	    return (self.x - self.radius <= paddle.x and self.x - self.radius > paddle.margin_x / 2 and
+    self.y + (self.radius / 2) >= paddle.y and self.y - (self.radius / 2) <= paddle.y + paddle.height and
+        self.dir.x < 0)
 
     def getPosition(self):
         return {"x": self.x, "y": self.y, "radius": self.radius}

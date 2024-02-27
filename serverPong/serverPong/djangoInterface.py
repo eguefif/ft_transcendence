@@ -24,8 +24,6 @@ class ModelGame:
             async with session.post(
                 "http://django:8000/api/game/creategame",
                 json=data,
-                # ssl=None,
-                # verify_ssl=False,
             ) as resp:
                 if resp.status == 201:
                     logging.info(f"Game created in django id: {djangoId}")
@@ -56,8 +54,6 @@ class ModelGame:
             async with session.post(
                 "http://django:8000/api/game/endgame",
                 json=data,
-                # ssl=None,
-                # verify_ssl=False,
             ) as resp:
                 if resp.status == 200:
                     logging.info(f"Game updated with the winner in django id: {djangoId}")
@@ -68,3 +64,20 @@ class ModelGame:
                     return False
         self.game_ended = True
         return True
+
+    async def drop_game(self, djangoId):
+        data = json.dumps(
+                {
+                    "gameid": djangoId,
+                })
+        async with aiohttp.ClientSession() as session:
+            async with session.post(
+                "http://django:8000/api/game/dropgame",
+                json=data,
+            ) as resp:
+                if resp.status == 200:
+                    logging.info(f"game {djangoId} was dropped")
+                else:
+                    logging.error(
+                        f"Error while dropping game id ({djangoId}) response status: {resp.status}",
+                    )

@@ -114,6 +114,7 @@ class Game:
 
     async def get_ending_message(self):
         if self.disconnection == True and not self.is_end_game():
+            await self.db.drop_game(self.djangoId)
             msg = {"command": "ending",
                     "startTimer": 0,
                     "ball": self.ball.getPosition(),
