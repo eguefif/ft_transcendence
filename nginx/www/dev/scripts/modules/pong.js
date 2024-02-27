@@ -5,11 +5,15 @@ import { RemoteController } from "./RemoteController.js"
 import { PassiveController } from "./PassiveController.js"
 import { renderer } from "./graphic-engine.js";
 import { initSidebar } from "./friendSidebar.js";
+import { Tournament } from "./tournament.js";
 
 export async function pongMenu() {
 	hideProfile()
+	renderer.hideBracket()
 	let controller = new PassiveController()
 	let game = new Game(controller)
+	const pongTournament = document.getElementById("playerForm")
+	pongTournament.innerHTML = ""
 
 	if (await fetcher.isAuthenticated()) {
 		render_pong_menu_connected()
@@ -18,6 +22,14 @@ export async function pongMenu() {
 	else 
 		render_pong_menu_not_connected()
 	game.run()
+}
+
+export async function initTournament() {
+	hideProfile()
+	render_pong_menu_button()
+	renderer.hideBoard()
+	renderer.hideBracket()
+	const tournament = new Tournament()
 }
 
 function hideProfile() {
@@ -31,8 +43,9 @@ export async function initRemoteGame() {
 		return
 	}
 	hideProfile()
+	const pongTournament = document.getElementById("playerForm")
+	pongTournament.innerHTML = ""
 	render_pong_menu_button()
-	initSidebar();
 	let controller = new RemoteController()
 	await controller.init()
 	let game = new Game(controller)
@@ -41,6 +54,8 @@ export async function initRemoteGame() {
 
 export function initLocalGame() {
 	hideProfile()
+	const pongTournament = document.getElementById("playerForm")
+	pongTournament.innerHTML = ""
 	let controller = new LocalController()
 	render_pong_menu_button()
 	controller.init()
@@ -55,6 +70,7 @@ export function render_game_board() {
 			<div id="pongMenu" class="row m-5">
 er
 			</div>
+			<div id="playerForm" class="row m-5 "></div>
 			<div class="row">
 				<div class="col">
 					<canvas id="board"></canvas>
@@ -74,6 +90,9 @@ function render_pong_menu_connected() {
 			<a id="localgamebtn" href="/localgame" class="btn btn-primary m-5" data-link>local game</a>
 		</div>
 		<div class="col">
+			<a id="tournamentbtn" href="/tournament" class="btn btn-primary m-5" data-link>Tournament</a>
+		</div>
+		<div class="col">
 			<a id="remotegamebtn" href="/remotegame" class="btn btn-primary m-5" data-link>Remote game</a>
 		</div>
 		`
@@ -85,13 +104,15 @@ function render_pong_menu_not_connected() {
 		<div class="col">
 			<a id="localgamebtn" href="/localgame" class="btn btn-primary m-5" data-link>local game</a>
 		</div>
+		<div class="col">
+			<a id="tournamentbtn" href="/tournament" class="btn btn-primary m-5" data-link>Tournament</a>
+		</div>
 		`
 }
 
 function render_pong_menu_button() {
 	const row_menu = document.getElementById("pongMenu")
 	row_menu.innerHTML = `
-	 	<div class="col" id="addFriendList"></div>
 		<div class="col">
 			<a id="menubtn" href="/" class="btn btn-primary m-5 bt-primary" data-link>Menu</a>
 		</div>

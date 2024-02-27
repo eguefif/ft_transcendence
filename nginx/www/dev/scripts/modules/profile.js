@@ -19,18 +19,21 @@ export async function profile() {
 
 function hidePong() {
 	renderer.hideBoard()
-	let pongMenu = document.getElementById("pongMenu")
+	renderer.hideBracket()
+	const pongMenu = document.getElementById("pongMenu")
 	pongMenu.innerHTML = ""
+	const pongTournament = document.getElementById("playerForm")
+	pongTournament.innerHTML = ""
 }
 
-async function getUsername() {
-	let msg = await fetcher.get("/api/userinfo")
+export async function getUsername() {
+	let msg = await fetcher.get("/api/profile/userinfo")
 	let username = ""
 	if (msg.status >= 200 && msg.status < 300)
 		username = msg.data.username
 	else{
 		username = "error"
-		console.log("Error in getuesrname")
+		console.log("Error in getusername")
 	}
 	return username
 }
@@ -53,11 +56,11 @@ export function showSpinner() {
 }
 
 async function getGameHistoryData(username) {
-	let retval = await fetcher.get("/api/profile/getprofile")
+	let retval = await fetcher.get("/api/profile/games")
 	let games = {}
 	if (retval.status >= 200 && retval.status < 300)
 		games = retval.data
-	else {
+	else if (retval.status >= 300 && retval.status < 500) {
 		games = retval.data
 		return games
 	}
@@ -100,7 +103,19 @@ function transformDate(games) {
             minutesStr = `0${minutes}`
         else
             minutesStr = `${minutes}`
-		game["time"] = `${time.getMonth()}/${time.getDay()}/${time.getFullYear()} - ${time.getHours()}:${minutesStr}`
+        let months = time.getMonth() + 1
+        let monthsStr = ``
+        if (months < 10)
+            monthsStr = `0${months}`
+        else
+            monthsStr = `${months}`
+        let days = time.getDate()
+        let daysStr = ``
+        if (days < 10)
+            daysStr = `0${days}`
+        else
+            daysStr = `${days}`
+		game["time"] = `${monthsStr}/${daysStr}/${time.getFullYear()} - ${time.getHours()}:${minutesStr}`
 	}
 	return games
 }

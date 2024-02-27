@@ -2,6 +2,7 @@
 *.swo
 nginx/www/dev/styles/styles.css
 package-lock.json
+:w
 
 # Byte-compiled / optimized / DLL files
 __pycache__/

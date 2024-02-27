@@ -3,18 +3,26 @@ import { renderer } from "./graphic-engine.js"
 
 
 export class Game {
-	constructor(controller) {
-		renderer.showBoard()
-		renderer.hideBoard()
+	constructor(controller, tournament=false) {
+		renderer.showBoard
 		this.controller = controller
 		this.graphicEngine = new graphicEngine()
 		this.running = true
 		let menu = document.querySelector("#menubtn")
 		this.initListeners()
+		this.tournament = tournament
 	}
 
 	run() {
 		const update = () => {
+			if (this.controller.running == false) {
+				if (this.tournament) {
+					const endGameEvent = new CustomEvent("endGame", {detail: this.controller.getWinner()})
+					document.dispatchEvent(endGameEvent)
+					this.graphicEngine.clearFrame()
+				}
+				return
+			}
 			if (!this.running) {
 				return
 			}
@@ -35,10 +43,10 @@ export class Game {
 
 		document.addEventListener("click", (e) => {
 			if (e.target.matches("[data-link]")) {
-					this.running = false
-					this.controller.cleanup()
-					this.graphicEngine.clearFrame()
-					this.controller.stop = true
+				this.running = false
+				this.controller.cleanup()
+				this.graphicEngine.clearFrame()
+				this.controller.stop = true
 			}
 			})
 

@@ -7,14 +7,13 @@ export class LocalController {
 		this.ball = new Ball()
 		this.player1Score = 0
 		this.player2Score = 0
-		this.message = ""
 		this.startTimer = 3
 		this.reset()
 		this.running = true
-		this.stop = false
+		this.stop = true
 		this.ball.in_play = false
-
 		this.restartTimestamp = 0
+		this.message = "press space to start the game"
 	}
 
 	cleanup(){}
@@ -40,7 +39,18 @@ export class LocalController {
 				this.paddle2.move_down = false
 			else if (e.key == 'ArrowUp') 
 				this.paddle2.move_up = false
+			if (e.code == "Space") {
+				this.stop = false;
+				this.message = ""
+				}
 			})
+	}
+
+	getWinner() {
+		if (this.player1Score == 3)
+			return this.paddle1.name
+		else
+			return this.paddle2.name
 	}
 
 	countdown()
@@ -68,7 +78,7 @@ export class LocalController {
 
 	update () {
 		let retval = "none"
-		if (this.ball.in_play) {
+		if (this.ball.in_play && this.stop == false) {
 			this.paddle1.move()
 			this.paddle2.move()
 			if (Date.now() > this.restartTimestamp && this.running)
@@ -81,11 +91,11 @@ export class LocalController {
 					else
 					this.player2Score++
 					if (this.player1Score == 3) {
-						this.message = "The winner is " + this.player1
+						this.message = "The winner is " + this.paddle1.name
 						this.running = false
 					}
 					else if (this.player2Score == 3) {
-						this.message = "The winner is " + this.player2
+						this.message = "The winner is " + this.paddle2.name
 						this.running = false
 					}
 					this.ball.in_play = false
@@ -94,10 +104,14 @@ export class LocalController {
 				}
 			}	
 		}
+		else
+			this.startTimer = ""
 		return {
 			ball: this.ball,
 			paddle1: this.paddle1,
 			paddle2: this.paddle2,
+			player1: this.paddle1.name,
+			player2: this.paddle2.name,
 			player1Score: this.player1Score,
 			player2Score: this.player2Score,
 			message: this.message,
@@ -111,7 +125,6 @@ class Ball {
 		this.radius = 1 / 50
 		this.x = 0
 		this.y = 0
-        this.speed = 1 / 120
 		this.reset()
     }
 
@@ -126,9 +139,23 @@ class Ball {
 			this.dir.x = Math.max(0.5)
 		this.dir.norm()
 		this.in_play = true
+		this.timerBall = this.getTimeNow() + 5;
+		this.speed = 1 / 120
+	}
+
+	getTimeNow() {
+		const d = new Date()
+		return d.getTime() / 1000;
 	}
 
     move(paddle1, paddle2){
+		const now = this.getTimeNow()
+		if (now >= this.timerBall) {
+			if (this.speed + 0.0005 <= this.radius - 0.002) {
+				this.speed += 0.0005
+				this.timerBall = this.getTimeNow() + 5;
+			}
+		}
         this.x += this.speed * this.dir.x
         this.y += this.speed * this.dir.y
 		this.checkTopWallCollision()
