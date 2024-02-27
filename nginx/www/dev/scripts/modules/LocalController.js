@@ -7,7 +7,7 @@ export class LocalController {
 		this.ball = new Ball()
 		this.player1Score = 0
 		this.player2Score = 0
-		this.startTimer = 3
+		this.startTimer = ""
 		this.reset()
 		this.running = true
 		this.stop = true
@@ -39,9 +39,11 @@ export class LocalController {
 				this.paddle2.move_down = false
 			else if (e.key == 'ArrowUp') 
 				this.paddle2.move_up = false
-			if (e.code == "Space") {
+			if (e.code == "Space" && this.stop == true) {
 				this.stop = false;
 				this.message = ""
+				this.startTimer = 3
+				this.countdown()
 				}
 			})
 	}
@@ -69,10 +71,8 @@ export class LocalController {
 	
 	reset()
 	{
-		this.startTimer = 3
 		this.ball_in_play = false
 		this.ball.reset()
-		this.countdown()
 	}
 
 
@@ -104,8 +104,8 @@ export class LocalController {
 				}
 			}	
 		}
-		else
-			this.startTimer = ""
+		// else
+		// 	this.startTimer = ""
 		return {
 			ball: this.ball,
 			paddle1: this.paddle1,
