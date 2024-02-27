@@ -200,8 +200,12 @@ export class Renderer{
 		this.verticalBracketRight.layers.toggle(this.BLOOM_SCENE)
 	}
 	
-	showBracket(player1 = "", player2 = "", player3 = "", player4 = "", finalist1 = "", finalist2 = "", winner = "")
+	showBracket(gameid = 1, player1 = "", player2 = "", player3 = "", player4 = "", finalist1 = "TBD", finalist2 = "TBD", winner = "")
 	{
+		player1 = "player1"
+		player2 = "player1"
+		player3 = "player1"
+		player4 = "player1"
 		const lenWinner = winner.length
 		const lenPlayer1 = player1.length
 		const lenPlayer2 = player2.length
@@ -225,8 +229,31 @@ export class Renderer{
 		this.ctx.fillText(finalist1, (this.bracket.width / 2) - (scale * lenFinalist1), this.bracket.height / 2 - this.bracket.height / 20 + 3.5 *scale)
 		this.ctx.fillText(finalist2, (this.bracket.width / 2) - (scale * lenFinalist2), this.bracket.height / 2 + this.bracket.height / 20)
 		this.ctx.stroke()
-		this.ctx.fillStyle = "rgb(238, 36, 249)"
-		this.ctx.fillText(nextGame, (this.bracket.width / 2) - (scale * lenNextGame), this.bracket.height -  this.bracket.height / 8)
+		if (gameid != 4)
+		{
+			this.ctx.fillStyle = "rgb(238, 36, 249)"
+			this.ctx.fillText(nextGame, (this.bracket.width / 2) - (scale * lenNextGame), this.bracket.height -  this.bracket.height / 8)
+			this.ctx.stroke()
+		}
+		if (gameid == 1)
+		{
+			this.ctx.fillText(player1, (this.bracket.width / 2 - this.bracket.width / 4.5) - (scale * lenPlayer1), this.bracket.height / 2 - this.bracket.height / 4 - scale)
+			this.ctx.fillText(player2, (this.bracket.width / 2 - this.bracket.width / 4.5) - (scale * lenPlayer2), this.bracket.height / 2 + this.bracket.height / 4 -  3 * scale)
+		}
+		else if (gameid == 2)
+		{
+			this.ctx.fillText(player1, (this.bracket.width / 2 - this.bracket.width / 4.5) - (scale * lenPlayer1), this.bracket.height / 2 - this.bracket.height / 4 - scale)
+			this.ctx.fillText(player2, (this.bracket.width / 2 - this.bracket.width / 4.5) - (scale * lenPlayer2), this.bracket.height / 2 + this.bracket.height / 4 -  3 * scale)
+		}
+		else if (gameid == 3)
+		{
+			this.ctx.fillText(finalist1, (this.bracket.width / 2) - (scale * lenFinalist1), this.bracket.height / 2 - this.bracket.height / 20 + 3.5 *scale)
+			this.ctx.fillText(finalist2, (this.bracket.width / 2) - (scale * lenFinalist2), this.bracket.height / 2 + this.bracket.height / 20)
+		}
+		else if (gameid == 4)
+		{
+			this.ctx.fillText(winner, (this.bracket.width / 2) - (scale * lenWinner), this.bracket.height / 2 - this.bracket.height / 6)
+		}
 		this.ctx.stroke()
 
 	}
