@@ -56,18 +56,18 @@ export class Tournament {
 			this.warningUnicityUsername()
 			return false
 		}
-		if (this.players[1].length <= 4 || this.players[1].length >= 24) {
+		if (this.players[1].length < 4 || this.players[1].length > 24) {
 			return false;
 		}
-		if (this.players[2].length <= 4 || this.players[2].length >= 24) {
+		if (this.players[2].length < 4 || this.players[2].length > 24) {
 			document.getElementById("tournamentForm").classList.add("was-validated")
 			return false;
 		}
-		if (this.players[3].length <= 4 || this.players[3].length >= 24) {
+		if (this.players[3].length < 4 || this.players[3].length > 24) {
 			document.getElementById("tournamentForm").classList.add("was-validated")
 			return false;
 		}
-		if (this.players[4].length <= 4 || this.players[4].length >= 24) {
+		if (this.players[4].length < 4 || this.players[4].length > 24) {
 			document.getElementById("tournamentForm").classList.add("was-validated")
 			this.state = "end"
 			return false;
