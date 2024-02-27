@@ -38,9 +38,9 @@ export function initSettings() {
 
 export function profileInfo()
 {
-	const profileBtn = document.querySelector("#settingsButton")
-	if (profileBtn){
-		profileBtn.addEventListener("click", async function (e) {
+	const settingsBtn = document.querySelector("#settingsButton")
+	if (settingsBtn) {
+		settingsBtn.addEventListener("click", async function (e) {
 			document.querySelector("#profileUsername").disabled = true
 			document.querySelector("#profileEmail").disabled = true
 			document.querySelector("#profileSaveChanges").classList.add("d-none")
@@ -68,8 +68,8 @@ export function profileInfo()
 
 export function changeProfile()
 {
-	const modifyProfileBtn = document.querySelector("#modifyProfile")
-	modifyProfileBtn.addEventListener("click", async function (e) {
+	const modifySettingsBtn = document.querySelector("#modifyProfile")
+	modifySettingsBtn.addEventListener("click", async function (e) {
 		const profileUsername = document.querySelector("#profileUsername")
 		const emailUsername = document.querySelector("#profileEmail")
 		profileUsername.disabled = false
