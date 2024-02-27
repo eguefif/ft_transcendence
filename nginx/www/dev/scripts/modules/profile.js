@@ -26,7 +26,7 @@ function hidePong() {
 	pongTournament.innerHTML = ""
 }
 
-async function getUsername() {
+export async function getUsername() {
 	let msg = await fetcher.get("/api/userinfo")
 	let username = ""
 	if (msg.status >= 200 && msg.status < 300)
