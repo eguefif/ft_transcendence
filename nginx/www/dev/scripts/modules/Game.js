@@ -3,21 +3,24 @@ import { renderer } from "./graphic-engine.js"
 
 
 export class Game {
-	constructor(controller) {
+	constructor(controller, tournament=false) {
 		renderer.showBoard
 		this.controller = controller
 		this.graphicEngine = new graphicEngine()
 		this.running = true
 		let menu = document.querySelector("#menubtn")
 		this.initListeners()
+		this.tournament = tournament
 	}
 
 	run() {
 		const update = () => {
 			if (this.controller.running == false) {
-				const endGameEvent = new CustomEvent("endGame", {detail: this.controller.getWinner()})
-				document.dispatchEvent(endGameEvent)
-				this.graphicEngine.clearFrame()
+				if (this.tournament) {
+					const endGameEvent = new CustomEvent("endGame", {detail: this.controller.getWinner()})
+					document.dispatchEvent(endGameEvent)
+					this.graphicEngine.clearFrame()
+				}
 				return
 			}
 			if (!this.running) {
