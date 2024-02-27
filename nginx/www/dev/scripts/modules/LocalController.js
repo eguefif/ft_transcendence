@@ -1,5 +1,6 @@
 export class LocalController {
 	constructor(player1="player1", player2="player2") {
+		this.eventRemover = new AbortController();
 		this.paddle1 = new Paddle(player1, "right")
 		this.paddle2 = new Paddle(player2, "left")
 		this.player1 = player1
@@ -16,6 +17,10 @@ export class LocalController {
 		this.message = "press space to start the game"
 	}
 
+	destructor() {
+		this.eventRemover.abort()
+	}
+
 	cleanup(){}
 
 	init() {
@@ -28,7 +33,8 @@ export class LocalController {
 				this.paddle1.move_down = true
 			else if (e.code == 'KeyW') 
 				this.paddle1.move_up = true	
-			})
+			}, { signal: this.eventRemover.signal }
+		)
 
 		document.addEventListener("keyup", (e) => {
 			if (e.code == 'KeyS')
@@ -45,7 +51,8 @@ export class LocalController {
 				this.startTimer = 3
 				this.countdown()
 				}
-			})
+			}, { signal: this.eventRemover.signal }
+		)
 	}
 
 	getWinner() {
@@ -93,10 +100,12 @@ export class LocalController {
 					if (this.player1Score == 3) {
 						this.message = "The winner is " + this.paddle1.name
 						this.running = false
+						this.eventRemover.abort();
 					}
 					else if (this.player2Score == 3) {
 						this.message = "The winner is " + this.paddle2.name
 						this.running = false
+						this.eventRemover.abort();
 					}
 					this.ball.in_play = false
 					this.restartTimestamp = Date.now() + 1000

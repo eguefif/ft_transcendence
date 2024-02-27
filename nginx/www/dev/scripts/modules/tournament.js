@@ -8,11 +8,16 @@ export class Tournament {
 	constructor() {
 	this.winner = ""
 	this.displayForm()
+	this.eventRemover = new AbortController();
 	this.initEvent()
 	this.players = []
 	this.state = "lobby"
 	this.game = 1
 	this.runninGame = false
+	}
+
+	destructor() {
+		this.eventRemover.abort()
 	}
 
 	initEvent() {
@@ -38,7 +43,9 @@ export class Tournament {
 				this.runGame()
 				this.runninGame = true
 		}
-		})
+		}, { signal: this.eventRemover.signal }
+		)
+
 		document.addEventListener("endGame", (e) => {
 			this.runninGame = false
 			if (this.game == 2)
@@ -48,7 +55,8 @@ export class Tournament {
 			if (this.state == "end")
 				this.winner = e.detail
 			this.displayBracket()
-		})
+		}, {signal: this.eventRemover.signal }
+		)
 	}
 
 	checkFormsTournament() {

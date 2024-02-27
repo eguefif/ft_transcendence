@@ -9,8 +9,13 @@ export class Game {
 		this.graphicEngine = new graphicEngine()
 		this.running = true
 		let menu = document.querySelector("#menubtn")
+		this.eventRemover = new AbortController()
 		this.initListeners()
 		this.tournament = tournament
+	}
+
+	destructor() {
+		this.eventRemover.abort()
 	}
 
 	run() {
@@ -21,6 +26,9 @@ export class Game {
 					document.dispatchEvent(endGameEvent)
 					this.graphicEngine.clearFrame()
 				}
+				else
+					renderer.hideBracket()
+				this.eventRemover.abort()
 				return
 			}
 			if (!this.running) {
@@ -39,7 +47,8 @@ export class Game {
 			this.running = false
 			this.controller.cleanup()
 			this.controller.stop = true
-			})
+			}, { signal: this.eventRemover.signal }
+		)
 
 		document.addEventListener("click", (e) => {
 			if (e.target.matches("[data-link]")) {
@@ -48,7 +57,8 @@ export class Game {
 				this.graphicEngine.clearFrame()
 				this.controller.stop = true
 			}
-			})
+			}, {signal: this.eventRemover.signal}
+			)
 
 		const logoutBtn = document.getElementById("logoutButton")
 		if (logoutBtn != undefined) {
@@ -57,7 +67,8 @@ export class Game {
 				this.controller.cleanup()
 				this.graphicEngine.clearFrame()
 				this.controller.stop = true
-			})
+			}, { signal: this.eventRemover.signal }
+			)
 		}
 	}
 }
