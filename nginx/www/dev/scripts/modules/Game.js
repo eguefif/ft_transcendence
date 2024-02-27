@@ -47,6 +47,7 @@ export class Game {
 			this.running = false
 			this.controller.cleanup()
 			this.controller.stop = true
+			this.controller.cleanup()
 			}, { signal: this.eventRemover.signal }
 		)
 
@@ -56,6 +57,7 @@ export class Game {
 				this.controller.cleanup()
 				this.graphicEngine.clearFrame()
 				this.controller.stop = true
+			this.controller.cleanup()
 			}
 			}, {signal: this.eventRemover.signal}
 			)
@@ -67,6 +69,7 @@ export class Game {
 				this.controller.cleanup()
 				this.graphicEngine.clearFrame()
 				this.controller.stop = true
+				this.controller.cleanup()
 			}, { signal: this.eventRemover.signal }
 			)
 		}

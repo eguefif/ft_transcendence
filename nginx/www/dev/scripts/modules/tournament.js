@@ -35,7 +35,8 @@ export class Tournament {
 					this.displayBracket()
 				}
 				 playerForm.classList.add("was-validated")
-			})
+			}, { signal: this.eventRemover.signal }
+			)
 		}
 
 		document.addEventListener("keyup", (e) => {
@@ -57,6 +58,26 @@ export class Tournament {
 			this.displayBracket()
 		}, {signal: this.eventRemover.signal }
 		)
+
+		window.addEventListener("popstate", (e) => {
+			this.eventRemover.abort()
+			}, { signal: this.eventRemover.signal }
+		)
+
+		document.addEventListener("click", (e) => {
+			if (e.target.matches("[data-link]")) {
+				this.eventRemover.abort()
+			}
+			}, {signal: this.eventRemover.signal}
+			)
+
+		const logoutBtn = document.getElementById("logoutButton")
+		if (logoutBtn != undefined) {
+			logoutBtn.addEventListener("click", (e) => {
+				this.eventRemover.abort()
+			}, { signal: this.eventRemover.signal }
+			)
+		}
 	}
 
 	checkFormsTournament() {

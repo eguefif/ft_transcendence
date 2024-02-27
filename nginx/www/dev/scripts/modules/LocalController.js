@@ -17,11 +17,9 @@ export class LocalController {
 		this.message = "press space to start the game"
 	}
 
-	destructor() {
+	cleanup() {
 		this.eventRemover.abort()
 	}
-
-	cleanup(){}
 
 	init() {
 		document.addEventListener("keydown", (e) => {
@@ -45,6 +43,16 @@ export class LocalController {
 				this.paddle2.move_down = false
 			else if (e.key == 'ArrowUp') 
 				this.paddle2.move_up = false
+			if (e.code == "Space" && this.stop == true) {
+				this.stop = false;
+				this.message = ""
+				this.startTimer = 3
+				this.countdown()
+				}
+			}, { signal: this.eventRemover.signal }
+		)
+
+		document.addEventListener("keyup", (e) => {
 			if (e.code == "Space" && this.stop == true) {
 				this.stop = false;
 				this.message = ""
