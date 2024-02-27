@@ -132,7 +132,6 @@ export class Tournament {
 			controller.init()
 			const game = new Game(controller, true)
 			game.run()
-			this.winnerSemi1 = this.players[2]
 			this.game = 2
 			return
 		}
@@ -141,7 +140,6 @@ export class Tournament {
 			const game = new Game(controller, true)
 			controller.init()
 			game.run()
-			this.winnerSemi2 = this.players[3]
 			this.game = 3
 			this.state = "final"
 			return
