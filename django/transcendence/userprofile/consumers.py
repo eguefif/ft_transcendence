@@ -55,19 +55,6 @@ def get_friends_channel_names(user):
         print("Could not get users")
         return None
 
-# @database_sync_to_async
-# def get_all_channel_names():
-#     channels = []
-#     try:
-#         profiles = Profile.objects.all()
-#         for p in profiles:
-#             if p.channel_name != "":
-#                 channels.append(p.channel_name)
-#         return channels
-#     except:
-#         print("Could not get users")
-#         return None
-
 class OnlineStatusConsumer(AsyncWebsocketConsumer):
 
     async def connect(self):
