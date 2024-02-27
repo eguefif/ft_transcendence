@@ -12,6 +12,7 @@ export class Tournament {
 	this.players = []
 	this.state = "lobby"
 	this.game = 1
+	this.runninGame = false
 	}
 
 	initEvent() {
@@ -33,10 +34,13 @@ export class Tournament {
 		}
 
 		document.addEventListener("keyup", (e) => {
-			if (e.code == "Space" && (this.state == "semi" || this.state == "final"))
+			if (e.code == "Space" && (this.state == "semi" || this.state == "final") && this.runninGame == false) {
 				this.runGame()
+				this.runninGame = true
+		}
 		})
 		document.addEventListener("endGame", (e) => {
+			this.runninGame = false
 			if (this.game == 2)
 				this.winnerSemi1 = e.detail
 			if (this.game == 3)

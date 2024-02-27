@@ -15,8 +15,6 @@ export class Game {
 	run() {
 		const update = () => {
 			if (this.controller.running == false) {
-				console.log(this.controller.running)
-				console.log(this.running)
 				const endGameEvent = new CustomEvent("endGame", {detail: this.controller.getWinner()})
 				document.dispatchEvent(endGameEvent)
 				this.graphicEngine.clearFrame()
