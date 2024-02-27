@@ -46,7 +46,6 @@ export async function initRemoteGame() {
 	const pongTournament = document.getElementById("playerForm")
 	pongTournament.innerHTML = ""
 	render_pong_menu_button()
-	initSidebar();
 	let controller = new RemoteController()
 	await controller.init()
 	let game = new Game(controller)
@@ -114,7 +113,6 @@ function render_pong_menu_not_connected() {
 function render_pong_menu_button() {
 	const row_menu = document.getElementById("pongMenu")
 	row_menu.innerHTML = `
-	 	<div class="col" id="addFriendList"></div>
 		<div class="col">
 			<a id="menubtn" href="/" class="btn btn-primary m-5 bt-primary" data-link>Menu</a>
 		</div>
