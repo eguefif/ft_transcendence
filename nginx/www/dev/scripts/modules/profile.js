@@ -277,8 +277,7 @@ function addEventListenerAddFriend() {
 function eventAddFriend(e) {
 	if (e.target.matches("[addFriendBtn]")) {
 		e.preventDefault()
-		const username = e.target.value
-		console.log("Adding ", username)
-		//await sendFriendRequest(username)
+		const username = e.target.getAttribute("value")
+		await sendFriendRequest(username)
 	}
 }
