@@ -125,7 +125,7 @@ def oauth(request):
     try:
         token = request.COOKIES["oauthToken"]
     except:
-        response.status_code = status.HTTP_401_UNAUTHORIZED
+        response.status_code = status.HTTP_400_BAD_REQUEST
         return response
     response.delete_cookie(key='oauthToken', path='/api/auth/oauth')
     try:

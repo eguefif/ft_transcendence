@@ -99,7 +99,7 @@ function createFetcher() {
 			localStorage.removeItem("oauth-42")
 			return true;
 		}
-		else if (result.status >= 400 && result.status < 500) {
+		else if (result.status >= 401 && result.status < 500) {
 			alert = createAlert("danger", "Could not authenticate using 42.");
 			document.querySelector("body").appendChild(alert);
 			setTimeout(() => {
