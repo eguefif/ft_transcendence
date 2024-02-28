@@ -143,5 +143,4 @@ def delete_friendship(request):
             })
         friendship.delete()
         return Response({'succes': 'Friend deleted'}, status=status.HTTP_200_OK)
-
     return Response({'error': 'Not friends'}, status=status.HTTP_400_BAD_REQUEST)
