@@ -5,7 +5,7 @@ async function deleteFriendship(username) {
     const res = await fetcher.post("api/delete_friendship/", body)
 }
 
-async function sendFriendRequest(username) {
+export async function sendFriendRequest(username) {
     const body = {"username": username}
     const res = await fetcher.post("api/send_friend_request/", body)
 }
