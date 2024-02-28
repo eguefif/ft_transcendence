@@ -2,6 +2,7 @@ import { fetcher } from "../modules/fetcher.js";
 
 export class RemoteController {
 	constructor(){
+		this.eventRemover = new AbortController();
 		this.player1Score = 0
 		this.player2Score = 0
 		this.startTimer = 0
@@ -23,8 +24,10 @@ export class RemoteController {
 		}
 		catch (error)
 		{}
+		this.eventRemover.abort()
 		this.stop = true
 	}
+
 	update (){
 		if (this.stop)
 			return
@@ -60,7 +63,8 @@ export class RemoteController {
 
 		this.websocket.addEventListener("open", async (e) => {
 			fetcher.sendToken(this.websocket)
-		})
+		} 
+		)
 
 		this.websocket.error = (e) => {
 		}
@@ -118,7 +122,8 @@ export class RemoteController {
 				else if (e.key == 'ArrowUp')
 					this.websocket.send("up")
 			    }
-			})
+			}, { signal: this.eventRemover.signal }
+		)
 
 		document.addEventListener("keyup", (e) => {
 			if (this.state == "running") {
@@ -128,7 +133,8 @@ export class RemoteController {
 				this.websocket.send("ready")
 				this.state = "running"
 				}
-		})
+			}, { signal: this.eventRemover.signal }
+		)
     }
     isSocketConnected(){
         if (this.websocket.readyState != 3)
