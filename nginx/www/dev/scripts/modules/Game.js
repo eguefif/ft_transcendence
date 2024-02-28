@@ -10,7 +10,6 @@ export class Game {
 		this.graphicEngine = new graphicEngine()
 		this.running = true
 		let menu = document.querySelector("#menubtn")
-		this.eventRemover = new AbortController()
 		this.initListeners()
 		this.tournament = tournament
 	}
