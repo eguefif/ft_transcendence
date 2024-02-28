@@ -18,8 +18,6 @@ async function preview_image() {
         img.onload = () => {
             URL.revokeObjectURL(file)
         }
-
-        profileImageContainer.classList.add("d-none")
         validation.innerHTML = ""
     } else if (res.status == 413) {
         validation.innerHTML = "Image is too large (> 1 mb)"
@@ -36,48 +34,27 @@ export function initSettings() {
 }
 
 
-export function profileInfo()
+async function profileInfo()
 {
-	const settingsBtn = document.querySelector("#settingsButton")
-	if (settingsBtn) {
-		settingsBtn.addEventListener("click", async function (e) {
-			document.querySelector("#profileUsername").disabled = true
-			document.querySelector("#profileEmail").disabled = true
-			document.querySelector("#profileSaveChanges").classList.add("d-none")
-			document.querySelector("#profileImageContainer").classList.add("d-none")
-			document.querySelector("#modifyProfile").classList.remove("d-none")
-			const imgElement = document.getElementById("profilePicture")
-			imgElement.src = "images/avatar.png"
-			const imageReply = await fetcher.get("api/profile/userpicture/")
-			if (imageReply.status == 200) {
-				const imageURL = URL.createObjectURL(imageReply.data)
-				imgElement.src = imageURL
-				imgElement.onload = () => {
-					URL.revokeObjectURL(imageReply.data)
-				}
-			}
-			const res = await fetcher.get("api/profile/userinfo/")
-			if (res.status == 200) {
-
-				document.querySelector("#profileUsername").value = res.data['username']
-				document.querySelector("#profileEmail").value = res.data['email']
-			}
-		})
+	const imgElement = document.getElementById("profilePicture")
+	imgElement.src = "images/avatar.png"
+	const imageReply = await fetcher.get("api/profile/userpicture/")
+	if (imageReply.status == 200) {
+		const imageURL = URL.createObjectURL(imageReply.data)
+		imgElement.src = imageURL
+		imgElement.onload = () => {
+			URL.revokeObjectURL(imageReply.data)
+		}
 	}
-}
-
-export function changeProfile()
-{
-	const modifySettingsBtn = document.querySelector("#modifyProfile")
-	modifySettingsBtn.addEventListener("click", async function (e) {
-		const profileUsername = document.querySelector("#profileUsername")
-		const emailUsername = document.querySelector("#profileEmail")
-		profileUsername.disabled = false
-		emailUsername.disabled = false
-		document.querySelector("#modifyProfile").classList.add("d-none")
-		document.querySelector("#profileSaveChanges").classList.remove("d-none")
-		document.querySelector("#profileImageContainer").classList.remove("d-none")
-	})
+	const res = await fetcher.get("api/profile/userinfo/")
+	if (res.status == 200) {
+		const userProfile = document.querySelector("#profileUsername")
+		if(userProfile)
+			userProfile.value = res.data['username']
+		const mailProfile = document.querySelector("#profileEmail")
+		if (mailProfile)
+			mailProfile.value = res.data['email']
+	}
 }
 
 export function authUpdateProfile()
@@ -108,11 +85,6 @@ async function sendUpdateProfileRequest(url, body)
 	const res = await fetcher.post(url, body)
 	if (res.status == 201)
 	{
-		document.querySelector("#profileSaveChanges").classList.add("d-none")
-		document.querySelector("#profileImageContainer").classList.add("d-none")
-		document.querySelector("#modifyProfile").classList.remove("d-none")
-		profileUsername.disabled = true
-		profileEmail.disabled = true
 		// alert test
 		document.querySelector("#settingsModal").insertAdjacentHTML("afterbegin", `
 		<div class="alert alert-success alert-dismissible fade show" role="alert">
@@ -149,7 +121,7 @@ function resetFormInput(form) {
 	// Reset validations
 }
 
-export function generateModalSettings() {
+function createModalSettings() {
 	return `
 	<div class="modal fade" id="settingsModal">
 		<div class="modal-dialog modal-lg">
@@ -158,32 +130,94 @@ export function generateModalSettings() {
 					<h1 class="modal-title fs-5" id="profileLabel">Profile</h1>
 					<div class="btn-close" data-bs-dismiss="modal"></div>
 				</div>
-				<div id="profilePictureContainer">
-					<img id="profilePicture" class="rounded-circle border" alt="profilePicture" width="150" height="150" src="images/default-user-picture.png"/>
-				</div>
-				<div class="modal-body">
-					<form id="profileForm" action="api/profile/updateprofile/" method="PATCH">
-						<div id="profileImageContainer" class="mb-3 d-none">
-							<label for="profileImageField" class="form-label">Profile picture</label>
-							<input class="form-control" type="file" id="profileImageField">
-							<div id="pictureUploadValidation" class="error text-danger"></div>
-						</div>
-						<div class="mb-3">
-							<label for="profileUsername" class="col-md-3 col-form-label">Username</label>
-							<input type="username" name="username" id="profileUsername" class="form-control" placeholder="username" disabled>
-							<div id="profileUsernameValidation"></div>
-						</div>
-						<div class="mb-3">
-							<label for="profileEmail" class="col-md-3 col-form-label">Email</label>
-							<input type="email" name="email" id="profileEmail" class="form-control" placeholder="email" disabled>
-							<div id="profileEmailValidation"></div>
-						</div>
-						<button type="button" class="btn btn-primary" id="modifyProfile">Modify</button>
-						<button type="submit" class="btn btn-primary d-none" id="profileSaveChanges">Save changes</button>
-					</form>
-				</div>
+			  </div>
 			</div>
 		</div>
 	</div>
 	`
+}
+
+function createformSettings() {
+	return `
+	<form id="profileForm" action="api/profile/updateprofile/" method="PATCH">
+		<img id="profilePicture" class="rounded-circle-border mx-auto d-block" alt="profilePicture" src="images/default-user-picture.png"/>
+		<div id="profileImageContainer" class="mb-3">
+			<label for="profileImageField" class="form-label">Profile picture</label>
+			<input class="form-control" type="file" id="profileImageField">
+			<div id="pictureUploadValidation" class="error text-danger"></div>
+		</div>
+		<div class="mb-3">
+			<label for="profileUsername" class="col-md-3 col-form-label">Username</label>
+			<input type="username" name="username" id="profileUsername" class="form-control" placeholder="username">
+			<div id="profileUsernameValidation"></div>
+		</div>
+		<div class="mb-3">
+			<label for="profileEmail" class="col-md-3 col-form-label">Email</label>
+			<input type="email" name="email" id="profileEmail" class="form-control" placeholder="email">
+			<div id="profileEmailValidation"></div>
+		</div>
+		<button type="submit" class="btn btn-primary" id="profileSaveChanges">Save changes</button>
+	</form>
+	`
+}
+
+function createCardSettings() {
+	return `
+	<div class="card bg-dark text-center">
+		<img id="profilePicture" class="rounded-circle-border mx-auto d-block" alt="profilePicture" src="images/default-user-picture.png"/>
+		<div class="card-body" >
+			<h1 class="userName">Le Loup de WallStreet !</h1>
+			<h5 class="lastName">Leloup</h5>
+			<h5 class="firstName">Jean</h5>
+			<h6 class="cardEmail">pierre@gmail.com</h6>
+			<p class="card-text">Current world champion of Pong!</p>
+			<a id="editButton" class="btn btn-primary">edit</a>
+		</div>
+	</div>
+	`
+}
+
+
+function editProfilCard() {
+	const settingsBtn = document.querySelector("#settingsButton")
+	const divCard = document.querySelector(".card")
+	if (settingsBtn && divCard) {
+		settingsBtn.addEventListener("click", async function (e) {
+			const imgElement = document.getElementById("profilePicture")
+			imgElement.src = "images/avatar.png"
+			const imageReply = await fetcher.get("api/profile/userpicture/")
+			if (imageReply.status == 200) {
+				const imageURL = URL.createObjectURL(imageReply.data)
+				imgElement.src = imageURL
+				imgElement.onload = () => {
+					URL.revokeObjectURL(imageReply.data)
+				}
+			}
+			const res = await fetcher.get("api/profile/userinfo/")
+			if (res.status == 200) {
+				const usr = document.querySelector(".userName")
+				if (usr)
+					usr.innerText = res.data['username']
+				const mail = document.querySelector(".cardEmail")
+				if(mail)
+					mail.innerText = res.data['email']
+			}
+		})
+	}
+}
+
+export function generateSettings() {
+	document.querySelector('nav').insertAdjacentHTML('afterend', createModalSettings())
+
+	const modalBody = document.querySelector('.modal-content')
+	modalBody.insertAdjacentHTML("beforeend", createCardSettings())
+	const buttonEdit = document.getElementById("editButton")
+	editProfilCard()
+	buttonEdit.addEventListener("click", async e  => {
+		e.preventDefault()
+		const cardDiv = document.querySelector('.card')
+		cardDiv.remove()
+		modalBody.insertAdjacentHTML("beforeend", createformSettings())
+		await profileInfo()
+	})
 }
