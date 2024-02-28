@@ -4,7 +4,7 @@ import { LocalController } from "./LocalController.js"
 import { RemoteController } from "./RemoteController.js"
 import { PassiveController } from "./PassiveController.js"
 import { renderer } from "./graphic-engine.js";
-import { initSidebar } from "./friendSidebar.js";
+import { initSidebar, createSidebar } from "./friendSidebar.js";
 
 export async function pongMenu() {
 	hideProfile()
@@ -32,7 +32,7 @@ export async function initRemoteGame() {
 	}
 	hideProfile()
 	render_pong_menu_button()
-	initSidebar();
+	initSidebar()
 	let controller = new RemoteController()
 	await controller.init()
 	let game = new Game(controller)

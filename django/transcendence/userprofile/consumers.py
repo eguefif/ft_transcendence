@@ -61,6 +61,7 @@ class OnlineStatusConsumer(AsyncWebsocketConsumer):
         await self.accept()
         self.authenticated = False
         self.away = False
+        self.playing = False
         self.user = None
         self.last_echo = datetime.now()
 
@@ -87,6 +88,9 @@ class OnlineStatusConsumer(AsyncWebsocketConsumer):
             try:
                 message = text_data_json["message"]
                 await self.send(text_data=message)
+                channel_layer = get_channel_layer()
+                channels = await get_friends_channel_names(self.user)
+
                 if message == 'online' and self.away:
                     self.last_echo = datetime.now()
                     self.away = False
@@ -97,6 +101,26 @@ class OnlineStatusConsumer(AsyncWebsocketConsumer):
                         await channel_layer.send(c, {
                             "type": "status.change",
                             "text": f'{self.user} is now online',
+                        })
+                elif message == 'Game started' and not self.playing:
+                    self.last_echo = datetime.now()
+                    self.away = False
+                    self.playing = True
+                    await set_status(self.user, Profile.PLAYING)
+                    for c in channels:
+                        await channel_layer.send(c, {
+                            "type": "status.change",
+                            "text": f'{self.user} started a game',
+                        })
+                elif message == 'Game ended' and self.playing:
+                    self.last_echo = datetime.now()
+                    self.away = False
+                    self.playing = False
+                    await set_status(self.user, Profile.ONLINE)
+                    for c in channels:
+                        await channel_layer.send(c, {
+                            "type": "status.change",
+                            "text": f'{self.user} ended a game',
                         })
             except:
                 print("No message to process")
@@ -111,7 +135,7 @@ class OnlineStatusConsumer(AsyncWebsocketConsumer):
     async def check_last_echo(self):
         while True:
             if self.authenticated and self.user:
-                if datetime.now() - self.last_echo > timedelta(seconds=10):
+                if datetime.now() - self.last_echo > timedelta(minutes=5):
                     channel_layer = get_channel_layer()
                     channels = await get_friends_channel_names(self.user) #notify friends
                     if not self.away:

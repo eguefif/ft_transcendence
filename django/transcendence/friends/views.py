@@ -1,17 +1,17 @@
 from django.contrib.auth.models import User
+from django.db import models
 from django.shortcuts import get_object_or_404
-from authentication.decorator import require_authorization
 from rest_framework import status
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
-from friends.models import Friendship
-from django.db import models
-from friends.serializers import FriendshipSerializer, UserFriendInfoSerializer
-from userprofile.serializers import UserProfileSerializer
 from channels.layers import get_channel_layer
 from asgiref.sync import async_to_sync
 
+from authentication.decorator import require_authorization
 from authentication.manageTokens import get_token_user
+from friends.models import Friendship
+from friends.serializers import FriendshipSerializer, UserFriendInfoSerializer
+from userprofile.serializers import UserProfileSerializer
 
 @api_view(['GET'])
 @require_authorization

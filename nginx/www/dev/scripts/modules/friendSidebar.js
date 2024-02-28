@@ -54,7 +54,7 @@ function createStatusBage(onlineStatus) {
         case "Away":
             colorClasses = "text-bg-warning"
             break;
-        case "In Game":
+        case "Playing":
             colorClasses = "text-bg-info"
             break;
         default:
@@ -119,6 +119,18 @@ function connectWebsocket() {
 
 	ws.onmessage = async function(e) {
 		console.log(e.data)
+
+        if (e.data == 'server:Game started')
+        {
+            ws.send(JSON.stringify({
+                "message": "Game started"
+            }))
+        } else if (e.data == 'server:Game ended') {
+            ws.send(JSON.stringify({
+                "message": "Game ended"
+            }))
+        }
+
         await updateSidebar()
 	}
 
@@ -152,7 +164,40 @@ async function updateSidebar() {
     initFriendRequestsEventListeners(friendBtn)
 }
 
-async function createSidebar() {
+function initFriendRequestsEventListeners(friendBtn) {
+    const inputs = friendBtn.querySelectorAll(".btn-friend-request")
+    inputs.forEach(input => {
+        let name = input.name
+        const action = name.split('-')[0]
+        const username = name.split('-')[1]
+        input.addEventListener("click", async function (e) {
+            e.preventDefault()
+            let success = false
+            if (action == "accept")
+                success = await acceptFriendRequest(username)
+            else if (action == "decline")
+                success = await declineFriendRequest(username)
+            if (success)
+                updateSidebar()
+        })
+    })
+}
+
+function initDeleteEventListeners(friendBtn) {
+    const deleteButtons = friendBtn.querySelectorAll(".btn-delete-friend")
+    deleteButtons.forEach(btn => {
+        btn.addEventListener("click", async function (e) {
+            const name = btn.name
+            const username = name.split('-')[1]
+            e.preventDefault()
+            console.log("Delete " + username)
+            await deleteFriendship(username)
+            updateSidebar()
+        })
+    })
+}
+
+export async function createSidebar() {
     const friendBtn = document.querySelector("#addFriendList")
     const friendList = await getFriendList()
     const friendRequests = await getFriendRequests()
@@ -190,39 +235,6 @@ async function createSidebar() {
 
     initFriendRequestsEventListeners(friendBtn)
     initDeleteEventListeners(friendBtn)
-}
-
-function initFriendRequestsEventListeners(friendBtn) {
-    const inputs = friendBtn.querySelectorAll(".btn-friend-request")
-    inputs.forEach(input => {
-        let name = input.name
-        const action = name.split('-')[0]
-        const username = name.split('-')[1]
-        input.addEventListener("click", async function (e) {
-            e.preventDefault()
-            let success = false
-            if (action == "accept")
-                success = await acceptFriendRequest(username)
-            else if (action == "decline")
-                success = await declineFriendRequest(username)
-            if (success)
-                updateSidebar()
-        })
-    })
-}
-
-function initDeleteEventListeners(friendBtn) {
-    const deleteButtons = friendBtn.querySelectorAll(".btn-delete-friend")
-    deleteButtons.forEach(btn => {
-        btn.addEventListener("click", async function (e) {
-            const name = btn.name
-            const username = name.split('-')[1]
-            e.preventDefault()
-            console.log("Delete " + username)
-            await deleteFriendship(username)
-            updateSidebar()
-        })
-    })
 }
 
 export async function initSidebar() {
