@@ -30,7 +30,7 @@
 		<div class="modal-dialog modal-lg">
 			<div class="modal-content bg-dark">
 				<div class="modal-header">
-					<h1 class="modal-title fs-5" id="profileLabel">Profile</h1>
+					<h1 class="modal-title fs-5" id="profileLabel">Settings</h1>
 					<div class="btn-close" data-bs-dismiss="modal"></div>
 				</div>
 				<div id="profilePictureContainer">
@@ -58,6 +58,20 @@
 						<!-- <a href="waddup" data-bs-toggle="modal"
 						data-bs-target="#modalPassword">Change Password</a> -->
 					</form>
+					<div>
+						<h5>Password and authentication</h3>
+						<div id="pass-change">
+							<a>Change password</a>
+						</div>
+						<div id="auth-type" class="d-flex flex-column">
+							<span class="fw-bold">Account type</span>
+							<span class="user-dependent"></span>
+						</div>
+						<div id="otp-toggle">
+							<span class="fw-bold">Two-factor authentication</span>
+							<div class="user-dependent"></div>
+						</div>
+					</div>
 				</div>
 			</div>
 		</div>

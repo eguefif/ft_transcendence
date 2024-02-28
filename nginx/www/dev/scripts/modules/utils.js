@@ -7,3 +7,11 @@ export function createAlert(type, message) {
 		  </button>`;
 	return alert;
 }
+
+export function clearContent(node) {
+	let child = node.lastElementChild;
+	while (child) {
+		node.removeChild(child);
+		child = node.lastElementChild;
+	}
+}

@@ -158,14 +158,14 @@ async function requireOtp() {
 	if (result.status >= 200 && result.status < 300){
 		localStorage.setItem("refreshExpiry", `${refreshExpiry}`)
 		fetcher.setAccess(result.data.accessToken);
-		document.querySelector("#modalLogin").classList.remove("show")
-		document.querySelector(".modal-backdrop").classList.remove("show")
+		closeModal("connectionModal");
+		await createButton();
+		await pongMenu();
 	}
 	else {
 		await requireOtp()
 	}
 }
-
 
 // THIS IS A TEMPORARY SETUP TO VALIDATE BACKEND AND NEEDS TO BE IMPLEMENTED PROPERLY
 function activateOtp() {

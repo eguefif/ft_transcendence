@@ -1,4 +1,4 @@
-import { createAlert } from "./bs_utils.js"
+import { createAlert } from "./utils.js"
 
 function createFetcher() {
 	// These are durations in ms (to be compared with Date.now())
