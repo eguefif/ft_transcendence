@@ -1,15 +1,17 @@
 from django.contrib.auth.models import User
+from django.db import models
 from django.shortcuts import get_object_or_404
-from authentication.decorator import require_authorization
 from rest_framework import status
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
+from channels.layers import get_channel_layer
+from asgiref.sync import async_to_sync
+
+from authentication.decorator import require_authorization
+from authentication.manageTokens import get_token_user
 from friends.models import Friendship
-from django.db import models
 from friends.serializers import FriendshipSerializer, UserFriendInfoSerializer
 from userprofile.serializers import UserProfileSerializer
-
-from authentication.manageTokens import get_token_user
 
 @api_view(['GET'])
 @require_authorization
@@ -75,6 +77,14 @@ def send_friend_request(request):
     if user == userRequest:
         return Response({'error': 'Cant be friends with yourself'}, status=status.HTTP_400_BAD_REQUEST)
     friendship = Friendship.objects.create(user1=user, user2=userRequest)
+    
+    channel_layer = get_channel_layer()
+    if userRequest.profile.channel_name != "":
+        async_to_sync(channel_layer.send)(userRequest.profile.channel_name, {
+            "type": "status.change",
+            "text": "Friend request sent",
+        })
+
     return Response({'success': 'Request sent'}, status=status.HTTP_201_CREATED)
 
 @api_view(['POST'])
@@ -87,6 +97,14 @@ def accept_friend_request(request):
         friend_request = Friendship.objects.get(user1=userToAccept, user2=user)
         friend_request.status = Friendship.ACCEPTED
         friend_request.save() # Update date_added a cause de auto_now=True
+
+        channel_layer = get_channel_layer()
+        if userToAccept.profile.channel_name != "":
+            async_to_sync(channel_layer.send)(userToAccept.profile.channel_name, {
+                "type": "status.change",
+                "text": "Friend added",
+            })
+
         return Response({'success': 'Friend request accepted'}, status=status.HTTP_200_OK)
     except Exception as e:
         return Response({'error': str(e)}, status=status.HTTP_400_BAD_REQUEST)
@@ -117,6 +135,12 @@ def delete_friendship(request):
     )
     
     if friendship.exists():
+        channel_layer = get_channel_layer()
+        if userToDelete.profile.channel_name != "":
+            async_to_sync(channel_layer.send)(userToDelete.profile.channel_name, {
+                "type": "status.change",
+                "text": "Friend deleted",
+            })
         friendship.delete()
         return Response({'succes': 'Friend deleted'}, status=status.HTTP_200_OK)
 

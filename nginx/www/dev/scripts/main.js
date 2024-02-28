@@ -6,8 +6,6 @@ import { initRouter } from "./modules/router.js";
 import { createNavBar } from "./modules/navbar.js";
 import { render_game_board } from "./modules/pong.js";
 
-
-
 (async function(){
 	await tryAuthenticating();
 	render_game_board()
