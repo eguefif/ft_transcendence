@@ -78,13 +78,19 @@ function setStatusGame(games, username) {
 		const win = `<div class="p-1"><h5 class="text-success fs-3 fw-bold text-center">win</h5></div>`
 		const loss = `<div class="p-1"><h5 class="text-danger fs-3 fw-bold text-center">loss</h5></div>`
 		const addFriend = getSVG.addFriendSVG.addFriend
+		if (!game["player2_add"])
+			game["player2_add"] = addFriend
+		else
+			game["player2_add"] = ""
+		if (!game["player1_add"])
+			game["player1_add"] = addFriend
+		else
+			game["player1_add"] = ""
 		if (game.player1 === username) {
 			if (game.score_player1 == 3)
 				game["status"] = win
 			else
 				game["status"] = loss
-			game["player2_add"] = addFriend
-			game["player1_add"] = ""
 		}
 		else {
 			if (game.score_player2 == 3)
@@ -274,7 +280,7 @@ function addEventListenerAddFriend() {
 		console.log("error getting profileDiv")
 }
 
-function eventAddFriend(e) {
+async function eventAddFriend(e) {
 	if (e.target.matches("[addFriendBtn]")) {
 		e.preventDefault()
 		const username = e.target.getAttribute("value")
