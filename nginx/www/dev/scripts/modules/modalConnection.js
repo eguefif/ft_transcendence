@@ -114,7 +114,7 @@ function createFormRegister() {
 			</div>
 			<div class="mb-3">
 				<label for="email" class="form-label">Email</label>
-				<input type="email" name='email' id="email" class="form-control" required pattern="^[\\w-\\.]+@([\\w-]+\\.)+[\\w-]{2,4}$">
+				<input type="email" name='email' id="email" class="form-control" required pattern="^[\\w\\-\\.]+@([\\w\\-]+\\.)+[\\w\\-]{2,4}$">
 				<div id="emailValidation" class="invalid-feedback">
 					Your email is not a valid email ("exemple@domaine.exp").
 				</div>

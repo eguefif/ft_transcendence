@@ -1,13 +1,16 @@
 import { authLogout } from "./auth.js";
 import { fetcher } from "./fetcher.js";
 import { getSVG } from "./iconSVG.js";
-import { initSettings, profileInfo, changeProfile, authUpdateProfile } from "./settings.js";
+import { generateModalConnection } from "./modalConnection.js";
+import { initSettings, profileInfo, changeProfile, authUpdateProfile, generateModalSettings } from "./settings.js";
 
 
 export async function createButton () {
 	if (await fetcher.isAuthenticated()) {
 		createBtns()
 		authLogout()
+		document.querySelector('nav').insertAdjacentHTML('afterend', generateModalSettings())
+		authUpdateProfile()
 		initSettings()
 		profileInfo()
 		changeProfile()

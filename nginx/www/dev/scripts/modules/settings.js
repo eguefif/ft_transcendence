@@ -148,3 +148,42 @@ function resetFormInput(form) {
 	})
 	// Reset validations
 }
+
+export function generateModalSettings() {
+	return `
+	<div class="modal fade" id="settingsModal">
+		<div class="modal-dialog modal-lg">
+			<div class="modal-content bg-dark">
+				<div class="modal-header">
+					<h1 class="modal-title fs-5" id="profileLabel">Profile</h1>
+					<div class="btn-close" data-bs-dismiss="modal"></div>
+				</div>
+				<div id="profilePictureContainer">
+					<img id="profilePicture" class="rounded-circle border" alt="profilePicture" width="150" height="150" src="images/default-user-picture.png"/>
+				</div>
+				<div class="modal-body">
+					<form id="profileForm" action="api/profile/updateprofile/" method="PATCH">
+						<div id="profileImageContainer" class="mb-3 d-none">
+							<label for="profileImageField" class="form-label">Profile picture</label>
+							<input class="form-control" type="file" id="profileImageField">
+							<div id="pictureUploadValidation" class="error text-danger"></div>
+						</div>
+						<div class="mb-3">
+							<label for="profileUsername" class="col-md-3 col-form-label">Username</label>
+							<input type="username" name="username" id="profileUsername" class="form-control" placeholder="username" disabled>
+							<div id="profileUsernameValidation"></div>
+						</div>
+						<div class="mb-3">
+							<label for="profileEmail" class="col-md-3 col-form-label">Email</label>
+							<input type="email" name="email" id="profileEmail" class="form-control" placeholder="email" disabled>
+							<div id="profileEmailValidation"></div>
+						</div>
+						<button type="button" class="btn btn-primary" id="modifyProfile">Modify</button>
+						<button type="submit" class="btn btn-primary d-none" id="profileSaveChanges">Save changes</button>
+					</form>
+				</div>
+			</div>
+		</div>
+	</div>
+	`
+}
