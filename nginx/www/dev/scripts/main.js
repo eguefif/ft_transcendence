@@ -5,6 +5,7 @@ import { initSettings, profileInfo, changeProfile, authUpdateProfile } from "./m
 import { initRouter } from "./modules/router.js";
 import { createNavBar } from "./modules/navbar.js";
 import { render_game_board } from "./modules/pong.js";
+import { initSidebar } from "./modules/friendSidebar.js";
 
 (async function(){
 	await tryAuthenticating();
@@ -12,6 +13,7 @@ import { render_game_board } from "./modules/pong.js";
 	await createNavBar();
 	authUpdateProfile();
 	initSettings();
+	await initSidebar()
 	profileInfo();
 	changeProfile();
 	initRouter();

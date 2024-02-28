@@ -74,7 +74,7 @@ function makeFriendElement(username, onlineStatus) {
                     <a href="#" class="nav-link" aria-current="page">${username} ${createStatusBage(onlineStatus)}</a>
                 </div>
                 <div class="col">
-                    <a name="delete-${username}" class="btn btn-sm btn-danger btn-delete-friend">Delet</a>
+                    <a name="delete-${username}" class="btn btn-sm btn-danger btn-delete-friend">Delete</a>
                 </div>
             </div>
         </li>
@@ -96,6 +96,8 @@ async function getFriendRequests() {
 }
 
 async function getFriendList() {
+	if (!fetcher.isAuthenticated())
+		return ""
     const res = await fetcher.get("api/get_friend_list")
 
     if (res.status != 200)
@@ -110,7 +112,24 @@ async function getFriendList() {
 }
 
 function connectWebsocket() {
-    let ws = new WebSocket("wss://localhost/online_status/")
+	const hostname = window.location.hostname
+    let ws = new WebSocket(`wss://${hostname}/online_status/`)
+
+	document.addEventListener("startGame", (e) => {
+		ws.send(JSON.stringify({"message": "Game started"}))
+	})
+
+	document.addEventListener("endGame", (e) => {
+		ws.send(JSON.stringify({"message": "Game ended"}))
+	})
+
+	const logoutBtn = document.getElementById("logoutButton");
+	if (logoutBtn != undefined) {
+		logoutBtn.addEventListener("click", (e) => {
+			ws.close()
+			console.log("offline")
+		})
+	}
 
 	ws.onopen = async function(e) {
 		console.log('Connection established')
@@ -146,7 +165,7 @@ function connectWebsocket() {
 }
 
 async function updateSidebar() {
-    const friendBtn = document.querySelector("#addFriendList")
+    const friendBtn = document.getElementById("friendBtnNavbar")
     const friendListContainer = document.querySelector("#friendListContainer")
     const friendRequestContainer = document.querySelector("#friendRequestContainer")
     
@@ -160,95 +179,107 @@ async function updateSidebar() {
         friendRequestContainer.innerHTML = friendRequestContent
     }
 
-    initDeleteEventListeners(friendBtn)
-    initFriendRequestsEventListeners(friendBtn)
+    initDeleteEventListeners()
+    initFriendRequestsEventListeners()
 }
 
-function initFriendRequestsEventListeners(friendBtn) {
-    const inputs = friendBtn.querySelectorAll(".btn-friend-request")
-    inputs.forEach(input => {
-        let name = input.name
-        const action = name.split('-')[0]
-        const username = name.split('-')[1]
-        input.addEventListener("click", async function (e) {
-            e.preventDefault()
-            let success = false
-            if (action == "accept")
-                success = await acceptFriendRequest(username)
-            else if (action == "decline")
-                success = await declineFriendRequest(username)
-            if (success)
-                updateSidebar()
-        })
-    })
+function initFriendRequestsEventListeners() {
+	const inputs = document.querySelectorAll(".btn-friend-request")
+	if (inputs != undefined) {
+		inputs.forEach(input => {
+			let name = input.name
+			const action = name.split('-')[0]
+			const username = name.split('-')[1]
+			input.addEventListener("click", async function (e) {
+				e.preventDefault()
+				let success = false
+				if (action == "accept")
+					success = await acceptFriendRequest(username)
+				else if (action == "decline")
+					success = await declineFriendRequest(username)
+				if (success)
+					updateSidebar()
+			})
+		})
+	}
 }
 
-function initDeleteEventListeners(friendBtn) {
-    const deleteButtons = friendBtn.querySelectorAll(".btn-delete-friend")
-    deleteButtons.forEach(btn => {
-        btn.addEventListener("click", async function (e) {
-            const name = btn.name
-            const username = name.split('-')[1]
-            e.preventDefault()
-            console.log("Delete " + username)
-            await deleteFriendship(username)
-            updateSidebar()
-        })
-    })
+function initDeleteEventListeners() {
+	const deleteButtons = document.querySelectorAll(".btn-delete-friend")
+	if (deleteButtons != undefined) {
+		deleteButtons.forEach(btn => {
+			btn.addEventListener("click", async function (e) {
+				const name = btn.name
+				const username = name.split('-')[1]
+				e.preventDefault()
+				console.log("Delete " + username)
+				await deleteFriendship(username)
+				updateSidebar()
+			})
+		})
+	}
 }
 
 export async function createSidebar() {
-    const friendBtn = document.querySelector("#addFriendList")
+    const friendBtn = document.getElementById("friendBtnNavbar")
+    const friendCollapse = document.getElementById("friendCollapse")
     const friendList = await getFriendList()
     const friendRequests = await getFriendRequests()
+	let friendRequestHtml = ""
+
+	if (friendRequests.length != 0)
+		friendRequestHtml = `
+				<hr>
+                <h3 class="text-primary fs-3 fw-bold">Requests</h3>
+                    <ul class="nav nav-pills flex-column mb-auto">
+                        <div id="friendRequestContainer">${friendRequests}</div>
+                   </ul>
+		`
 
     friendBtn.innerHTML = `
-        <div class="collapse collapse-horizontal" id="sidebarCollapse" style="position: absolute; height: 80%;">	
-            <div id="friendSidebar" class="d-flex flex-column align-items-stretch flex-shrink-0 text-bg-dark overflow-auto" style="width: 350px; height: 100%">
-                <h1>Friends</h1>
-                <hr>
-                    <ul class="nav nav-pills flex-column mb-auto">
-                        <div id="friendListContainer">${friendList}</div>
-                        <h1>Requests</h1>
-                        <hr>
-                        <div id="friendRequestContainer">${friendRequests}</div>
-                    </ul>
-                <button class="btn btn-primary" type="button" data-bs-toggle="collapse" data-bs-target="#sidebarCollapse">Collapse</button>
-            </div>
-        </div>
-        <button class="btn btn-primary" type="button" data-bs-toggle="collapse" data-bs-target="#sidebarCollapse">
-            Friends
-        </button>
-        <form id="formFriendRequest">
-            <label for="sendFriendRequest">username</label>
-            <input type="text" name="username" class="form-control" type="button" id="sendFriendRequest"></input>
-            <button type="submit" class="btn btn-primary">Submit</button>
-        </form>
+	<button
+	class="btn btn-primary"
+	data-bs-toggle="collapse"
+	data-bs-target="#sidebarCollapse"
+	>Friends</button>
+		`
+	friendCollapse.innerHTML = `
+		<div class="container position-absolute top-5 start-70 end-0" style="max-width: 500px">
+			<div class="collapse" id="sidebarCollapse">	
+				<div id="friendSidebar" class="d-flex m-2 p-2 flex-column align-items-stretch flex-shrink-0 text-bg-dark">
+					<h3 class="text-primary fs-3 fw-bold">Friends</h3>
+						<ul class="nav nav-pills flex-column mb-auto">
+							<div id="friendListContainer">${friendList}</div>
+					   </ul>
+					   ${friendRequestHtml}
+				</div>
+			</div>
+		</div>
     `
 
-    const formFriendRequest = document.getElementById("formFriendRequest")
-    formFriendRequest.addEventListener("submit", async function (e) {
-        e.preventDefault()
-        const data = new FormData(e.target)
-        const res = await sendFriendRequest(data.get('username'))
-    })
-
-    initFriendRequestsEventListeners(friendBtn)
-    initDeleteEventListeners(friendBtn)
+    initFriendRequestsEventListeners()
+    initDeleteEventListeners()
 }
 
 export async function initSidebar() {
-    if (!await fetcher.isAuthenticated())
-        return
+    const friendBtn = document.getElementById("friendBtnNavbar")
+    const friendCollapse = document.getElementById("friendCollapse")
+	if (friendBtn != undefined) {
+		if (!await fetcher.isAuthenticated()) {
+			friendBtn.innerHTML = ""
+			friendCollapse.innerHTML = ""
+			return
+		}
 
-    let ws = connectWebsocket()
+		let ws = connectWebsocket()
 
-    window.addEventListener("click", function (e) {
-        if (ws.readyState == ws.OPEN) {
-            ws.send(JSON.stringify({
-                "message": "online",
-            }))
-        }
-    })
-    await createSidebar()
+		window.addEventListener("click", function (e) {
+			if (ws.readyState == ws.OPEN) {
+				ws.send(JSON.stringify({
+					"message": "online",
+				}))
+			}
+		})
+		await createSidebar()
+	}
 }

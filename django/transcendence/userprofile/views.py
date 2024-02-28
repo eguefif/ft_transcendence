@@ -89,6 +89,8 @@ def get_games_history(games, user):
     counter = 0
     usrImg = get_image(user)
     for game in games:
+        if game.score_player1 != "3" and game.score_player2 != "3":
+            continue
         entry = dict()
         try:
             if game.player1.username == user.username:

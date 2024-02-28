@@ -58,7 +58,7 @@ export function showSpinner() {
 }
 
 async function getGameHistoryData(username) {
-	let retval = await fetcher.get("/api/profile/games")
+	const retval = await fetcher.get("/api/profile/games")
 	let games = {}
 	if (retval.status >= 200 && retval.status < 300)
 		games = retval.data
@@ -97,8 +97,6 @@ function setStatusGame(games, username) {
 				game["status"] = win
 			else
 				game["status"] = loss
-			game["player1_add"] = addFriend
-			game["player2_add"] = ""
 		}
 	}
 	return games
