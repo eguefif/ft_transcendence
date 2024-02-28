@@ -19,14 +19,6 @@ export class Renderer{
 		this.bracket = document.getElementById("bracket")
 		this.ctx =  this.bracket.getContext("2d")
 
-		// let dpi = window.devicePixelRatio;
-		// let style_height = +getComputedStyle(this.bracket).getPropertyValue("height").slice(0, -2);
-		// let style_width = +getComputedStyle(this.bracket).getPropertyValue("width").slice(0, -2);
-		// this.bracket.setAttribute('height', style_height * dpi);
-		// this.bracket.setAttribute('width', style_width * dpi);
-
-
-		// window.devicePixelRatio=2;
 		this.windowWidth = window.innerWidth
 		this.windowHeight = window.innerHeight
 		this.textColor = "rgb(43, 194, 14)"
@@ -202,9 +194,6 @@ export class Renderer{
 	
 	showBracket(gameid = 1, player1 = "", player2 = "", player3 = "", player4 = "", finalist1 = "TBD", finalist2 = "TBD", winner = "")
 	{
-		// this.bracket = document.getElementById("bracket")
-		// this.ctx =  this.bracket.getContext("2d")
-
 		let dpi = window.devicePixelRatio;
 		let style_height = +getComputedStyle(this.bracket).getPropertyValue("height").slice(0, -2);
 		let style_width = +getComputedStyle(this.bracket).getPropertyValue("width").slice(0, -2);

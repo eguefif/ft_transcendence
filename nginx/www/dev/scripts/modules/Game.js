@@ -4,7 +4,6 @@ import { renderer } from "./graphic-engine.js"
 
 export class Game {
 	constructor(controller, tournament=false) {
-		console.log("game launched")
 		renderer.showBoard
 		this.controller = controller
 		this.graphicEngine = new graphicEngine()

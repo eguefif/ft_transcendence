@@ -40,7 +40,6 @@ export class LocalController {
 			else if (e.key == 'ArrowUp') 
 				this.paddle2.move_up = false
 			if (e.code == "Space" && this.stop == true) {
-
 				this.stop = false;
 				this.message = ""
 				this.startTimer = 3
