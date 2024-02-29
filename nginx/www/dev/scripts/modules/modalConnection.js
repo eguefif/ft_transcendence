@@ -1,5 +1,6 @@
 import { authRegister, authLogin } from "./auth.js"
 import { getSVG } from "./iconSVG.js";
+import { removeModal } from "./navbar.js";
 
 export function closeModal(modalID) {
 	let modal = document.getElementById(modalID)
@@ -10,8 +11,8 @@ export function closeModal(modalID) {
 }
 
 export function generateModalConnection() {
+	removeModal()
 	document.querySelector('nav').insertAdjacentHTML("afterend", CreateModal("connection"));
-
 	addLoginForm();
 }
 
@@ -26,7 +27,6 @@ function removeForm() {
 	}
 }
 
-
 function addLoginForm() {
 	document.querySelector("#connectionLabel").innerText = "Login";
 	document.querySelector('.modal-content').insertAdjacentHTML("beforeend", createFormLogin());
@@ -38,8 +38,6 @@ function addLoginForm() {
 		addRegistrationForm()
 	});
 }
-
-
 
 function addRegistrationForm() {
 	document.querySelector("#connectionLabel").innerText = "Register";

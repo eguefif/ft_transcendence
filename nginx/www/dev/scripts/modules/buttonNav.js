@@ -2,6 +2,7 @@ import { authLogout } from "./auth.js";
 import { fetcher } from "./fetcher.js";
 import { getSVG } from "./iconSVG.js";
 import { generateSettings } from "./settings.js";
+import { generateModalConnection } from "./modalConnection.js";
 
 
 export async function createButton () {
@@ -13,6 +14,7 @@ export async function createButton () {
 	else {
 		const element = document.getElementById("navBarButton")
 		element.innerHTML = createModalBtn("nav-item btn-primary", "connection","" , "Login / Register");
+		generateModalConnection();
 	}
 }
 

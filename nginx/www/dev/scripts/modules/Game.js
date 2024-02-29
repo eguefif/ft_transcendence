@@ -4,6 +4,7 @@ import { renderer } from "./graphic-engine.js"
 
 export class Game {
 	constructor(controller, tournament=false) {
+		this.eventRemover = new AbortController();
 		renderer.showBoard
 		this.controller = controller
 		this.graphicEngine = new graphicEngine()
@@ -11,6 +12,11 @@ export class Game {
 		let menu = document.querySelector("#menubtn")
 		this.initListeners()
 		this.tournament = tournament
+	}
+
+	cleanup() {
+		this.controller.cleanup()
+		this.eventRemover.abort()
 	}
 
 	run() {
@@ -21,6 +27,9 @@ export class Game {
 					document.dispatchEvent(endGameEvent)
 					this.graphicEngine.clearFrame()
 				}
+				else
+					renderer.hideBracket()
+				this.eventRemover.abort()
 				return
 			}
 			if (!this.running) {
@@ -37,27 +46,31 @@ export class Game {
 	{
 		window.addEventListener("popstate", (e) => {
 			this.running = false
-			this.controller.cleanup()
 			this.controller.stop = true
-			})
+			this.cleanup()
+			}, { signal: this.eventRemover.signal }
+		)
 
 		document.addEventListener("click", (e) => {
 			if (e.target.matches("[data-link]")) {
 				this.running = false
-				this.controller.cleanup()
 				this.graphicEngine.clearFrame()
 				this.controller.stop = true
+				this.cleanup()
+				this.eventRemover.abort()
 			}
-			})
+			}, {signal: this.eventRemover.signal}
+			)
 
 		const logoutBtn = document.getElementById("logoutButton")
 		if (logoutBtn != undefined) {
 			logoutBtn.addEventListener("click", (e) => {
-				this.runnintg = false
-				this.controller.cleanup()
+				this.running = false
 				this.graphicEngine.clearFrame()
 				this.controller.stop = true
-			})
+				this.cleanup()
+			}, { signal: this.eventRemover.signal }
+			)
 		}
 	}
 }
