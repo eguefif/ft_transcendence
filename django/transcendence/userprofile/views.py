@@ -12,6 +12,7 @@ from userprofile.models import Profile
 from authentication.manageTokens import get_token_user
 from gamesManager.models import Game
 from authentication.decorator import require_authorization
+from userprofile.forms import UploadImageForm
 from friends.models import Friendship
 
 @api_view(['GET'])
@@ -46,13 +47,19 @@ def update_profile(request):
         return Response({"user": serializer.data}, status=status.HTTP_201_CREATED)
     return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
+def is_image_valid(request):
+    form = UploadImageForm(request.POST, request.FILES)
+    if form.is_valid():
+        return True
+    return False
+
 @api_view(['POST'])
 @require_authorization
 def upload_image(request):
     username = get_token_user(request.headers["Authorization"])
     user = User.objects.get(username=username)
     profile = user.profile
-    if request.FILES.get('image'):
+    if request.FILES.get('image') and is_image_valid(request):
         current_picture = profile.profile_picture
         if current_picture and os.path.isfile(current_picture.path):
             os.remove(current_picture.path)
