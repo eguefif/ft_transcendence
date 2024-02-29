@@ -1,4 +1,5 @@
 import { fetcher } from "./fetcher.js";
+import { getSVG } from "./iconSVG.js";
 
 async function deleteFriendship(username) {
     const body = {"username": username}
@@ -141,6 +142,21 @@ function connectWebsocket() {
 
 	ws.onmessage = async function(e) {
 		console.log(e.data)
+		const friendBtn = document.getElementById("textFriendBtn")
+		if (friendBtn != undefined) {
+			if (!friendBtn.innerHTML.includes("alertNotification")) {
+				friendBtn.innerHTML += `
+	  <span id="alertNotification" class="position-absolute top-0 start-10 translate-middle p-1 bg-danger border border-dark rounded-circle">
+	  </span>
+	  `
+				friendBtn.addEventListener("click", (e) => {
+					let alertNotification = document.getElementById("alertNotification")
+					if (alertNotification != null) {
+						alertNotification.remove()
+					}
+				})
+			}
+		}
 
         if (e.data == 'server:Game started')
         {
@@ -240,14 +256,15 @@ export async function createSidebar() {
     `
 
     friendBtn.innerHTML = `
-	<button
-	class="btn btn-primary"
+	<text id="textFriendBtn"
+	class="position-relative"
 	data-bs-toggle="collapse"
 	data-bs-target="#sidebarCollapse"
-	>Friends</button>
+	>${getSVG.navbarSVG.friends}
+	</text>
 		`
 	friendCollapse.innerHTML = `
-		<div class="container position-absolute top-5 start-70 end-0" style="max-width: 500px">
+		<div class="container position-absolute top-5 start-70 end-0" style="max-width: 500px; z-index: 1000">
 			<div class="collapse" id="sidebarCollapse">	
 				<div id="friendSidebar" class="d-flex m-2 p-2 flex-column align-items-stretch flex-shrink-0 text-bg-dark">
 					<h3 class="text-primary fs-3 fw-bold">Friends</h3>

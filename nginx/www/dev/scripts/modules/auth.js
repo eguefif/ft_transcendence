@@ -78,6 +78,7 @@ async function sendRegistrationRequest(url, body)
 		await createButton()
 		closeModal('connectionModal')
 		await pongMenu()
+		await initSidebar()
 		return true
 	}
 }
