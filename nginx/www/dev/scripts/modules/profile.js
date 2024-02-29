@@ -1,5 +1,7 @@
 import { fetcher } from "./fetcher.js"
 import { renderer } from "./graphic-engine.js"
+import { getSVG } from "./iconSVG.js"
+import { sendFriendRequest } from "./friendSidebar.js"
 
 export async function profile() {
 	hidePong()
@@ -19,18 +21,21 @@ export async function profile() {
 
 function hidePong() {
 	renderer.hideBoard()
-	let pongMenu = document.getElementById("pongMenu")
+	renderer.hideBracket()
+	const pongMenu = document.getElementById("pongMenu")
 	pongMenu.innerHTML = ""
+	const pongTournament = document.getElementById("playerForm")
+	pongTournament.innerHTML = ""
 }
 
-async function getUsername() {
-	let msg = await fetcher.get("/api/userinfo")
+export async function getUsername() {
+	let msg = await fetcher.get("/api/profile/userinfo")
 	let username = ""
 	if (msg.status >= 200 && msg.status < 300)
 		username = msg.data.username
 	else{
 		username = "error"
-		console.log("Error in getuesrname")
+		console.log("Error in getusername")
 	}
 	return username
 }
@@ -53,11 +58,11 @@ export function showSpinner() {
 }
 
 async function getGameHistoryData(username) {
-	let retval = await fetcher.get("/api/profile/getprofile")
+	const retval = await fetcher.get("/api/profile/games")
 	let games = {}
 	if (retval.status >= 200 && retval.status < 300)
 		games = retval.data
-	else {
+	else if (retval.status >= 300 && retval.status < 500) {
 		games = retval.data
 		return games
 	}
@@ -70,8 +75,17 @@ async function getGameHistoryData(username) {
 
 function setStatusGame(games, username) {
 	for (const [key, game] of Object.entries(games)) {
-    let win = `<div class="p-1"><h5 class="text-success fs-3 fw-bold text-center">win</h5></div>`
-    let loss = `<div class="p-1"><h5 class="text-danger fs-3 fw-bold text-center">loss</h5></div>`
+		const win = `<div class="p-1"><h5 class="text-success fs-3 fw-bold text-center">win</h5></div>`
+		const loss = `<div class="p-1"><h5 class="text-danger fs-3 fw-bold text-center">loss</h5></div>`
+		const addFriend = getSVG.addFriendSVG.addFriend
+		if (!game["player2_add"])
+			game["player2_add"] = addFriend
+		else
+			game["player2_add"] = ""
+		if (!game["player1_add"])
+			game["player1_add"] = addFriend
+		else
+			game["player1_add"] = ""
 		if (game.player1 === username) {
 			if (game.score_player1 == 3)
 				game["status"] = win
@@ -100,7 +114,19 @@ function transformDate(games) {
             minutesStr = `0${minutes}`
         else
             minutesStr = `${minutes}`
-		game["time"] = `${time.getMonth()}/${time.getDay()}/${time.getFullYear()} - ${time.getHours()}:${minutesStr}`
+        let months = time.getMonth() + 1
+        let monthsStr = ``
+        if (months < 10)
+            monthsStr = `0${months}`
+        else
+            monthsStr = `${months}`
+        let days = time.getDate()
+        let daysStr = ``
+        if (days < 10)
+            daysStr = `0${days}`
+        else
+            daysStr = `${days}`
+		game["time"] = `${monthsStr}/${daysStr}/${time.getFullYear()} - ${time.getHours()}:${minutesStr}`
 	}
 	return games
 }
@@ -113,7 +139,7 @@ function renderProfileStructure(username) {
 		<hr class="w-25 border border-1 border-primary mx-auto text-primary"/>
         <h3 class="text-primary fs-2 fw-bold px-5">Stats</h3>
 		<div id="stats" class="p-4">
-		</div> 
+		</div>
 		<hr class="w-25 border border-1 border-primary mx-auto text-primary"/>
         <h3 class="text-primary p-2 fs-2 fw-bold px-5">History</h3>
 		<div id="history" class="p-4">
@@ -163,7 +189,7 @@ function renderStats(games) {
                 </div>
             </div>
         </div>
-    </section> 
+    </section>
 		`
 }
 
@@ -172,7 +198,7 @@ function getStats(games) {
 	let nbr_games = 0
 	let losses = 0
 	let wins = 0
-	
+
 	if (!("error" in games)) {
 		for (const [key, game] of Object.entries(games)) {
 			nbr_games++
@@ -205,7 +231,7 @@ function renderHistory(games) {
 					<div class="col-2"><img src="${game.avatar1}" class="img-fluid rounded float-left"></div>
 					<div class="col-3">
 						<div class="d-flex flex-column">
-							<div class="p-1"><h5 class="text-primary fs-4 fw-bold text-center">${game.player1}</h5></div>
+							<div class="p-1"><h5 class="text-primary fs-4 fw-bold text-center">${game.player1}${generateAddFriendLink(game.player1, game.player1_add)}</h5></div>
 							<div class="p-1"><h5 class="text-secondary fs-3 fw-bold text-center">${game.score_player1}</h5></div>
 						</div>
 					</div>
@@ -217,10 +243,10 @@ function renderHistory(games) {
 					</div>
 					<div class="col-3">
 						<div class="d-flex flex-column">
-							<div class="p-1"><h5 class="text-primary fs-4 fw-bold text-center">${game.player2}</h5></div>
+							<div class="p-1"><h5 class="text-primary fs-4 fw-bold text-center">${game.player2}${generateAddFriendLink(game.player2, game.player2_add)}</h5></div>
 							<div class="p-1"><h5 class="text-secondary fs-3 fw-bold text-center">${game.score_player2}</h5></div>
 						</div>
-					</div>   
+					</div>
 					<div class="col-2"><img src="${game.avatar2}" class="img-fluid rounded float-right"></div>
 				</div>
 			`
@@ -233,4 +259,29 @@ function renderHistory(games) {
 		</div>
 		`
 	history.innerHTML = html
+	addEventListenerAddFriend()
+}
+
+function generateAddFriendLink(name, svg) {
+	if (svg == "")
+		return ``
+	return `
+		<a href="" value="${name}" class="btn btn-primary mx-1" addFriendBtn>${svg}</a>
+	`
+}
+
+function addEventListenerAddFriend() {
+	const history = document.getElementById("history")
+	if (history != undefined)
+		history.addEventListener("click", eventAddFriend);
+	else
+		console.log("error getting profileDiv")
+}
+
+async function eventAddFriend(e) {
+	if (e.target.matches("[addFriendBtn]")) {
+		e.preventDefault()
+		const username = e.target.getAttribute("value")
+		await sendFriendRequest(username)
+	}
 }

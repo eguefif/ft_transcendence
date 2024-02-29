@@ -26,7 +26,8 @@ services:
     expose:
       - 8000
     depends_on:
-      - postgres
+      postgres:
+        condition: service_healthy
     networks:
       - transcendence-net
     volumes:
@@ -42,6 +43,10 @@ services:
     networks:
       - transcendence-net
     restart: unless-stopped
+    healthcheck:
+      test: pg_isready -U ${POSTGRES_USER}
+      interval: 1s
+      retries: 20
 
   serverpong:
     container_name: serverpong

@@ -1,3 +1,5 @@
+import { createAlert } from "./bs_utils.js"
+
 function createFetcher() {
 	// These are durations in ms (to be compared with Date.now())
 	const accessDuration = 5 * 60 * 1000;
@@ -13,6 +15,7 @@ function createFetcher() {
 
 		const set = (key) => {
 			value = key;
+			expires = Date.now() + accessDuration;
 		};
 
 		const isValid = () => {
@@ -41,16 +44,18 @@ function createFetcher() {
 					headers: { "Content-Type": "application/json", Authorization: value },
 				});
 				const data = await result.json();
-				if (result.status == 200) {
+				if (result.status >= 200 && result.status < 300) {
 					value = data.accessToken;
 					localStorage.setItem("refreshExpiry", `${refreshExpiry}`);
 					return true;
 				} else {
+					localStorage.removeItem("refreshExpiry");
 					value = "";
 					expires = 0;
 					return false;
 				}
 			} catch {
+				localStorage.removeItem("refreshExpiry");
 				value = "";
 				expires = 0;
 				return false;
@@ -62,6 +67,48 @@ function createFetcher() {
 
 	const reset = () => {
 		token.reset();
+	}
+
+	const isTryingOauth = async () => {
+		const refreshExpiry = Date.now() + fetcher.refreshDuration;
+		if (!localStorage.getItem("oauth-42")) {
+			return false
+		}
+		localStorage.removeItem("oauth-42")
+		const result = await post("/api/auth/oauth")
+		let alert;
+		if (result.status >= 200 && result.status < 300) {
+			if (result.data.oauth_status) {
+				if (result.data.oauth_status.includes("email")) {
+					alert = createAlert("warning", "This is an existing account that was linked with your 42 email. It has been updated to use authentication with 42, which will now be required to login.")
+					document.querySelector("body").appendChild(alert);
+				}
+				else if (result.data.oauth_status.includes("username")) {
+					alert = createAlert("warning", "The username associated with your 42 account was already in use on this site. An available username was assigned to your account.");
+					document.querySelector("body").appendChild(alert);
+				}
+				else {
+					alert = createAlert("success", "Successfully authenticated with 42.");
+					document.querySelector("body").appendChild(alert);
+					setTimeout(() => {
+						const bsAlert = new bootstrap.Alert(alert);
+						bsAlert.close()
+					}, 3000);
+				}
+			}
+			token.set(result.data.accessToken);
+			localStorage.setItem("refreshExpiry", `${refreshExpiry}`)
+			return true;
+		}
+		else if (result.status >= 400 && result.status < 500) {
+			alert = createAlert("danger", "Could not authenticate using 42.");
+			document.querySelector("body").appendChild(alert);
+			setTimeout(() => {
+				const bsAlert = new bootstrap.Alert(alert);
+				bsAlert.close()
+			}, 3000);
+		}
+		return false;
 	}
 
 	const isAuthenticated = async () => {
@@ -143,7 +190,7 @@ function createFetcher() {
 			return false
 		}
 	}
-	return { accessDuration, refreshDuration, setAccess, isAuthenticated, get, post, sendToken, reset };
+	return { accessDuration, refreshDuration, setAccess, isTryingOauth, isAuthenticated, get, post, sendToken, reset };
 }
 
 export const fetcher = createFetcher();

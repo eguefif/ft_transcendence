@@ -1,16 +1,20 @@
 import { authLogout } from "./auth.js";
 import { fetcher } from "./fetcher.js";
 import { getSVG } from "./iconSVG.js";
+import { initSettings, profileInfo, changeProfile, authUpdateProfile } from "./settings.js";
 
 
 export async function createButton () {
 	if (await fetcher.isAuthenticated()) {
 		createBtns()
 		authLogout()
+		initSettings()
+		profileInfo()
+		changeProfile()
 	}
 	else {
 		const element = document.getElementById("navBarButton")
-		element.innerHTML = createModalBtn("nav-item btn-primary", "connection","" , "Connexion");
+		element.innerHTML = createModalBtn("nav-item btn-primary", "connection","" , "Login / Register");
 	}
 }
 
@@ -29,6 +33,7 @@ function createBtns() {
 	let nav = document.getElementById("navBarButton")
 	nav.innerHTML = `
 		<div class="d-flex navbar-nav ms-auto">
+			<div id="friendBtnNavbar" class="nav-item mx-3"></div>
 			<a id="profileButton" class="nav-item mx-3" href="/profile" data-link>
 				${getSVG.navbarSVG.profile}
 			</a>

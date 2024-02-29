@@ -91,18 +91,16 @@ class OnlineStatusConsumer(AsyncWebsocketConsumer):
                 channel_layer = get_channel_layer()
                 channels = await get_friends_channel_names(self.user)
 
-                if message == 'online' and self.away:
+                if message == 'online' and not self.playing:
                     self.last_echo = datetime.now()
                     self.away = False
                     await set_status(self.user, Profile.ONLINE)
-                    channel_layer = get_channel_layer()
-                    channels = await get_friends_channel_names(self.user) #notify friends
                     for c in channels:
                         await channel_layer.send(c, {
                             "type": "status.change",
-                            "text": f'{self.user} is now online',
+                            "text": "online",
                         })
-                elif message == 'Game started' and not self.playing:
+                elif message == 'Game started':
                     self.last_echo = datetime.now()
                     self.away = False
                     self.playing = True
@@ -112,7 +110,7 @@ class OnlineStatusConsumer(AsyncWebsocketConsumer):
                             "type": "status.change",
                             "text": f'{self.user} started a game',
                         })
-                elif message == 'Game ended' and self.playing:
+                elif message == 'Game ended':
                     self.last_echo = datetime.now()
                     self.away = False
                     self.playing = False
@@ -130,11 +128,18 @@ class OnlineStatusConsumer(AsyncWebsocketConsumer):
     async def disconnect(self, close_code):
         print(f'Closed connection. code={close_code}')
         await set_status(self.user, Profile.OFFLINE)
+        channel_layer = get_channel_layer()
+        channels = await get_friends_channel_names(self.user)
+        for c in channels:
+                        await channel_layer.send(c, {
+                            "type": "status.change",
+                            "text": "online",
+                        })
         self.check_last_echo_task.cancel()
 
     async def check_last_echo(self):
         while True:
-            if self.authenticated and self.user:
+            if self.authenticated and self.user and not self.playing:
                 if datetime.now() - self.last_echo > timedelta(minutes=5):
                     channel_layer = get_channel_layer()
                     channels = await get_friends_channel_names(self.user) #notify friends

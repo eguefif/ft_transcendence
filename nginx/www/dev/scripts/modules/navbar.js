@@ -1,9 +1,9 @@
-import { generateModal } from "./modal.js";
+import { generateModalConnection } from "./modalConnection.js";
 import { createButton } from "./buttonNav.js";
 
 export async function createNavBar () {
 	document.querySelector('body').insertAdjacentHTML("afterbegin", navHTML());
-	generateModal();
+	generateModalConnection();
 	await createButton();
 }
 

@@ -1,4 +1,5 @@
 import { authRegister, authLogin } from "./auth.js"
+import { getSVG } from "./iconSVG.js";
 
 export function closeModal(modalID) {
 	let modal = document.getElementById(modalID)
@@ -8,8 +9,9 @@ export function closeModal(modalID) {
 	}
 }
 
-export function generateModal() {
+export function generateModalConnection() {
 	document.querySelector('nav').insertAdjacentHTML("afterend", CreateModal("connection"));
+
 	addLoginForm();
 }
 
@@ -24,6 +26,7 @@ function removeForm() {
 	}
 }
 
+
 function addLoginForm() {
 	document.querySelector("#connectionLabel").innerText = "Login";
 	document.querySelector('.modal-content').insertAdjacentHTML("beforeend", createFormLogin());
@@ -36,9 +39,13 @@ function addLoginForm() {
 	});
 }
 
+
+
 function addRegistrationForm() {
 	document.querySelector("#connectionLabel").innerText = "Register";
 	document.querySelector('.modal-content').insertAdjacentHTML("beforeend", createFormRegister());
+	const tooltipTriggerList = document.querySelectorAll('[data-bs-toggle="tooltip"]')
+	const tooltipList = [...tooltipTriggerList].map(tooltipTriggerEl => new bootstrap.Tooltip(tooltipTriggerEl))
 	authRegister();
 	const btnSwitchLogin = document.getElementById("btnOpenLogin")
 	btnSwitchLogin.addEventListener('click', function(e) {
@@ -68,24 +75,24 @@ function createFormLogin() {
 	<div id="createFormLogin" class="modal-body">
 		<form class="needs-validation" novalidate id="loginForm" action="api/auth/token" method="POST">
 			<div class="mb-3">
-				<label for="username" class="form-label">Username</label>
-				<input type="username" name='username' id="loginUsername" class="form-control" required>
+				<label for="loginUsername" class="form-label">Username</label>
+				<input type="username" name='username' id="loginUsername" class="form-select" required pattern="^[a-zA-Z\\d]{4,24}$">
 				<div class="invalid-feedback">
 					Your user name is required
 				</div>
 			</div>
 			<div class="mb-3">
-				<label for="password" class="form-label">Password</label>
-				<input type="password" name='password' id="loginPassword" class="form-control" required>
+				<label for="loginPassword" class="form-label">Password</label>
+				<input type="password" name='password' id="loginPassword" class="form-control" required pattern="^(?=.*[a-z])(?=.*[A-Z])(?=.*\\d)[a-zA-Z\\d\\w\\W]{4,24}$">
 				<div class="invalid-feedback">
 					Your password is required
 				</div>
 			</div>
+			<button form="loginForm" type="submit" class="btn btn-primary">Submit</button>
+			<button type="button" id="login-42" class="btn btn-primary">Login with 42</button>
 		</form>
-		<button form="loginForm" type="submit" class="btn btn-primary">Submit</button>
-		<button class="btn btn-primary">Login with 42</button>
 		<div class="modal-footer">
-			<a id="btnOpenRegister">Register</a>
+			<text id="btnOpenRegister">Register</text>
 		</div>
 	</div>
 	`
@@ -97,21 +104,27 @@ function createFormRegister() {
 		<form class="needs-validation" novalidate id="registrationForm" action="api/auth/token" method="POST">
 			<div class="mb-3">
 				<label for="username" class="form-label">Username</label>
-				<input type="username" name='username' id="username" class="form-control" required>
+				<div class="input-group mb-3">
+					<input type="username" name='username' id="username" class="form-control" required pattern="^[a-zA-Z\\d]{4,24}$">
+					<span data-bs-toggle="tooltip" data-bs-title="Your username must have between 4-24 characters, only letters and numbers." data-bs-placement="right" class="input-group-text">${getSVG.formSVG.help}</span>
+				</div>
 				<div  id="usernameValidation" class="invalid-feedback">
 					Your username must have between 4-24 characters, only letters and numbers.
 				</div>
 			</div>
 			<div class="mb-3">
 				<label for="email" class="form-label">Email</label>
-				<input type="email" name='email' id="email" class="form-control" required>
+				<input type="email" name='email' id="email" class="form-control" required pattern="^[\\w-\\.]+@([\\w-]+\\.)+[\\w-]{2,4}$">
 				<div id="emailValidation" class="invalid-feedback">
 					Your email is not a valid email ("exemple@domaine.exp").
 				</div>
 			</div>
 			<div class="mb-3">
 				<label for="password" class="form-label">Password</label>
-				<input type="password" name='password' id="password" class="form-control" required>
+				<div class="input-group mb-3">
+					<input  type="password" name='password' id="password" class="form-control" required pattern="^(?=.*[a-z])(?=.*[A-Z])(?=.*\\d)[a-zA-Z\\d\\w\\W]{4,24}$">
+					<span data-bs-toggle="tooltip" data-bs-title="Your password must have between 4-24 characters, at least one uppercase, one lowercase and one number." data-bs-placement="right" class="input-group-text">${getSVG.formSVG.help}</span>
+				</div>
 				<div id="passwordValidation" class="invalid-feedback">
 					Your password must have between 4-24 characters, at least one uppercase, one lowercase and one number.
 				</div>
@@ -126,7 +139,7 @@ function createFormRegister() {
 			<button type="submit" value="Register" class="btn btn-primary">Submit</button>
 		</form>
 		<div class="modal-footer">
-			<a id="btnOpenLogin">Login</a>
+			<text id="btnOpenLogin">Login</text>
 		</div>
 	</div>
 		`
