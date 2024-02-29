@@ -142,6 +142,9 @@ export class RemoteController {
         return false
 	}
 
+	getWinner() {
+		return ""
+	}
 }
 
 class Paddle{
