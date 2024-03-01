@@ -17,7 +17,6 @@ cd /var/www/dev/
 
 sed -i '1s/\/\///' ./scripts/modules/modalConnection.js
 
-mkdir ../build
 npm install
 npm run build
 

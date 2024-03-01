@@ -11,7 +11,7 @@ RUN mkdir -p /var/src
 RUN mkdir -p /var/src/app
 COPY ./transcendence /var/src/app/
 
-COPY ./tools/entry-point-deploy.sh /
+COPY ./tools/entry-point-deploy.sh /entry-point.sh
 RUN chmod +x /entry-point.sh
 
 EXPOSE 8000
