@@ -1,24 +1,32 @@
 ::-webkit-scrollbar {
 	width: 10px;
   }
-  
+
   /* Track */
   ::-webkit-scrollbar-track {
-	background: $dark; 
+	background: $dark;
   }
-   
+
   /* Handle */
   ::-webkit-scrollbar-thumb {
-	background: $primary; 
+	background: $primary;
   }
-  
+
 //   /* Handle on hover */
 //   ::-webkit-scrollbar-thumb:hover {
-// 	background: #ffffff; 
+// 	background: #ffffff;
 //   }
 
 #match-history{
     overflow-y:scroll;
     height:38em;
     scrollbar-color: $primary $dark;
+}
+
+#profilePicture {
+  margin-top: 10px;
+  width: 150px;
+  height: 150px;
+  border: 1px solid #000;
+  border-radius: 50%;
 }
