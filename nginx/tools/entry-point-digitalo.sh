@@ -12,5 +12,7 @@ if [ $i = 30 ]; then
 	echo "connection with django failed: " $i
 fi
 
+cd dev/
+npm run build
 
 nginx -g "daemon off;"

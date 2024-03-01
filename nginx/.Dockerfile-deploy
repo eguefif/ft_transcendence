@@ -1,12 +1,13 @@
 FROM nginx:1.25.3-bookworm
 
 RUN apt-get update && apt-get upgrade -y
-RUN apt-get install -y openssl certbot python3-certbot-nginx
+RUN apt-get install -y openssl certbot python3-certbot-nginx nodejs
 
 ADD ./conf/do.conf /etc/nginx/nginx.conf
 COPY ./tools/entry-point-digitalo.sh /entry-point.sh
 RUN chmod +x /entry-point.sh
 COPY ./www /var/www/
 
+WORKDIR /var/www
 
 ENTRYPOINT ["/entry-point.sh"]
