@@ -165,6 +165,7 @@ async function requireOtp() {
 		closeModal("connectionModal");
 		await createButton();
 		await pongMenu();
+		await initSidebar()
 	}
 	else {
 		await requireOtp()
