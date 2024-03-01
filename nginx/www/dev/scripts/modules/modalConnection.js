@@ -1,6 +1,7 @@
 import { authRegister, authLogin } from "./auth.js"
 import { getSVG } from "./iconSVG.js";
 import { removeModal } from "./navbar.js";
+//import * as bootstrap from "../bootstrap/bootstrap.bundle.min.js";
 
 export function closeModal(modalID) {
 	let modal = document.getElementById(modalID)

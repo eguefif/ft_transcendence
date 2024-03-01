@@ -79,15 +79,15 @@ function createFetcher() {
 			if (result.data.oauth_status) {
 				if (result.data.oauth_status.includes("email")) {
 					alert = createAlert("warning", "This is an existing account that was linked with your 42 email. It has been updated to use authentication with 42, which will now be required to login.")
-					document.querySelector("body").appendChild(alert);
+					document.querySelector("#alert-container").appendChild(alert);
 				}
 				else if (result.data.oauth_status.includes("username")) {
 					alert = createAlert("warning", "The username associated with your 42 account was already in use on this site. An available username was assigned to your account.");
-					document.querySelector("body").appendChild(alert);
+					document.querySelector("#alert-container").appendChild(alert);
 				}
 				else {
 					alert = createAlert("success", "Successfully authenticated with 42.");
-					document.querySelector("body").appendChild(alert);
+					document.querySelector("#alert-container").appendChild(alert);
 					setTimeout(() => {
 						const bsAlert = new bootstrap.Alert(alert);
 						bsAlert.close()
@@ -101,7 +101,7 @@ function createFetcher() {
 		}
 		else if (result.status >= 401 && result.status < 500) {
 			alert = createAlert("danger", "Could not authenticate using 42.");
-			document.querySelector("body").appendChild(alert);
+			document.querySelector("#alert-container").appendChild(alert);
 			setTimeout(() => {
 				const bsAlert = new bootstrap.Alert(alert);
 				bsAlert.close()

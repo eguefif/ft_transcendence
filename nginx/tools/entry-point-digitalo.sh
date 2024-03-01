@@ -13,6 +13,10 @@ if [ $i = 30 ]; then
 fi
 
 cd dev/
+
+cd /var/www/dev/
+mkdir ../build
+npm install
 npm run build
 
 nginx -g "daemon off;"
