@@ -12,6 +12,8 @@ from userprofile.models import Profile
 from authentication.manageTokens import get_token_user
 from gamesManager.models import Game
 from authentication.decorator import require_authorization
+from userprofile.forms import UploadImageForm
+from friends.models import Friendship
 
 @api_view(['GET'])
 @require_authorization
@@ -23,8 +25,8 @@ def user_info(request):
         return Response({'error':'bad request'}, status=status.HTTP_400_BAD_REQUEST)
     data = {'username': user.username,
             'email': user.email,
-            'firstName': user.first_name,
-            'lastName': user.last_name,
+            'first_name': user.first_name,
+            'last_name': user.last_name,
             'authType': ('42' if user.profile.oauth_42_active else 'standard'),
             'otp': (True if user.profile.otp_active else False)
             }
@@ -52,8 +54,15 @@ def update_profile(request):
     serializer = UserProfileSerializer(user, data=request.data, partial=True)
     if serializer.is_valid():
         serializer.save()
+        user = User.objects.get(username=username)
         return Response({"user": serializer.data}, status=status.HTTP_201_CREATED)
     return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+def is_image_valid(request):
+    form = UploadImageForm(request.POST, request.FILES)
+    if form.is_valid():
+        return True
+    return False
 
 @api_view(['POST'])
 @require_authorization
@@ -61,7 +70,7 @@ def upload_image(request):
     username = get_token_user(request.headers["Authorization"])
     user = User.objects.get(username=username)
     profile = user.profile
-    if request.FILES.get('image'):
+    if request.FILES.get('image') and is_image_valid(request):
         current_picture = profile.profile_picture
         if current_picture and os.path.isfile(current_picture.path):
             os.remove(current_picture.path)
@@ -87,36 +96,53 @@ def get_image(user):
         usrImg = profile_user.profile_picture.url
     return usrImg
 
+def is_friend(target, user):
+    return Friendship.objects.filter(
+        (Q(user1=user) & Q(user2=target)) |
+        (Q(user1=target) & Q(user2=user))
+    ).exists()
+
 def get_games_history(games, user):
     retval = dict()
     counter = 0
     usrImg = get_image(user)
     for game in games:
+        if game.score_player1 != "3" and game.score_player2 != "3":
+            continue
         entry = dict()
         try:
-            player2 = game.player2.username
-            player2_user = User.objects.get(username=player2)
+            if game.player1.username == user.username:
+                player2 = game.player2.username
+                player2_user = User.objects.get(username=player2)
+                player2_img = get_image(player2_user)
+                player1 = user.username
+                player1_user = user
+                player1_img = usrImg
+            else:
+                player1 = game.player1.username
+                player1_user = User.objects.get(username=player1)
+                player1_img = get_image(player1_user)
+                player2 = user.username
+                player2_user = user
+                player2_img = usrImg
         except Exception:
             player2 = "unknown"
             player2_user = None
-        user2_img = get_image(player2_user)
-        entry["player1"] = game.player1.username
+            player1 = "unknown"
+            player1_user = None
+        entry["player1"] = player1
         entry["player2"] = player2
-        if len(game.score_player1) == 0:
-            entry["score_player1"] = 0
+        entry["player1_add"] = True
+        entry["player2_add"] = True
+        if user.username == player1:
+            entry["player2_add"] = is_friend(player2_user, player1_user)
         else:
-            entry["score_player1"] = int(game.score_player1)
-        if len(game.score_player2) == 0:
-            entry["score_player2"] = 0
-        else:
-            entry["score_player2"] = int(game.score_player2)
+            entry["player1_add"] = is_friend(player1_user, player2_user)
+        entry["score_player1"] = int(game.score_player1)
+        entry["score_player2"] = int(game.score_player2)
         entry["time"] = game.time
-        if game.player1.username == user.username:
-            entry["avatar1"] = usrImg
-            entry["avatar2"] = user2_img
-        else:
-            entry["avatar2"] = usrImg
-            entry["avatar1"] = user2_img
+        entry["avatar1"] = player1_img
+        entry["avatar2"] = player2_img
         retval[counter] = entry
         counter += 1
     return retval

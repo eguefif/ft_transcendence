@@ -45,8 +45,8 @@ services:
     restart: unless-stopped
     healthcheck:
       test: pg_isready -U ${POSTGRES_USER}
-      interval: 10s
-      retries: 10
+      interval: 1s
+      retries: 20
 
   serverpong:
     container_name: serverpong

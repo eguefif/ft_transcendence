@@ -16,9 +16,10 @@ nav {
         min-width: 2rem;
         min-height: 2rem;
     }
-    .noclick {
-        pointer-events: none;
-    }
+}
+
+.noclick {
+	pointer-events: none;
 }
 
 text {
@@ -33,7 +34,7 @@ text {
 
 }
 
-#connectionModal, #settingsModal {
+#connectionModal, #settingsModal, .card {
     color: $primary;
 }
 

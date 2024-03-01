@@ -3,7 +3,6 @@ import { createButton } from "./buttonNav.js";
 
 export async function createNavBar () {
 	document.querySelector('body').insertAdjacentHTML("afterbegin", navHTML());
-	generateModalConnection();
 	await createButton();
 }
 
@@ -21,4 +20,13 @@ function navHTML() {
 	`
 }
 
-
+export function removeModal() {
+	const settingsModal = document.getElementById('settingsModal')
+	const connectionModal = document.getElementById('connectionModal')
+	if(settingsModal) {
+		settingsModal.remove()
+	}
+	if(connectionModal) {
+		connectionModal.remove()
+	}
+}

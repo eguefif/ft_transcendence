@@ -2,6 +2,7 @@ import { fetcher } from "./fetcher.js"
 import { pongMenu } from "./pong.js"
 import { closeModal } from "./modalConnection.js";
 import { createButton } from "./buttonNav.js";
+import { initSidebar } from "./friendSidebar.js"
 
 export function authLogout()
 {
@@ -14,6 +15,7 @@ export function authLogout()
 			fetcher.reset()
 			await createButton()
 			await pongMenu()
+			await initSidebar()
 		}
 		else {
 			console.log("Logout failed")
@@ -73,8 +75,8 @@ async function sendRegistrationRequest(url, body)
 	{
 		localStorage.setItem("refreshExpiry", `${refreshExpiry}`)
 		fetcher.setAccess(result.data.accessToken);
-		await createButton()
 		closeModal('connectionModal')
+		await createButton()
 		await pongMenu()
 		return true
 	}
@@ -132,6 +134,7 @@ async function sendLoginRequest(url, body)
 			closeModal('connectionModal')
 		  	await createButton()
 			await pongMenu()
+			await initSidebar()
 		}
 		else {
 			validationPass.innerHTML = "Something went wrong";
