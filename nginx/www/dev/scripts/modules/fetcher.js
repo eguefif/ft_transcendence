@@ -1,4 +1,4 @@
-import { createAlert } from "./bs_utils.js"
+import { createAlert } from "./utils.js"
 
 function createFetcher() {
 	// These are durations in ms (to be compared with Date.now())
@@ -43,19 +43,18 @@ function createFetcher() {
 					credentials: "same-origin",
 					headers: { "Content-Type": "application/json", Authorization: value },
 				});
-				const data = await result.json();
 				if (result.status >= 200 && result.status < 300) {
+					const data = await result.json();
 					value = data.accessToken;
 					localStorage.setItem("refreshExpiry", `${refreshExpiry}`);
 					return true;
 				} else {
-					localStorage.removeItem("refreshExpiry");
 					value = "";
 					expires = 0;
+					localStorage.removeItem("refreshExpiry");
 					return false;
 				}
 			} catch {
-				localStorage.removeItem("refreshExpiry");
 				value = "";
 				expires = 0;
 				return false;
@@ -74,7 +73,6 @@ function createFetcher() {
 		if (!localStorage.getItem("oauth-42")) {
 			return false
 		}
-		localStorage.removeItem("oauth-42")
 		const result = await post("/api/auth/oauth")
 		let alert;
 		if (result.status >= 200 && result.status < 300) {
@@ -98,9 +96,10 @@ function createFetcher() {
 			}
 			token.set(result.data.accessToken);
 			localStorage.setItem("refreshExpiry", `${refreshExpiry}`)
+			localStorage.removeItem("oauth-42")
 			return true;
 		}
-		else if (result.status >= 400 && result.status < 500) {
+		else if (result.status >= 401 && result.status < 500) {
 			alert = createAlert("danger", "Could not authenticate using 42.");
 			document.querySelector("body").appendChild(alert);
 			setTimeout(() => {
@@ -108,6 +107,7 @@ function createFetcher() {
 				bsAlert.close()
 			}, 3000);
 		}
+		localStorage.removeItem("oauth-42")
 		return false;
 	}
 

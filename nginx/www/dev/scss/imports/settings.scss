@@ -1,0 +1,54 @@
+@import "./bootstrap.scss";
+
+.covering {
+  background-color: $dark;
+  border-radius: $border-radius;
+  position: absolute;
+  top: 0%;
+  left: 0%;
+  min-height: 100%;
+  max-height: 100%;
+  min-width: 100%;
+  z-index: 10;
+  padding: 1rem;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items:center;
+  gap: 1rem;
+  transition: $animation-fast-time;
+  opacity: 0;
+
+  * {
+    opacity: inherit;
+    transition-delay: $animation-fast-time;
+    transition: $animation-fast-time;
+  }
+
+  &.show {
+    opacity: 1;
+    * {
+      opacity: 1;
+    }
+  }
+
+  input {
+    text-align: center;
+  }
+  svg {
+    color: $light;
+  }
+
+  span {
+    max-width: 60%;
+    text-align: center;
+    color: $light;
+  }
+  div {
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    align-items: center;
+    gap: 1rem;
+  }
+}

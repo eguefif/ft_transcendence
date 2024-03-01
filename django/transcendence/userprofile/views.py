@@ -18,10 +18,20 @@ from friends.models import Friendship
 @api_view(['GET'])
 @require_authorization
 def user_info(request):
-    username = get_token_user(request.headers["Authorization"])
-    user = User.objects.get(username=username)
-    serializer = UserProfileSerializer(user)
-    return Response(serializer.data, status=status.HTTP_200_OK)
+    try:
+        username = get_token_user(request.headers["Authorization"])
+        user = User.objects.get(username=username)
+    except:
+        return Response({'error':'bad request'}, status=status.HTTP_400_BAD_REQUEST)
+    data = {'username': user.username,
+            'email': user.email,
+            'first_name': user.first_name,
+            'last_name': user.last_name,
+            'authType': ('42' if user.profile.oauth_42_active else 'standard'),
+            'otp': (True if user.profile.otp_active else False)
+            }
+    return Response(data, status=status.HTTP_200_OK)
+
 
 # Get l'image profile du user logged in, besoin de changer si on veux afficher l'image d'un autre user
 @api_view(['GET'])
@@ -44,6 +54,7 @@ def update_profile(request):
     serializer = UserProfileSerializer(user, data=request.data, partial=True)
     if serializer.is_valid():
         serializer.save()
+        user = User.objects.get(username=username)
         return Response({"user": serializer.data}, status=status.HTTP_201_CREATED)
     return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
