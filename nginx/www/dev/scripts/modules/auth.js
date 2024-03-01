@@ -78,6 +78,7 @@ async function sendRegistrationRequest(url, body)
 		closeModal('connectionModal')
 		await createButton()
 		await pongMenu()
+		await initSidebar()
 		return true
 	}
 }
@@ -164,6 +165,7 @@ async function requireOtp() {
 		closeModal("connectionModal");
 		await createButton();
 		await pongMenu();
+		await initSidebar()
 	}
 	else {
 		await requireOtp()

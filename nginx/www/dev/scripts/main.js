@@ -1,5 +1,5 @@
-import { fetcher } from "./modules/fetcher.js";
 import * as bootstrap from "./bootstrap/bootstrap.bundle.min.js";
+import { fetcher } from "./modules/fetcher.js";
 import { tryAuthenticating } from "./modules/auth.js";
 
 import { initRouter } from "./modules/router.js";

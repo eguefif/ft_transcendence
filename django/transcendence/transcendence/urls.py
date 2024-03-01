@@ -16,6 +16,8 @@ Including another URLconf
 """
 from django.contrib import admin
 from django.urls import path, include
+from rest_framework import status
+from django.http import HttpResponse
 
 from django.conf.urls.static import static
 from django.conf import settings
@@ -25,6 +27,7 @@ urlpatterns = [
     path('api/', include('authentication.urls')),
     path('api/', include('friends.urls')),
     path('api/', include('userprofile.urls')),
+    path('healthcheck/', lambda r: HttpResponse()),
 ]
 
 urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

@@ -1,5 +1,22 @@
 #!/bin/bash
 
-#cerbot --nginx -d $HOSTNAME
+for i in {1..30}
+do
+	if curl --silent http://django:8000/healthcheck/; then
+		break
+	fi
+	sleep 1
+done
+
+if [ $i = 30 ]; then
+	echo "connection with django failed: " $i
+fi
+
+cd dev/
+
+cd /var/www/dev/
+mkdir ../build
+npm install
+npm run build
 
 nginx -g "daemon off;"

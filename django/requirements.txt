@@ -16,3 +16,4 @@ sqlparse==0.4.4
 typing_extensions==4.9.0
 urllib3==2.2.1
 channels==3.0.5
+daphne==3.0.2

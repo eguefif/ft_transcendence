@@ -13,9 +13,8 @@ https://docs.djangoproject.com/en/5.0/ref/settings/
 import os
 from pathlib import Path
 
+
 env = os.environ
-
-
 
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
@@ -32,7 +31,6 @@ SECRET_KEY = env["SECRET"]
 
 DEBUG = env["DEBUG"]
 
-#ALLOWED_HOSTS = [env["HOSTNAME"]]
 if env["DEBUG"]:
     ALLOWED_HOSTS = ["localhost", env["HOSTNAME"], "django"]
 else:
@@ -42,6 +40,7 @@ else:
 # Application definition
 
 INSTALLED_APPS = [
+    'daphne',
     'channels',
     'gamesManager',
     'authentication',

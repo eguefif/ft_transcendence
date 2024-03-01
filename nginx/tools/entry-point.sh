@@ -1,4 +1,17 @@
 #!/bin/bash
+
+for i in {1..30}
+do
+	if curl --silent http://django:8000/healthcheck/; then
+		break
+	fi
+	sleep 1
+done
+
+if [ $i = 30 ]; then
+	echo "connection with django failed: " $i
+fi
+
 if [ ! -d "/etc/ssl/certs" ]; then
 	mkdir /etc/ssl/certs
 fi
@@ -9,7 +22,5 @@ if [ ! -f "/etc/ssl/certs/ft_transcendence.crt" ]; then
 	# create the crt from the last two files
 	openssl x509 -req -days 365 -in ft_transcendence.csr -signkey ft_transcendence.key -out ft_transcendence.crt
 fi
-
-cd  /var/www/
 
 nginx -g "daemon off;"

@@ -60,7 +60,7 @@ class OnlineStatusConsumer(AsyncWebsocketConsumer):
     async def connect(self):
         await self.accept()
         self.authenticated = False
-        self.away = False
+        self.away = True
         self.playing = False
         self.user = None
         self.last_echo = datetime.now()
@@ -78,7 +78,7 @@ class OnlineStatusConsumer(AsyncWebsocketConsumer):
                 if self.user:
                     await set_status(self.user, Profile.ONLINE)
                     await save_channel_name(self.user, self.channel_name)
-                    self.away = False
+                    self.away = True
                     self.authenticated = True
             except:
                 await self.close()
@@ -87,11 +87,10 @@ class OnlineStatusConsumer(AsyncWebsocketConsumer):
         if self.authenticated and self.user:
             try:
                 message = text_data_json["message"]
-                await self.send(text_data=message)
                 channel_layer = get_channel_layer()
                 channels = await get_friends_channel_names(self.user)
 
-                if message == 'online' and not self.playing:
+                if message == 'online' and not self.playing and self.away:
                     self.last_echo = datetime.now()
                     self.away = False
                     await set_status(self.user, Profile.ONLINE)
