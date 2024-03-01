@@ -19,7 +19,7 @@ os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'transcendence.settings')
 #application = get_asgi_application()
 application = ProtocolTypeRouter({
     'http': get_asgi_application(),
-    'websocket': AuthMiddlewareStack(
+    'websocket': 
         URLRouter(userprofile.routing.websocket_urlpatterns)
-    )
+    
 })

@@ -33,6 +33,7 @@ function createBtns() {
 	let nav = document.getElementById("navBarButton")
 	nav.innerHTML = `
 		<div class="d-flex navbar-nav ms-auto">
+			<div id="friendBtnNavbar" class="nav-item mx-3"></div>
 			<a id="profileButton" class="nav-item mx-3" href="/profile" data-link>
 				${getSVG.navbarSVG.profile}
 			</a>

@@ -3,7 +3,7 @@ import { renderer } from "./graphic-engine.js"
 
 
 export class Game {
-	constructor(controller, tournament=false) {
+	constructor(controller, passive=false, tournament=false) {
 		this.eventRemover = new AbortController();
 		renderer.showBoard
 		this.controller = controller
@@ -12,19 +12,27 @@ export class Game {
 		let menu = document.querySelector("#menubtn")
 		this.initListeners()
 		this.tournament = tournament
+		this.passive = passive
+		if (!this.passive) {
+			const startGameEvent = new Event("startGame")
+			document.dispatchEvent(startGameEvent)
+		}
 	}
 
 	cleanup() {
 		this.controller.cleanup()
 		this.eventRemover.abort()
+		if (!this.passive) {
+			const endGameEvent = new CustomEvent("endGame", {detail: this.controller.getWinner()})
+			document.dispatchEvent(endGameEvent)
+		}
 	}
 
 	run() {
 		const update = () => {
 			if (this.controller.running == false) {
 				if (this.tournament) {
-					const endGameEvent = new CustomEvent("endGame", {detail: this.controller.getWinner()})
-					document.dispatchEvent(endGameEvent)
+					this.cleanup()
 					this.graphicEngine.clearFrame()
 				}
 				else

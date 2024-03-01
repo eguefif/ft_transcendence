@@ -1,5 +1,7 @@
 import { fetcher } from "./fetcher.js"
 import { renderer } from "./graphic-engine.js"
+import { getSVG } from "./iconSVG.js"
+import { sendFriendRequest } from "./friendSidebar.js"
 
 export async function profile() {
 	hidePong()
@@ -56,7 +58,7 @@ export function showSpinner() {
 }
 
 async function getGameHistoryData(username) {
-	let retval = await fetcher.get("/api/profile/games")
+	const retval = await fetcher.get("/api/profile/games")
 	let games = {}
 	if (retval.status >= 200 && retval.status < 300)
 		games = retval.data
@@ -73,8 +75,17 @@ async function getGameHistoryData(username) {
 
 function setStatusGame(games, username) {
 	for (const [key, game] of Object.entries(games)) {
-    let win = `<div class="p-1"><h5 class="text-success fs-3 fw-bold text-center">win</h5></div>`
-    let loss = `<div class="p-1"><h5 class="text-danger fs-3 fw-bold text-center">loss</h5></div>`
+		const win = `<div class="p-1"><h5 class="text-success fs-3 fw-bold text-center">win</h5></div>`
+		const loss = `<div class="p-1"><h5 class="text-danger fs-3 fw-bold text-center">loss</h5></div>`
+		const addFriend = getSVG.addFriendSVG.addFriend
+		if (!game["player2_add"])
+			game["player2_add"] = addFriend
+		else
+			game["player2_add"] = ""
+		if (!game["player1_add"])
+			game["player1_add"] = addFriend
+		else
+			game["player1_add"] = ""
 		if (game.player1 === username) {
 			if (game.score_player1 == 3)
 				game["status"] = win
@@ -220,7 +231,7 @@ function renderHistory(games) {
 					<div class="col-2"><img src="${game.avatar1}" class="img-fluid rounded float-left"></div>
 					<div class="col-3">
 						<div class="d-flex flex-column">
-							<div class="p-1"><h5 class="text-primary fs-4 fw-bold text-center">${game.player1}</h5></div>
+							<div class="p-1"><h5 class="text-primary fs-4 fw-bold text-center">${game.player1}${generateAddFriendLink(game.player1, game.player1_add)}</h5></div>
 							<div class="p-1"><h5 class="text-secondary fs-3 fw-bold text-center">${game.score_player1}</h5></div>
 						</div>
 					</div>
@@ -232,7 +243,7 @@ function renderHistory(games) {
 					</div>
 					<div class="col-3">
 						<div class="d-flex flex-column">
-							<div class="p-1"><h5 class="text-primary fs-4 fw-bold text-center">${game.player2}</h5></div>
+							<div class="p-1"><h5 class="text-primary fs-4 fw-bold text-center">${game.player2}${generateAddFriendLink(game.player2, game.player2_add)}</h5></div>
 							<div class="p-1"><h5 class="text-secondary fs-3 fw-bold text-center">${game.score_player2}</h5></div>
 						</div>
 					</div>
@@ -248,4 +259,29 @@ function renderHistory(games) {
 		</div>
 		`
 	history.innerHTML = html
+	addEventListenerAddFriend()
+}
+
+function generateAddFriendLink(name, svg) {
+	if (svg == "")
+		return ``
+	return `
+		<a href="" value="${name}" class="btn btn-primary mx-1" addFriendBtn>${svg}</a>
+	`
+}
+
+function addEventListenerAddFriend() {
+	const history = document.getElementById("history")
+	if (history != undefined)
+		history.addEventListener("click", eventAddFriend);
+	else
+		console.log("error getting profileDiv")
+}
+
+async function eventAddFriend(e) {
+	if (e.target.matches("[addFriendBtn]")) {
+		e.preventDefault()
+		const username = e.target.getAttribute("value")
+		await sendFriendRequest(username)
+	}
 }
