@@ -8,6 +8,4 @@ COPY ./tools/entry-point-digitalo.sh /entry-point.sh
 RUN chmod +x /entry-point.sh
 COPY ./www /var/www/
 
-WORKDIR /var/www
-
 ENTRYPOINT ["/entry-point.sh"]
