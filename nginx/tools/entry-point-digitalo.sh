@@ -12,9 +12,11 @@ if [ $i = 30 ]; then
 	echo "connection with django failed: " $i
 fi
 
-cd dev/
 
 cd /var/www/dev/
+
+sed -i '1s/\/\///' ./scripts/modules/modalConnection.js
+
 mkdir ../build
 npm install
 npm run build
