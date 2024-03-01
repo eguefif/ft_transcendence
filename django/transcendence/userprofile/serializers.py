@@ -5,7 +5,7 @@ import re
 class UserProfileSerializer(serializers.ModelSerializer):
     class Meta:
         model = User
-        fields = ['username', 'email']
+        fields = ['username', 'email', 'first_name', 'last_name']
 
     def validate_username(self, value):
         # Requirements: 4-24 characters, only letters and numbers

@@ -1,14 +1,4 @@
-
-$primary: #2FF924;
-$secondary: #EE24F9;
-
-$success: green;
-$info: blue;
-$warning: yellow;
-$danger: red;
-$light: #F9F6EE;
-$dark: #36454F;
-
+@import './variables.scss';
 @import '../../node_modules/bootstrap/scss/bootstrap.scss';
 
 .bg-dark {

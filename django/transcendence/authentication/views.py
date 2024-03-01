@@ -97,10 +97,26 @@ def otp_activate(request):
     user = User.objects.get(username=get_token_user(request.headers["Authorization"]))
     if not user.profile.otp_active:
         new_otp_key = get_new_otp_key()
-        user.profile.otp_active = True
         user.profile.otp_key = new_otp_key
         user.save()
         return Response({'otpCode': get_key_qr_code(new_otp_key, user.username)}, status.HTTP_200_OK)
+    return Response({'info': 'otp already activated'}, status.HTTP_400_BAD_REQUEST)
+
+@api_view(['POST'])
+@require_authorization
+def otp_activate_confirm(request):
+    try:
+        code = request.data["code"]
+        user = User.objects.get(username=get_token_user(request.headers["Authorization"]))
+    except:
+        return Response({'info': 'invalid code'}, status.HTTP_400_BAD_REQUEST)
+    otp_key = user.profile.otp_key
+    if (get_current_code(otp_key) == code and code != user.profile.otp_previous):
+        user.profile.otp_previous = code
+        user.profile.otp_active = True;
+        user.save()
+        return Response(status.HTTP_204_NO_CONTENT)
+    return Response({'info': 'invalid code'}, status.HTTP_400_BAD_REQUEST)
     return Response({'info': 'otp already activated'}, status.HTTP_400_BAD_REQUEST)
 
 @api_view(['POST'])
@@ -125,7 +141,7 @@ def oauth(request):
     try:
         token = request.COOKIES["oauthToken"]
     except:
-        response.status_code = status.HTTP_401_UNAUTHORIZED
+        response.status_code = status.HTTP_400_BAD_REQUEST
         return response
     response.delete_cookie(key='oauthToken', path='/api/auth/oauth')
     try:

@@ -1,5 +1,5 @@
-import { createAlert } from "./bs_utils.js"
 import { fetcher } from "./fetcher.js"
+import { clearContent, createAlert } from "./utils.js"
 import { closeModal } from "./modalConnection.js"
 import { removeModal } from "./navbar.js"
 
@@ -40,7 +40,7 @@ async function profileInfo()
 {
 	const imgElement = document.getElementById("profilePicture")
 	const imageReply = await fetcher.get("api/profile/userpicture/")
-	if (imageReply.status == 200) {
+	if (imageReply.status >= 200 && imageReply.status < 300 && imageReply.status != 202) {
 		const imageURL = URL.createObjectURL(imageReply.data)
 		imgElement.src = imageURL
 		imgElement.onload = () => {
@@ -51,13 +51,16 @@ async function profileInfo()
 		imgElement.src = "images/avatar.png"
 	}
 	const res = await fetcher.get("api/profile/userinfo/")
-	if (res.status == 200) {
-		const userProfile = document.querySelector("#profileUsername")
-		if(userProfile)
-			userProfile.value = res.data['username']
+	if (res.status >= 200 && res.status < 300) {
 		const mailProfile = document.querySelector("#profileEmail")
 		if (mailProfile)
 			mailProfile.value = res.data['email']
+		const firstName = document.querySelector("#profileFirstName");
+		if (firstName && res.data.first_name)
+			firstName.value = res.data.first_name;
+		const lastName = document.querySelector("#profileLastName");
+		if (lastName && res.data.last_name)
+			lastName.value = res.data.last_name;
 	}
 }
 
@@ -77,8 +80,9 @@ function authUpdateProfile()
 		const data = new FormData(e.target)
 		const url = e.target.action
 		const body = {
-			'username': data.get('username'),
 			'email': data.get('email'),
+			'first_name': data.get('firstName'),
+			'last_name': data.get('lastName'),
 		}
 		sendUpdateProfileRequest(url, body)
 		removeCardOrForm()
@@ -88,9 +92,7 @@ function authUpdateProfile()
 
 async function sendUpdateProfileRequest(url, body)
 {
-	const profileUsername = document.querySelector("#profileUsername")
 	const profileEmail = document.querySelector("#profileEmail")
-	const profileUsernameValidation = document.querySelector("#profileUsernameValidation")
 	const profileEmailValidation = document.querySelector("#profileEmailValidation")
 
 	const form = document.getElementById("profileForm")
@@ -113,12 +115,6 @@ async function sendUpdateProfileRequest(url, body)
 	{
 		const data = res.data
 
-		if (data['username'])
-		{
-			profileUsername.classList.add("is-invalid")
-			profileUsernameValidation.classList.add("invalid-feedback")
-			profileUsernameValidation.innerHTML = data['username']
-		}
 		if (data['email'])
 		{
 			profileEmail.classList.add("is-invalid")
@@ -134,7 +130,6 @@ function resetFormInput(form) {
 		input.classList.remove("is-invalid")
 		input.classList.add("is-valid")
 	})
-	// Reset validations
 }
 
 function createModalSettings() {
@@ -143,8 +138,24 @@ function createModalSettings() {
 		<div class="modal-dialog">
 			<div class="modal-content bg-dark">
 				<div class="modal-header">
-					<h1 class="modal-title fs-5" id="profileLabel">Profile</h1>
+					<h1 class="modal-title fs-5" id="profileLabel">Settings</h1>
 					<div class="btn-close" data-bs-dismiss="modal"></div>
+				</div>
+				<div class="modal-body">
+					<div>
+						<h5>Password and authentication</h3>
+						<div id="pass-change">
+							<a>Change password</a>
+						</div>
+						<div id="auth-type" class="d-flex flex-column">
+							<span class="fw-bold">Account type</span>
+							<span class="user-dependent"></span>
+						</div>
+						<div id="otp-toggle">
+							<span class="fw-bold">Two-factor authentication</span>
+							<div class="user-dependent"></div>
+						</div>
+					</div>
 				</div>
 			  </div>
 			</div>
@@ -163,14 +174,19 @@ function createformSettings() {
 			<div id="pictureUploadValidation" class="error text-danger"></div>
 		</div>
 		<div class="mb-3">
-			<label for="profileUsername" class="col-md-3 col-form-label">Username</label>
-			<input type="username" name="username" id="profileUsername" class="form-control" placeholder="username" disabled>
-			<div id="profileUsernameValidation"></div>
-		</div>
-		<div class="mb-3">
 			<label for="profileEmail" class="col-md-3 col-form-label">Email</label>
 			<input type="email" name="email" id="profileEmail" class="form-control" placeholder="email">
 			<div id="profileEmailValidation"></div>
+		</div>
+		<div class="mb-3">
+			<label for="profileFirstName" class="col-md-3 col-form-label">First Name</label>
+			<input type="text" name="firstName" id="profileFirstName" class="form-control" placeholder="First Name">
+			<div id="profileFirstNameValidation"></div>
+		</div>
+		<div class="mb-3">
+			<label for="profileLastName" class="col-md-3 col-form-label">Last Name</label>
+			<input type="text" name="lastName" id="profileLastName" class="form-control" placeholder="Last Name">
+			<div id="profileLastNameValidation"></div>
 		</div>
 		<button type="submit" class="btn btn-primary" id="profileSaveChanges">Save changes</button>
 		<button type="button" class="btn btn-light" id="cancelButton">Cancel</button>
@@ -183,20 +199,18 @@ function createCardSettings() {
 	return `
 	<div class="card bg-dark text-center">
 		<img id="profilePicture" class="rounded-circle-border mx-auto d-block" alt="profilePicture"/>
-		<div class="card-body" >
-			<h1 class="userName">Le Loup de WallStreet !</h1>
-			<h5 class="lastName">Leloup</h5>
-			<h5 class="firstName">Jean</h5>
-			<h6 class="cardEmail">pierre@gmail.com</h6>
-			<p class="card-text">Current world champion of Pong!</p>
+		<div class="card-body d-flex flex-column align-items-center" >
+			<span class="userName fs-1">Le Loup de WallStreet !</span>
+			<span class="lastName fs-5">Leloup</span>
+			<span class="firstName fs-5">Jean</span>
+			<span class="cardEmail fs-5">pierre@gmail.com</span>
 			<a id="editButton" class="btn btn-primary">edit</a>
 		</div>
 	</div>
 	`
 }
 
-
-async function editProfilCard() {
+async function editProfileCard() {
 	const imgElement = document.getElementById("profilePicture")
 	const imageReply = await fetcher.get("api/profile/userpicture/")
 	if (imageReply.status == 200) {
@@ -210,13 +224,20 @@ async function editProfilCard() {
 		imgElement.src = "images/avatar.png"
 	}
 	const res = await fetcher.get("api/profile/userinfo/")
-	if (res.status == 200) {
+	if (res.status >= 200 && res.status < 300) {
 		const usr = document.querySelector(".userName")
-		if (usr)
-			usr.innerText = res.data['username']
+		if (usr && res.data.username)
+			usr.innerText = res.data.username
 		const mail = document.querySelector(".cardEmail")
-		if(mail)
-			mail.innerText = res.data['email']
+		if(mail && res.data.email)
+			mail.innerText = res.data.email
+		const firstName = document.querySelector(".firstName");
+		if (firstName && res.data.first_name)
+			firstName.innerText = res.data.first_name;
+		const lastName = document.querySelector(".lastName");
+		if (lastName && res.data.last_name)
+			lastName.innerText = res.data.last_name;
+		updatePassAuth(res.data);
 	}
 }
 
@@ -232,10 +253,10 @@ function removeCardOrForm() {
 }
 
 async function addCard () {
-	const modalBody = document.querySelector('.modal-content')
-	modalBody.insertAdjacentHTML("beforeend", createCardSettings())
+	const modalBody = document.querySelector('.modal-body')
+	modalBody.insertAdjacentHTML("afterbegin", createCardSettings())
 	const buttonEdit = document.getElementById("editButton")
-	await editProfilCard()
+	await editProfileCard()
 	buttonEdit.addEventListener("click", async e  => {
 		e.preventDefault()
 		removeCardOrForm()
@@ -244,8 +265,8 @@ async function addCard () {
 }
 
 function addChangeSettings () {
-	const modalBody = document.querySelector('.modal-content')
-	modalBody.insertAdjacentHTML("beforeend", createformSettings())
+	const modalBody = document.querySelector('.modal-body')
+	modalBody.insertAdjacentHTML("afterbegin", createformSettings())
 	profileInfo()
 	initSettings();
 	authUpdateProfile()
@@ -255,4 +276,107 @@ export function generateSettings() {
 	removeModal()
 	document.querySelector('nav').insertAdjacentHTML('afterend', createModalSettings())
 	addCard()
+}
+
+function updatePassAuth(data) {
+	updateAuthType(data);
+	updateOtpToggle(data);
+}
+
+function updateAuthType(data) {
+	const authTypeField = document.querySelector("#auth-type").querySelector(".user-dependent");
+	authTypeField.innerText = data.authType== "42" ? "Authenticating with 42" : "Standard";
+}
+
+function updateOtpToggle(data) {
+	const otpToggle = document.querySelector("#otp-toggle").querySelector(".user-dependent");
+	clearContent(otpToggle);
+	if (data.authType == 42) {
+		const text = document.createElement("span");
+		otpToggle.appendChild(text);
+		text.innerText = "not available (42 user)"
+	}
+	else {
+		const button = document.createElement("button");
+		otpToggle.appendChild(button);
+		button.classList.add("btn", "btn-primary");
+		if (data.otp) {
+			button.innerText = "Deactivate 2FA";
+			button.addEventListener("click", async function() {
+				let result = await fetcher.post("/api/auth/otp/deactivate");
+				if (result.status >= 200 && result.status < 300) {
+					const res = await fetcher.get("api/profile/userinfo/")
+					if (res.status >= 200 && res.status < 300) {
+						updatePassAuth(res.data);
+					}
+				}
+			});
+
+		} else {
+			button.innerText = "Activate 2FA";
+			button.addEventListener("click", async function() {
+				const result = await fetcher.post("/api/auth/otp/activate");
+				const qrcode = result.data.otpCode;
+				activateOtp(qrcode);
+			})
+		}
+	}
+}
+
+function activateOtp(qrcode) {
+	const otpForm = createOtpForm(qrcode);
+	otpForm.querySelector("#activate-otp-cancel").addEventListener("click", () => {
+		closeOtpForm();
+	});
+	otpForm.querySelector("input").addEventListener("input", (e) => {
+		e.target.classList.remove("is-invalid");
+	});
+	otpForm.querySelector("form").addEventListener("submit", async (e) => {
+		e.preventDefault();
+		const data = new FormData(e.target);
+		const code = data.get('otp-code');
+		if (!code || !(/^\d+$/.test(code))) {
+			otpForm.querySelector("input").classList.add("is-invalid");
+		}
+		const result = await fetcher.post("/api/auth/otp/activate/confirm", {'code': code});
+		if (result.status >= 200 && result.status < 300) {
+			const res = await fetcher.get("api/profile/userinfo/")
+			if (res.status >= 200 && res.status < 300) {
+				updatePassAuth(res.data);
+			}
+			closeOtpForm();
+		}
+		else {
+			otpForm.querySelector("input").classList.add("is-invalid");
+		}
+	});
+}
+
+function createOtpForm(qrcode) {
+	const modal = document.querySelector("#settingsModal").querySelector(".modal-body");
+	let otpForm = document.createElement("div");
+	otpForm.classList.add("covering");
+	otpForm.innerHTML = `
+		${qrcode}
+		<span>Please scan this QR code and enter your one-time password to enable 2FA</span>
+		<form id="activate-otp-form" action="/api/auth/otp/activate/confirm" method="POST">
+			<input class="form-control" name="otp-code" type="text"></input>
+		</form>
+		<div class="d-flex flex-row">
+			<button type="submit" id="activate-otp-confirm" form="activate-otp-form" class="btn btn-primary">Enable</button>
+			<button type="button" id="activate-otp-cancel" class="btn btn-danger">Cancel</button>
+		</div>`
+	otpForm.querySelector("svg").setAttribute("style", "fill:currentColor");
+	otpForm.querySelector("svg").querySelector("path").removeAttribute("fill");
+	modal.appendChild(otpForm);
+	setTimeout(() => {otpForm.classList.add("show");}, 25);
+	return otpForm;
+}
+
+async function closeOtpForm() {
+	const otpForm = document.querySelector("#activate-otp-form").parentElement;
+	otpForm.classList.remove("show");
+	setTimeout(() => {
+		otpForm.remove()
+	}, 500);
 }
