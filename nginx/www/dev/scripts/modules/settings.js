@@ -1,5 +1,5 @@
 import { fetcher } from "./fetcher.js"
-import { clearContent, createAlert } from "./utils.js"
+import { clearContent, createAlert, closeCovering } from "./utils.js"
 import { closeModal } from "./modalConnection.js"
 import { removeModal } from "./navbar.js"
 
@@ -326,7 +326,7 @@ function updateOtpToggle(data) {
 function activateOtp(qrcode) {
 	const otpForm = createOtpForm(qrcode);
 	otpForm.querySelector("#activate-otp-cancel").addEventListener("click", () => {
-		closeOtpForm();
+		closeCovering(otpForm);
 	});
 	otpForm.querySelector("input").addEventListener("input", (e) => {
 		e.target.classList.remove("is-invalid");
@@ -337,6 +337,7 @@ function activateOtp(qrcode) {
 		const code = data.get('otp-code');
 		if (!code || !(/^\d+$/.test(code))) {
 			otpForm.querySelector("input").classList.add("is-invalid");
+			return;
 		}
 		const result = await fetcher.post("/api/auth/otp/activate/confirm", {'code': code});
 		if (result.status >= 200 && result.status < 300) {
@@ -344,7 +345,7 @@ function activateOtp(qrcode) {
 			if (res.status >= 200 && res.status < 300) {
 				updatePassAuth(res.data);
 			}
-			closeOtpForm();
+			closeCovering(otpForm);
 		}
 		else {
 			otpForm.querySelector("input").classList.add("is-invalid");
@@ -371,12 +372,4 @@ function createOtpForm(qrcode) {
 	modal.appendChild(otpForm);
 	setTimeout(() => {otpForm.classList.add("show");}, 25);
 	return otpForm;
-}
-
-async function closeOtpForm() {
-	const otpForm = document.querySelector("#activate-otp-form").parentElement;
-	otpForm.classList.remove("show");
-	setTimeout(() => {
-		otpForm.remove()
-	}, 500);
 }

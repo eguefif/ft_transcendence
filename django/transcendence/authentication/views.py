@@ -1,3 +1,4 @@
+from os import environ
 from datetime import timedelta
 from django.contrib.auth.models import User
 from django.shortcuts import get_object_or_404, redirect
@@ -81,9 +82,9 @@ def refresh(request):
 def otp(request):
     try:
         code = request.data["code"]
+        user = User.objects.get(username=get_token_user(request.headers["Authorization"]))
     except:
-        return Response({'info': 'invalid code'}, status.HTTP_400_BAD_REQUEST)
-    user = User.objects.get(username=get_token_user(request.headers["Authorization"]))
+        return Response({'info': 'bad request'}, status.HTTP_400_BAD_REQUEST)
     otp_key = user.profile.otp_key
     if (get_current_code(otp_key) == code and code != user.profile.otp_previous):
         user.profile.otp_previous = code
@@ -113,7 +114,7 @@ def otp_activate_confirm(request):
     otp_key = user.profile.otp_key
     if (get_current_code(otp_key) == code and code != user.profile.otp_previous):
         user.profile.otp_previous = code
-        user.profile.otp_active = True;
+        user.profile.otp_active = True
         user.save()
         return Response(status.HTTP_204_NO_CONTENT)
     return Response({'info': 'invalid code'}, status.HTTP_400_BAD_REQUEST)
@@ -163,7 +164,7 @@ def oauth(request):
     except:
         response.status_code = status.HTTP_401_UNAUTHORIZED
         return response
-    reponse.status_code = status.HTTP_400_BAD_REQUEST
+    response.status_code = status.HTTP_400_BAD_REQUEST
     return response
 
 @api_view(['POST'])
@@ -174,7 +175,7 @@ def oauth_42(request):
 @api_view(['GET'])
 def login_42(request):
     request_info = authenticate_42_user(request)
-    response = redirect('https://localhost')
+    response = redirect("https://" + environ['HOSTNAME'])
     response.set_cookie(key='oauthToken',
                         value=get_oauth_42_token(request_info['user_info'], request_info['status']),
                         max_age=timedelta(minutes=2),

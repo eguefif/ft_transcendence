@@ -2,7 +2,8 @@ import { fetcher } from "./fetcher.js"
 import { pongMenu } from "./pong.js"
 import { closeModal } from "./modalConnection.js";
 import { createButton } from "./buttonNav.js";
-import { initSidebar } from "./friendSidebar.js"
+import { initSidebar } from "./friendSidebar.js";
+import { closeCovering, sendAlert } from "./utils.js";
 
 export function authLogout()
 {
@@ -18,7 +19,7 @@ export function authLogout()
 			await initSidebar()
 		}
 		else {
-			console.log("Logout failed")
+			console.log("Logout failed");
 		}
 	});
 }
@@ -153,46 +154,54 @@ async function sendLoginRequest(url, body)
 }
 
 async function requireOtp() {
-	let code;
-	while (!code) {
-		code = prompt("Please enter one time password");
-	}
-	const refreshExpiry = Date.now() + fetcher.refreshDuration;
-	const result = await fetcher.post("/api/auth/otp/login", {"code": code});
-	if (result.status >= 200 && result.status < 300){
-		localStorage.setItem("refreshExpiry", `${refreshExpiry}`)
-		fetcher.setAccess(result.data.accessToken);
-		closeModal("connectionModal");
-		await createButton();
-		await pongMenu();
-		await initSidebar()
-	}
-	else {
-		await requireOtp()
-	}
+	const otpField = createOtpField();
+	otpField.querySelector("#otp-login-cancel").addEventListener("click", () => {
+		closeCovering(otpField);
+	});
+	otpField.querySelector("input").addEventListener("input", (e) => {
+		e.target.classList.remove("is-invalid");
+	});
+	otpField.querySelector("form").addEventListener("submit", async (e) => {
+		e.preventDefault();
+		const data = new FormData(e.target);
+		const code = data.get('otp-code');
+		if (!code || !(/^\d+$/.test(code))) {
+			otpField.querySelector("input").classList.add("is-invalid");
+			return;
+		}
+		const refreshExpiry = Date.now() + fetcher.refreshDuration;
+		const result = await fetcher.post("/api/auth/otp/login", {'code': code});
+		if (result.status >= 200 && result.status < 300) {
+			closeCovering(otpField);
+			localStorage.setItem("refreshExpiry", `${refreshExpiry}`)
+			fetcher.setAccess(result.data.accessToken);
+			closeModal("connectionModal");
+			await createButton();
+			await pongMenu();
+			await initSidebar();
+		}
+		else {
+			otpField.querySelector("input").classList.add("is-invalid");
+		}
+	});
 }
 
-// THIS IS A TEMPORARY SETUP TO VALIDATE BACKEND AND NEEDS TO BE IMPLEMENTED PROPERLY
-function activateOtp() {
-	const button = document.createElement("button");
-	button.innerText = "Activate 2FA";
-	document.querySelector("body").appendChild(button);
-	button.addEventListener("click", async function() {
-		const result = await fetcher.post("/api/auth/otp/activate");
-		const qrcode = document.createElement("div")
-		let qrcodeSvq = result.data.otpCode;
-		qrcode.innerHTML = result.data.otpCode;
-		document.querySelector("body").appendChild(qrcode);
-		setTimeout(() => {
-			qrcode.remove();
-		}, 5000);
-	})
-	const otherButton = document.createElement("button");
-	otherButton.innerText = "Deactivate 2FA";
-	document.querySelector("body").appendChild(otherButton);
-	otherButton.addEventListener("click", async function() {
-		let result = await fetcher.post("/api/auth/otp/deactivate");
-	})
+function createOtpField() {
+	const modal = document.querySelector("#connectionModal").querySelector(".modal-body");
+	let otpField = document.createElement("div");
+	otpField.classList.add("covering");
+	otpField.innerHTML = `
+		<span>Please enter your 2FA one-time password.</span>
+		<form id="form-otp-login" action="/api/auth/otp/login" method="POST">
+			<input class="form-control" name="otp-code" type="text"></input>
+		</form>
+		<div class="d-flex flex-row">
+			<button type="submit" id="otp-login-confirm" form="form-otp-login" class="btn btn-primary">Submit</button>
+			<button type="button" id="otp-login-cancel" class="btn btn-danger">Cancel</button>
+		</div>`
+	modal.appendChild(otpField);
+	setTimeout(() => {otpField.classList.add("show");}, 25);
+	return otpField;
 }
 
 export async function tryAuthenticating() {
