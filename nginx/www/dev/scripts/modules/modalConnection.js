@@ -76,15 +76,12 @@ function createFormLogin() {
 			<div class="mb-3">
 				<label for="loginUsername" class="form-label">Username</label>
 				<input type="username" name='username' id="loginUsername" class="form-select" required pattern="^[a-zA-Z\\d]{4,24}$">
-				<div class="invalid-feedback">
-					Your user name is required
-				</div>
 			</div>
 			<div class="mb-3">
 				<label for="loginPassword" class="form-label">Password</label>
 				<input type="password" name='password' id="loginPassword" class="form-control" required pattern="^(?=.*[a-z])(?=.*[A-Z])(?=.*\\d)[a-zA-Z\\d\\w\\W]{4,24}$">
 				<div class="invalid-feedback">
-					Your password is required
+					Password or login invalid.
 				</div>
 			</div>
 			<button form="loginForm" type="submit" class="btn btn-primary">Submit</button>

@@ -185,15 +185,10 @@ async function sendRegistrationRequest(url, body)
 
 export function authLogin()
 {
-	const formsLogin = document.querySelectorAll('.needs-validation');
-	Array.from(formsLogin).forEach(form => {
-		form.addEventListener('submit', e => {
-			if (!form.checkValidity()) {
-				e.preventDefault();
-				e.stopPropagation();
-			}
-			else {
-				e.preventDefault();
+	const form  = document.getElementById('loginForm');
+	form.addEventListener('submit', e => {
+		e.preventDefault();
+		if (form.checkValidity()) {
 			const data = new FormData(e.target);
 			const url = e.target.action
 			const body = {
@@ -201,12 +196,17 @@ export function authLogin()
 				'username': data.get('username'),
 				'password': data.get('password'),
 			}
-			sendLoginRequest(url, body)
+		sendLoginRequest(url, body)
 		}
-
-		form.classList.add('was-validated');
-	  }, false);
-	});
+		else {
+			const loginInput = document.getElementById("loginUsername")
+			if (loginInput)
+				loginInput.classList.add("is-invalid")
+			const password = document.getElementById("loginPassword")
+			if (password)
+				password.classList.add("is-invalid")
+		}
+  	}, false);
 	const login42 = document.querySelector("#login-42");
 	login42.addEventListener("click", async function() {
 		let result = await fetcher.post("/api/auth/oauth/42");
@@ -222,6 +222,18 @@ async function sendLoginRequest(url, body)
 	const refreshExpiry = Date.now() + fetcher.refreshDuration;
 	const result = await fetcher.post(url, body);
 	const validationPass = document.getElementById("loginPassword")
+	const loginInput = document.getElementById("loginUsername")
+	const form = document.getElementById("loginForm")
+	if (loginInput){
+		loginInput.classList.remove("is-invalid")
+		loginInput.classList.add("is-valid")
+	}
+	if (form)
+		form.classList.remove("was-validated")
+	if (validationPass) {
+		validationPass.classList.remove("is-invalid")
+		validationPass.classList.add("is-valid")
+	}
 	if (result.status >= 200 && result.status < 300)
 	{
 		if (result.data.otpToken) {
@@ -238,18 +250,19 @@ async function sendLoginRequest(url, body)
 			await initSidebar()
 		}
 		else {
-			validationPass.innerHTML = "Something went wrong";
+			if (validationPass) {
+				validationPass.classList.add("is-invalid")
+				validationPass.innerHTML = "Something went wrong";
+			}
 		}
 	}
 	else
 	{
-		const validation = document.querySelectorAll(".invalid-feedback")
-		document.getElementById("loginUsername").value = ""
-		validation[0].innerText = "Wrong credentials"
-		document.getElementById("loginPassword").value = ""
-		validation[1].innerText = "Wrong credentials"
+		if (validationPass)
+			validationPass.classList.add("is-invalid")
+		if (loginInput)
+			loginInput.classList.add("is-invalid")
 	}
-	return ;
 }
 
 async function requireOtp() {
