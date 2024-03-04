@@ -43,7 +43,7 @@ def user_picture(request):
         image_path = user.profile.profile_picture.path
         return FileResponse(open(image_path, 'rb'))
     except:
-        return Response({'error': 'No image found'}, status=status.HTTP_202_ACCEPTED)
+        return Response({'error': 'No image found'}, status=status.HTTP_404_NOT_FOUND)
     
 
 @api_view(['POST'])
@@ -72,7 +72,8 @@ def upload_image(request):
     profile = user.profile
     if request.FILES.get('image') and is_image_valid(request):
         current_picture = profile.profile_picture
-        if current_picture and os.path.isfile(current_picture.path):
+        if current_picture and os.path.isfile(current_picture.path) and os.path.basename(current_picture.path) != "avatar.png":
+            print(current_picture.path)
             os.remove(current_picture.path)
         recieved_image = request.FILES['image']
         profile.profile_picture = recieved_image

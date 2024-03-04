@@ -47,9 +47,9 @@ async function profileInfo()
 			URL.revokeObjectURL(imageReply.data)
 		}
 	}
-	else {
-		imgElement.src = "images/avatar.png"
-	}
+	// else {
+	// 	imgElement.src = "images/avatar.png"
+	// }
 	const res = await fetcher.get("api/profile/userinfo/")
 	if (res.status >= 200 && res.status < 300) {
 		const mailProfile = document.querySelector("#profileEmail")
@@ -220,9 +220,9 @@ async function editProfileCard() {
 			URL.revokeObjectURL(imageReply.data)
 		}
 	}
-	else {
-		imgElement.src = "images/avatar.png"
-	}
+	// else {
+	// 	imgElement.src = "images/avatar.png"
+	// }
 	const res = await fetcher.get("api/profile/userinfo/")
 	if (res.status >= 200 && res.status < 300) {
 		const usr = document.querySelector(".userName")
