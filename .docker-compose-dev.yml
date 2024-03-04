@@ -1,4 +1,4 @@
-version: '3'
+version: '3.8'
 services:
   nginx:
     container_name: nginx
@@ -13,6 +13,8 @@ services:
       - django
     networks:
       - transcendence-net
+    volumes:
+      - ./nginx/www:/var/www/
     restart: on-failure
 
   django:
@@ -28,6 +30,8 @@ services:
         condition: service_healthy
     networks:
       - transcendence-net
+    volumes:
+      - ./django/transcendence:/var/src/app
 
   postgres:
     image: postgres:latest
@@ -51,19 +55,26 @@ services:
     image: django-serverpong
     restart: always
     depends_on:
-      - django
+      - nginx
     env_file:
       - .env
     expose:
       - 10000
     networks:
       - transcendence-net
+    volumes:
+      - ./serverPong/serverPong:/var/src/app
 
 volumes:
   postgres-vol:
     name: postgres-vol
+  nginx-vol:
+    name: nginx-vol
+  django-vol:
+    name: django-vol
 
 networks:
   transcendence-net:
     name: transcendence-net
     driver: bridge
+
