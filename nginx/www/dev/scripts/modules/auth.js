@@ -41,23 +41,17 @@ export function authRegister()
 				'username': data.get('username'),
 				'email': data.get('email'),
 				'password': data.get('password'),
-			}
-			sendRegistrationRequest(url, body)
-		}
-
-		form.classList.add('was-validated');
-	}, false);
-});
+				}
+			  sendRegistrationRequest(url, body)
+			  }
+			form.classList.add('was-validated');
+		}, false);
+	});
 }
 
 async function sendRegistrationRequest(url, body)
 {
 	const form = document.getElementById("registrationForm")
-	const inputs = form.querySelectorAll("input")
-	inputs.forEach(input => {
-		input.classList.remove("is-invalid")
-		input.classList.add("is-valid")
-	})
 	const refreshExpiry = Date.now() + fetcher.refreshDuration;
 	const result = await fetcher.post(url, body);
 	if (result.status >= 400 && result.status < 500)
@@ -66,13 +60,22 @@ async function sendRegistrationRequest(url, body)
 		{
 			const textbox = document.getElementById(`${obj}`)
 			const validation = document.getElementById(`${obj}Validation`)
+			console.log(validation)
+			console.log(`${obj}Validation`)
 			textbox.classList.add("is-invalid")
 			validation.classList.add("invalid-feedback")
 			validation.innerHTML = result.data[obj]
+			form.classList.remove("was-validated")
 		}
 	}
 	else if (result.status >= 200 && result.status < 300)
 	{
+		const inputs = form.querySelectorAll("input")
+		console.log("inside validation ok")
+		inputs.forEach(input => {
+			input.classList.remove("is-invalid")
+			input.classList.add("is-valid")
+		})
 		localStorage.setItem("refreshExpiry", `${refreshExpiry}`)
 		fetcher.setAccess(result.data.accessToken);
 		closeModal('connectionModal')

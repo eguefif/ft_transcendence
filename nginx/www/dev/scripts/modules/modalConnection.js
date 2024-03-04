@@ -106,9 +106,9 @@ function createFormRegister() {
 				<div class="input-group mb-3">
 					<input type="username" name='username' id="username" class="form-control" required pattern="^[a-zA-Z\\d]{4,24}$">
 					<span data-bs-toggle="tooltip" data-bs-title="Your username must have between 4-24 characters, only letters and numbers." data-bs-placement="right" class="input-group-text">${getSVG.formSVG.help}</span>
-				</div>
 				<div  id="usernameValidation" class="invalid-feedback">
 					Your username must have between 4-24 characters, only letters and numbers.
+				</div>
 				</div>
 			</div>
 			<div class="mb-3">
