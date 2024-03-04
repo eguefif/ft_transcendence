@@ -23,17 +23,116 @@ export function authLogout()
 	});
 }
 
+function resetPasswordsFormChecks(form) {
+	const password = document.getElementById("password")
+	const password_check = document.getElementById("password-check")
+	const check = document.getElementById("passwordValidation")
+	const check_check = document.getElementById("password-checkValidation")
+	if (password_check) {
+		password_check.classList.remove("is-invalid")
+		password_check.classList.add("is-valid")
+	}
+	if (password) {
+		password.classList.remove("is-invalid")
+		password.classList.add("is-valid")
+	}
+	if (check-check)
+		check_check.innerHTML = ""
+	if (check)
+		check.innerHTML = ""
+}
+
+function passwordsMatch(form) {
+	resetPasswordsFormChecks(form)
+	if (form["password"].value === "") {
+		const password = document.getElementById("password")
+		const check = document.getElementById("passwordValidation")
+		if (password)
+			password.classList.add("is-invalid")
+		if (check)
+			check.innerHTML = 'Password cannot be empty'
+		return false
+	}
+	else if ((form["password"].value != form["password-check"].value)) {
+		const password = document.getElementById("password-check")
+		const check = document.getElementById("password-checkValidation")
+		if (password)
+			password.classList.add("is-invalid")
+		if (check)
+			check.innerHTML = 'Password does not match'
+		return false
+	}
+	return true
+}
+
+function emailValid(form) {
+	const email = form.email.value
+	const reg = new RegExp("^[\\w\\-\\.]+@([\\w\\-]+\\.)+[\\w\\-]{2,4}$")
+	if (!reg.test(email) || email.length == 0) {
+		const email = document.getElementById("email")
+		const check = document.getElementById("emailValidation")
+		if (email)
+			email.classList.add("is-invalid")
+		if (check)
+			email.innerHTML = "Your email is invalid. (test@test.com)"
+		return false
+	}
+	else {
+		const email = document.getElementById("email")
+		const check = document.getElementById("emailValidation")
+		if (email) {
+			email.classList.remove("is-invalid")
+			email.classList.add("is-valid")
+	}
+		if (check)
+			email.innerHTML = ""
+	}
+	return true
+}
+
+function usernameValid(form) {
+	const username = form.username.value
+	const reg = new RegExp("^[a-zA-Z\\d]{4,24}$")
+	if (!reg.test(username) || !username.length) {
+		const username = document.getElementById("username")
+		const check = document.getElementById("usernameValidation")
+		if (username)
+			username.classList.add("is-invalid")
+		if (check)
+			username.innerHTML = "Your username must have between 4-24 characters, only letters and numbers."
+		return false
+	}
+	else {
+		const username = document.getElementById("username")
+		const check = document.getElementById("usernameValidation")
+		if (username) {
+			username.classList.remove("is-invalid")
+			username.classList.add("is-valid")
+		}
+		if (check)
+			username.innerHTML = ""
+	}
+	return true
+}
+
+function checkRegistrationForm(form) {
+	let retval = true
+
+	if (!passwordsMatch(form))
+		retval = false
+	if (!usernameValid(form))
+		retval = false
+	if (!emailValid(form))
+		retval = false
+	return retval
+}
+
 export function authRegister()
 {
-	const formsRegister = document.querySelectorAll('.needs-validation');
-	Array.from(formsRegister).forEach(form => {
-		form.addEventListener('submit', e => {
-			if (!form.checkValidity()) {
-			e.preventDefault();
-			e.stopPropagation();
-		  }
-		  else {
-			e.preventDefault()
+	const form = document.getElementById('registrationForm');
+	form.addEventListener('submit', e => {
+		e.preventDefault();
+		if (checkRegistrationForm(form)) {
 			const data = new FormData(e.target);
 			const url = e.target.action
 			const body = {
@@ -43,39 +142,37 @@ export function authRegister()
 				'password': data.get('password'),
 				}
 			  sendRegistrationRequest(url, body)
-			  }
-			form.classList.add('was-validated');
+			}
 		}, false);
-	});
 }
 
 async function sendRegistrationRequest(url, body)
 {
-	const form = document.getElementById("registrationForm")
 	const refreshExpiry = Date.now() + fetcher.refreshDuration;
 	const result = await fetcher.post(url, body);
+	const form = document.getElementById("registrationForm")
+	const inputs = document.querySelectorAll("input")
+	inputs.forEach(input => {
+		input.classList.remove("is-invalid")
+		input.classList.add("is-valid")
+	})
 	if (result.status >= 400 && result.status < 500)
 	{
+		console.log(result)
 		for (const obj in result.data)
 		{
-			const textbox = document.getElementById(`${obj}`)
-			const validation = document.getElementById(`${obj}Validation`)
-			console.log(validation)
-			console.log(`${obj}Validation`)
-			textbox.classList.add("is-invalid")
-			validation.classList.add("invalid-feedback")
-			validation.innerHTML = result.data[obj]
-			form.classList.remove("was-validated")
+			if (obj != undefined) {
+				const textbox = document.getElementById(`${obj}`)
+				const validation = document.getElementById(`${obj}Validation`)
+				textbox.classList.add("is-invalid")
+				validation.classList.add("invalid-feedback")
+				validation.innerHTML = result.data[obj]
+				form.classList.remove("was-validated")
+			}
 		}
 	}
 	else if (result.status >= 200 && result.status < 300)
 	{
-		const inputs = form.querySelectorAll("input")
-		console.log("inside validation ok")
-		inputs.forEach(input => {
-			input.classList.remove("is-invalid")
-			input.classList.add("is-valid")
-		})
 		localStorage.setItem("refreshExpiry", `${refreshExpiry}`)
 		fetcher.setAccess(result.data.accessToken);
 		closeModal('connectionModal')
