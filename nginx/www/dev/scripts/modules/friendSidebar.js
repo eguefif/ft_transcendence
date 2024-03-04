@@ -32,7 +32,7 @@ function makeFriendRequestElement(username) {
         <li class="nav-item" style="margin: 0px;">
             <div class="row align-items-center">
                 <div class="col-auto">
-                    <a href="#" class="nav-link" aria-current="page">${username}</a>
+                    <a href="" class="nav-link" aria-current="page">${username}</a>
                 </div>
                 <div class="col">
                     <a name="accept-${username}" class="btn btn-sm btn-success btn-friend-request">Accept</a>
@@ -72,7 +72,7 @@ function makeFriendElement(username, onlineStatus) {
         <li class="nav-item" style="margin: 0px;">
             <div class="row align-items-center">
                 <div class="col-auto">
-                    <a href="#" class="nav-link" aria-current="page">${username} ${createStatusBage(onlineStatus)}</a>
+                    <div class="nav-link noclick" aria-current="page">${username} ${createStatusBage(onlineStatus)}</div>
                 </div>
                 <div class="col">
                     <a name="delete-${username}" class="btn btn-sm btn-danger btn-delete-friend">Delete</a>
@@ -228,9 +228,9 @@ function initDeleteEventListeners() {
 	if (deleteButtons != undefined) {
 		deleteButtons.forEach(btn => {
 			btn.addEventListener("click", async function (e) {
+				e.preventDefault()
 				const name = btn.name
 				const username = name.split('-')[1]
-				e.preventDefault()
 				console.log("Delete " + username)
 				await deleteFriendship(username)
 				updateSidebar()

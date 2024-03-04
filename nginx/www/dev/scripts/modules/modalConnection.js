@@ -76,15 +76,12 @@ function createFormLogin() {
 			<div class="mb-3">
 				<label for="loginUsername" class="form-label">Username</label>
 				<input type="username" name='username' id="loginUsername" class="form-select" required pattern="^[a-zA-Z\\d]{4,24}$">
-				<div class="invalid-feedback">
-					Your user name is required
-				</div>
 			</div>
 			<div class="mb-3">
 				<label for="loginPassword" class="form-label">Password</label>
 				<input type="password" name='password' id="loginPassword" class="form-control" required pattern="^(?=.*[a-z])(?=.*[A-Z])(?=.*\\d)[a-zA-Z\\d\\w\\W]{4,24}$">
 				<div class="invalid-feedback">
-					Your password is required
+					Password or login invalid.
 				</div>
 			</div>
 			<button form="loginForm" type="submit" class="btn btn-primary">Submit</button>
@@ -104,11 +101,11 @@ function createFormRegister() {
 			<div class="mb-3">
 				<label for="username" class="form-label">Username</label>
 				<div class="input-group mb-3">
-					<input type="username" name='username' id="username" class="form-control" required pattern="^[a-zA-Z\\d]{4,24}$">
+					<input type="username" name='username' id="username" class="form-control">
 					<span data-bs-toggle="tooltip" data-bs-title="Your username must have between 4-24 characters, only letters and numbers." data-bs-placement="right" class="input-group-text">${getSVG.formSVG.help}</span>
-				</div>
 				<div  id="usernameValidation" class="invalid-feedback">
 					Your username must have between 4-24 characters, only letters and numbers.
+				</div>
 				</div>
 			</div>
 			<div class="mb-3">
@@ -121,16 +118,18 @@ function createFormRegister() {
 			<div class="mb-3">
 				<label for="password" class="form-label">Password</label>
 				<div class="input-group mb-3">
-					<input  type="password" name='password' id="password" class="form-control" required pattern="^(?=.*[a-z])(?=.*[A-Z])(?=.*\\d)[a-zA-Z\\d\\w\\W]{4,24}$">
+					<input  type="password" name='password' id="password" class="form-control">
 					<span data-bs-toggle="tooltip" data-bs-title="Your password must have between 4-24 characters, at least one uppercase, one lowercase and one number." data-bs-placement="right" class="input-group-text">${getSVG.formSVG.help}</span>
-				</div>
-				<div id="passwordValidation" class="invalid-feedback">
-					Your password must have between 4-24 characters, at least one uppercase, one lowercase and one number.
+					<div id="passwordValidation" class="invalid-feedback">
+						Your password must have between 4-24 characters, at least one uppercase, one lowercase and one number.
+					</div>
+					<div class="valid-feedback"></div>
 				</div>
 			</div>
 			<div class="mb-3">
 				<label for="password-check" class="form-label">Comfirm Password</label>
 				<input type="password" name='password-check' id="password-check" class="form-control" required>
+				<div class="valid-feedback"></div>
 				<div id="password-checkValidation" class="invalid-feedback">
 					Your password is not the same
 				</div>
