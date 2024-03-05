@@ -94,9 +94,11 @@ function createFormLogin() {
 					Password or login invalid.
 				</div>
 			</div>
-			<button form="loginForm" type="submit" class="btn btn-primary">Submit</button>
-			<div class="mb-1">
-			<text id="btnOpenRegister">Create account</text>
+			<div class="container text-center">
+				<button form="loginForm" type="submit" class="btn btn-primary">Submit</button>
+				<div class="d-flex align-items-center justify-content-center flex-gap-1">
+				<text class="text-light fs-6">Don't have a account yet ?</text><text class="fs-6" id="btnOpenRegister">Create account</text>
+				</div>
 			</div>
 		</form>
 	</div>
@@ -143,9 +145,11 @@ function createFormRegister() {
 					Your password is not the same
 				</div>
 			</div>
-			<button type="submit" value="Register" class="btn btn-primary">Submit</button>
-			<div class="mb-1">
-				<text id="btnOpenLogin">Have an account</text>
+			<div class="container text-center">
+				<button type="submit" value="Register" class="btn btn-primary">Submit</button>
+				<div class="d-flex align-items-center justify-content-center flex-gap-1">
+					<text class="text-light fs-6">Do you have an account ?</text><text class="fs-6" id="btnOpenLogin">login</text>
+				</div>
 			</div>
 		</form>
 	</div>
