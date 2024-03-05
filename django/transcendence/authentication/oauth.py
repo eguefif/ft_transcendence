@@ -77,7 +77,9 @@ def get_42_user_info(tokens):
         content = json.loads(content_str)
         user_info = {'username': content['login'],
                      'email': content['email'],
-                     'profile_picture': content['image']['versions']['medium']
+                     'profile_picture': content['image']['versions']['medium'],
+                     'first_name': content['first_name'],
+                     'last_name': content['last_name'],
                      }
     except:
         return {}
@@ -110,6 +112,8 @@ def link_42_user(data):
 def create_42_user(data):
     user = User.objects.create_user(username=data['user_info']['username'],
                                     email=data['user_info']['email'],
+                                    first_name=data['user_info']['first_name'],
+                                    last_name=data['user_info']['last_name'],
                                     password=OAUTH_FILL_PASS)
     user.profile.oauth_42_active = True
     user.profile.oauth_42_access = data['tokens']['access_token']
