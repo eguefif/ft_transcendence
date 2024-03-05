@@ -30,7 +30,7 @@ function removeForm() {
 
 function addLoginForm() {
 	document.querySelector("#connectionLabel").innerText = "Login";
-	document.querySelector('.modal-content').insertAdjacentHTML("beforeend", createFormLogin());
+	document.querySelector('.modal-body').insertAdjacentHTML("afterbegin", createFormLogin());
 	authLogin();
 	const btnSwitchRegister = document.getElementById("btnOpenRegister")
 	btnSwitchRegister.addEventListener('click', function(e) {
@@ -42,7 +42,7 @@ function addLoginForm() {
 
 function addRegistrationForm() {
 	document.querySelector("#connectionLabel").innerText = "Register";
-	document.querySelector('.modal-content').insertAdjacentHTML("beforeend", createFormRegister());
+	document.querySelector('.modal-body').insertAdjacentHTML("afterbegin", createFormRegister());
 	const tooltipTriggerList = document.querySelectorAll('[data-bs-toggle="tooltip"]')
 	const tooltipList = [...tooltipTriggerList].map(tooltipTriggerEl => new bootstrap.Tooltip(tooltipTriggerEl))
 	authRegister();
@@ -63,6 +63,16 @@ function CreateModal(name) {
 						<h1 class="modal-title fs-5" id="${name}Label"></h1>
 						<div class="btn-close" data-bs-dismiss="modal"></div>
 					</div>
+					<div class="modal-body">
+						<div class="d-flex align-items-center justify-content-center flex-gap-1">
+							<hr style="width: 33%;" class="solid">
+							<span>OR</span>
+							<hr style="width: 33%;" class="solid">
+						</div>
+						<div class="d-flex align-items-center justify-content-center mt-2">
+							<button type="button" id="login-42" class="btn btn-primary">Login with 42</button>
+						</div>
+					</div>
 				</div>
 			</div>
 		</div>
@@ -71,7 +81,7 @@ function CreateModal(name) {
 
 function createFormLogin() {
 	return `
-	<div id="createFormLogin" class="modal-body">
+	<div id="createFormLogin">
 		<form class="needs-validation" novalidate id="loginForm" action="api/auth/token" method="POST">
 			<div class="mb-3">
 				<label for="loginUsername" class="form-label">Username</label>
@@ -85,18 +95,17 @@ function createFormLogin() {
 				</div>
 			</div>
 			<button form="loginForm" type="submit" class="btn btn-primary">Submit</button>
-			<button type="button" id="login-42" class="btn btn-primary">Login with 42</button>
+			<div class="mb-1">
+			<text id="btnOpenRegister">Create account</text>
+			</div>
 		</form>
-		<div class="modal-footer">
-			<text id="btnOpenRegister">Register</text>
-		</div>
 	</div>
 	`
 }
 
 function createFormRegister() {
 	return  `
-	<div id="createFormRegister" class="modal-body">
+	<div id="createFormRegister">
 		<form class="needs-validation" novalidate id="registrationForm" action="api/auth/token" method="POST">
 			<div class="mb-3">
 				<label for="username" class="form-label">Username</label>
@@ -135,10 +144,10 @@ function createFormRegister() {
 				</div>
 			</div>
 			<button type="submit" value="Register" class="btn btn-primary">Submit</button>
+			<div class="mb-1">
+				<text id="btnOpenLogin">Have an account</text>
+			</div>
 		</form>
-		<div class="modal-footer">
-			<text id="btnOpenLogin">Login</text>
-		</div>
 	</div>
 		`
 }

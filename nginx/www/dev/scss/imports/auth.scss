@@ -46,3 +46,12 @@ text {
 button {
     margin-bottom: 1rem;
 }
+
+
+hr.solid {
+    border-top: 2px solid $primary;
+  }
+
+#btnOpenRegister, #btnOpenLogin {
+    font-size: smaller;
+}
