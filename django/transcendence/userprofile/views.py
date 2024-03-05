@@ -40,8 +40,8 @@ def user_picture(request):
     username = get_token_user(request.headers["Authorization"])
     user = User.objects.get(username=username)
     try:
-        image_path = user.profile.profile_picture.path
-        return FileResponse(open(image_path, 'rb'))
+        image_url= user.profile.profile_picture.url
+        return Response({'image': image_url}, status=status.HTTP_200_OK)
     except:
         return Response({'error': 'No image found'}, status=status.HTTP_404_NOT_FOUND)
     
