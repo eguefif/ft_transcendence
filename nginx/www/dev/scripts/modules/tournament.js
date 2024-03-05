@@ -159,14 +159,14 @@ export class Tournament {
 		if (this.game === 1) {
 			let controller = new LocalController(this.players[1], this.players[2])
 			controller.init()
-			const game = new Game(controller, true)
+			const game = new Game(controller, false, true)
 			game.run()
 			this.game = 2
 			return
 		}
 		else if (this.game == 2) {
 			let controller = new LocalController(this.players[3], this.players[4])
-			const game = new Game(controller, true)
+			const game = new Game(controller, false, true)
 			controller.init()
 			game.run()
 			this.game = 3
@@ -175,7 +175,7 @@ export class Tournament {
 		}
 		else if (this.game == 3) {
 			let controller = new LocalController(this.winnerSemi1, this.winnerSemi2)
-			const game = new Game(controller, true)
+			const game = new Game(controller, false, true)
 			controller.init()
 			game.run()
 			this.game = 4

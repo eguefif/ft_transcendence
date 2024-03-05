@@ -128,12 +128,10 @@ function connectWebsocket() {
 	if (logoutBtn != undefined) {
 		logoutBtn.addEventListener("click", (e) => {
 			ws.close()
-			console.log("offline")
 		})
 	}
 
 	ws.onopen = async function(e) {
-		console.log('Connection established')
 		await fetcher.sendToken(ws)
         ws.send(JSON.stringify({
             "message": "online",
@@ -141,20 +139,21 @@ function connectWebsocket() {
 	}
 
 	ws.onmessage = async function(e) {
-		console.log(e.data)
-		const friendBtn = document.getElementById("textFriendBtn")
-		if (friendBtn != undefined) {
-			if (!friendBtn.innerHTML.includes("alertNotification")) {
-				friendBtn.innerHTML += `
-	  <span id="alertNotification" class="position-absolute top-0 start-10 translate-middle p-1 bg-danger border border-dark rounded-circle">
-	  </span>
-	  `
-				friendBtn.addEventListener("click", (e) => {
-					let alertNotification = document.getElementById("alertNotification")
-					if (alertNotification != null) {
-						alertNotification.remove()
-					}
-				})
+		if (e.data == "Friend added" || e.data == "Friend request sent") {
+			const friendBtn = document.getElementById("textFriendBtn")
+			if (friendBtn != undefined) {
+				if (!friendBtn.innerHTML.includes("alertNotification")) {
+					friendBtn.innerHTML += `
+		  <span id="alertNotification" class="position-absolute top-0 start-10 translate-middle p-1 bg-danger border border-dark rounded-circle">
+		  </span>
+		  `
+					friendBtn.addEventListener("click", (e) => {
+						let alertNotification = document.getElementById("alertNotification")
+						if (alertNotification != null) {
+							alertNotification.remove()
+						}
+					})
+				}
 			}
 		}
 
@@ -173,11 +172,9 @@ function connectWebsocket() {
 	}
 
 	ws.onerror = function(e) {
-		console.log("Error")
 	}
 
 	ws.onclose = function(e) {
-		console.log("Connection closed")
 	}
 
     return ws
@@ -231,7 +228,6 @@ function initDeleteEventListeners() {
 				e.preventDefault()
 				const name = btn.name
 				const username = name.split('-')[1]
-				console.log("Delete " + username)
 				await deleteFriendship(username)
 				updateSidebar()
 			})

@@ -1,4 +1,5 @@
 import { createAlert } from "./utils.js"
+import { refreshContent } from "./refreshContent.js"
 
 function createFetcher() {
 	// These are durations in ms (to be compared with Date.now())
@@ -33,6 +34,8 @@ function createFetcher() {
 				localStorage.getItem("refreshExpiry") <= Date.now()
 			) {
 				localStorage.removeItem("refreshExpiry");
+				value = "";
+				expires = 0;
 				return false;
 			}
 			try {
@@ -127,7 +130,12 @@ function createFetcher() {
 				credentials: "same-origin",
 				headers: header,
 			});
-			if (result.status == 401 && redo && (await token.refresh())) {
+			if (result.status == 401) {
+				if (redo && await token.refresh()) {
+					return await post(url, body, false);
+				}
+				else
+					await refreshContent()
 				return await get(url, false);
 			}
 			return await extractData(result);
@@ -151,8 +159,12 @@ function createFetcher() {
 				headers: header,
 				body: bodyJSON,
 			});
-			if (result.status == 401 && redo && (await token.refresh())) {
-				return await post(url, body, false);
+			if (result.status == 401) {
+				if (redo && await token.refresh()) {
+					return await post(url, body, false);
+				}
+				else
+					await refreshContent()
 			}
 			return await extractData(result);
 		} catch {

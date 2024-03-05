@@ -1,8 +1,6 @@
 import { fetcher } from "./fetcher.js"
-import { pongMenu } from "./pong.js"
 import { closeModal } from "./modalConnection.js";
-import { createButton } from "./buttonNav.js";
-import { initSidebar } from "./friendSidebar.js"
+import { refreshContent } from "./refreshContent.js"
 
 export function authLogout()
 {
@@ -13,9 +11,7 @@ export function authLogout()
 		if (result.status >= 200 && result.status < 300) {
 			localStorage.removeItem("refreshExpiry")
 			fetcher.reset()
-			await createButton()
-			await pongMenu()
-			await initSidebar()
+			await refreshContent()
 		}
 		else {
 			console.log("Logout failed")
@@ -176,9 +172,7 @@ async function sendRegistrationRequest(url, body)
 		localStorage.setItem("refreshExpiry", `${refreshExpiry}`)
 		fetcher.setAccess(result.data.accessToken);
 		closeModal('connectionModal')
-		await createButton()
-		await pongMenu()
-		await initSidebar()
+		await refreshContent()
 		return true
 	}
 }
@@ -245,9 +239,7 @@ async function sendLoginRequest(url, body)
 			localStorage.setItem("refreshExpiry", `${refreshExpiry}`)
 			fetcher.setAccess(result.data.accessToken);
 			closeModal('connectionModal')
-		  	await createButton()
-			await pongMenu()
-			await initSidebar()
+			refreshContent()
 		}
 		else {
 			if (validationPass) {
@@ -276,9 +268,7 @@ async function requireOtp() {
 		localStorage.setItem("refreshExpiry", `${refreshExpiry}`)
 		fetcher.setAccess(result.data.accessToken);
 		closeModal("connectionModal");
-		await createButton();
-		await pongMenu();
-		await initSidebar()
+		await refreshContent()
 	}
 	else {
 		await requireOtp()
