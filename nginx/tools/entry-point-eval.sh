@@ -23,11 +23,4 @@ if [ ! -f "/etc/ssl/certs/ft_transcendence.crt" ]; then
 	openssl x509 -req -days 365 -in ft_transcendence.csr -signkey ft_transcendence.key -out ft_transcendence.crt
 fi
 
-cd /var/www/dev/
-
-sed -i '1s/\/\///' ./scripts/modules/modalConnection.js
-
-npm install
-npm run build
-
 nginx -g "daemon off;"

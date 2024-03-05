@@ -1,4 +1,4 @@
-//import * as bootstrap from "../bootstrap/bootstrap.bundle.min.js";
+import * as bootstrap from "../bootstrap/bootstrap.bundle.min.js";
 import { authRegister, authLogin } from "./auth.js"
 import { getSVG } from "./iconSVG.js";
 import { removeModal } from "./navbar.js";
