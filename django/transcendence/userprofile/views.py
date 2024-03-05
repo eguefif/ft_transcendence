@@ -165,13 +165,13 @@ def get_games(request):
                                     Q(player2__id=user.id)).order_by('-time')
     if len(games) == 0:
         retval = {}
-        retval = {"error": "no games with that username"}
-        return Response(retval, status.HTTP_400_BAD_REQUEST)
+        retval = {"error": "No game played yet"}
+        return Response(retval, status.HTTP_200_OK)
 
     games_history = get_games_history(games, user)
 
     if not games_history:
         retval = {}
-        retval = {"error": "impossible to generate games data"}
-        return Response(retval, status.HTTP_400_BAD_REQUEST)
+        retval = {"error": "No game played yet"}
+        return Response(retval, status.HTTP_200_OK)
     return Response(games_history, status.HTTP_200_OK)

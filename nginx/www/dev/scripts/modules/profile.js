@@ -60,12 +60,9 @@ export function showSpinner() {
 async function getGameHistoryData(username) {
 	const retval = await fetcher.get("/api/profile/games")
 	let games = {}
-	if (retval.status >= 200 && retval.status < 300)
-		games = retval.data
-	else if (retval.status >= 300 && retval.status < 500) {
-		games = retval.data
+	games = retval.data
+	if ("error" in games)
 		return games
-	}
 	games = setStatusGame(games, username)
 	if ("error" in games)
 		return games
@@ -253,7 +250,7 @@ function renderHistory(games) {
 		}
 	}
 	else {
-		html += `<div class="container p-3 border fs-3 border-primary border-rounded border-3 bg-dark text-danger">No games played yet</div>`
+		html += `<div class="container p-3 border fs-3 border-primary border-rounded border-3 bg-dark text-danger">No game played yet</div>`
 	}
 	html +=`
 		</div>

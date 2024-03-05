@@ -75,11 +75,11 @@ function createFormLogin() {
 		<form class="needs-validation" novalidate id="loginForm" action="api/auth/token" method="POST">
 			<div class="mb-3">
 				<label for="loginUsername" class="form-label">Username</label>
-				<input type="username" name='username' id="loginUsername" class="form-select" required pattern="^[a-zA-Z\\d]{4,24}$">
+				<input type="username" name='username' id="loginUsername" class="form-select">
 			</div>
 			<div class="mb-3">
 				<label for="loginPassword" class="form-label">Password</label>
-				<input type="password" name='password' id="loginPassword" class="form-control" required pattern="^(?=.*[a-z])(?=.*[A-Z])(?=.*\\d)[a-zA-Z\\d\\w\\W]{4,24}$">
+				<input type="password" name='password' id="loginPassword" class="form-control">
 				<div class="invalid-feedback">
 					Password or login invalid.
 				</div>
