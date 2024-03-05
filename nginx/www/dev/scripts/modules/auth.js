@@ -19,7 +19,7 @@ export function authLogout()
 	});
 }
 
-function resetPasswordsFormChecks(form) {
+function resetPasswordsFormChecks() {
 	const password = document.getElementById("password")
 	const password_check = document.getElementById("password-check")
 	const check = document.getElementById("passwordValidation")
@@ -39,7 +39,7 @@ function resetPasswordsFormChecks(form) {
 }
 
 function passwordsMatch(form) {
-	resetPasswordsFormChecks(form)
+	resetPasswordsFormChecks()
 	if (form["password"].value === "") {
 		const password = document.getElementById("password")
 		const check = document.getElementById("passwordValidation")
@@ -205,7 +205,7 @@ export function authLogin()
 	login42.addEventListener("click", async function() {
 		let result = await fetcher.post("/api/auth/oauth/42");
 		if (result.status >= 200 && result.status < 300) {
-			localStorage.setItem("oauth-42", "I'm a ninja"); 
+			localStorage.setItem("oauth-42", "I'm a ninja");
 			window.location.href = result.data.redirect
 		}
 	});
