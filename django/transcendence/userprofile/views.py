@@ -1,7 +1,5 @@
 from django.contrib.auth.models import User
-from django.http import FileResponse
 from django.db.models import Q
-from django.shortcuts import get_object_or_404
 from rest_framework import status
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
@@ -9,11 +7,11 @@ import os
 
 from userprofile.serializers import UserProfileSerializer
 from userprofile.models import Profile
-from authentication.manageTokens import get_token_user
-from gamesManager.models import Game
-from authentication.decorator import require_authorization
 from userprofile.forms import UploadImageForm
+from authentication.manageTokens import get_token_user
+from authentication.decorator import require_authorization
 from friends.models import Friendship
+from gamesManager.models import Game
 
 @api_view(['GET'])
 @require_authorization
@@ -40,10 +38,10 @@ def user_picture(request):
     username = get_token_user(request.headers["Authorization"])
     user = User.objects.get(username=username)
     try:
-        image_path = user.profile.profile_picture.path
-        return FileResponse(open(image_path, 'rb'))
+        image_url= user.profile.profile_picture.url
+        return Response({'image': image_url}, status=status.HTTP_200_OK)
     except:
-        return Response({'error': 'No image found'}, status=status.HTTP_202_ACCEPTED)
+        return Response({'error': 'No image found'}, status=status.HTTP_404_NOT_FOUND)
     
 
 @api_view(['POST'])
@@ -72,7 +70,7 @@ def upload_image(request):
     profile = user.profile
     if request.FILES.get('image') and is_image_valid(request):
         current_picture = profile.profile_picture
-        if current_picture and os.path.isfile(current_picture.path):
+        if current_picture and os.path.isfile(current_picture.path) and os.path.basename(current_picture.path) != "avatar.png":
             os.remove(current_picture.path)
         recieved_image = request.FILES['image']
         profile.profile_picture = recieved_image

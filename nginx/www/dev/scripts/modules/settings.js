@@ -41,11 +41,7 @@ async function profileInfo()
 	const imgElement = document.getElementById("profilePicture")
 	const imageReply = await fetcher.get("api/profile/userpicture/")
 	if (imageReply.status >= 200 && imageReply.status < 300 && imageReply.status != 202) {
-		const imageURL = URL.createObjectURL(imageReply.data)
-		imgElement.src = imageURL
-		imgElement.onload = () => {
-			URL.revokeObjectURL(imageReply.data)
-		}
+		imgElement.src = imageReply.data['image']
 	}
 	else {
 		imgElement.src = "images/avatar.png"
@@ -214,11 +210,7 @@ async function editProfileCard() {
 	const imgElement = document.getElementById("profilePicture")
 	const imageReply = await fetcher.get("api/profile/userpicture/")
 	if (imageReply.status == 200) {
-		const imageURL = URL.createObjectURL(imageReply.data)
-		imgElement.src = imageURL
-		imgElement.onload = () => {
-			URL.revokeObjectURL(imageReply.data)
-		}
+		imgElement.src = imageReply.data['image']
 	}
 	else {
 		imgElement.src = "images/avatar.png"
