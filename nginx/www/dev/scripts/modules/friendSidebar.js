@@ -9,6 +9,7 @@ async function deleteFriendship(username) {
 export async function sendFriendRequest(username) {
     const body = {"username": username}
     const res = await fetcher.post("api/send_friend_request/", body)
+    await updateSidebar()
 }
 
 async function acceptFriendRequest(username) {
@@ -32,7 +33,7 @@ function makeFriendRequestElement(username) {
         <li class="nav-item" style="margin: 0px;">
             <div class="row align-items-center">
                 <div class="col-auto">
-                    <a href="" class="nav-link" aria-current="page">${username}</a>
+                    <div class="nav-link noclick" aria-current="page">${username}</div>
                 </div>
                 <div class="col">
                     <a name="accept-${username}" class="btn btn-sm btn-success btn-friend-request">Accept</a>
@@ -58,6 +59,9 @@ function createStatusBage(onlineStatus) {
         case "Playing":
             colorClasses = "text-bg-info"
             break;
+        case "Pending":
+            colorClasses = "text-bg-light"
+            break;
         default:
             break;
     }
@@ -80,6 +84,32 @@ function makeFriendElement(username, onlineStatus) {
             </div>
         </li>
     `
+}
+
+function makePendingElement(username) {
+    return `
+        <li class="nav-item" style="margin: 0px;">
+            <div class="row align-items-center">
+                <div class="col-auto">
+                    <div class="nav-link noclick" aria-current="page">${username} ${createStatusBage("Pending")}</div>
+                </div>
+            </div>
+        </li>
+    `
+}
+
+async function getSentRequests() {
+    const res = await fetcher.get("api/get_sent_requests/")
+
+    if (res.status != 200)
+        return ""
+
+    let pending_friends = ""
+    for (let i = 0; i < res.data.length; i++) {
+        let user = res.data[i]
+        pending_friends += makePendingElement(user['username'])
+    }
+    return pending_friends
 }
 
 async function getFriendRequests() {
@@ -192,7 +222,8 @@ async function updateSidebar() {
 
     if (friendRequestContainer) {
         const friendRequestContent = await getFriendRequests()
-        friendRequestContainer.innerHTML = friendRequestContent
+        const sentRequestsContent = await getSentRequests()
+        friendRequestContainer.innerHTML = friendRequestContent + sentRequestsContent
     }
 
     initDeleteEventListeners()
@@ -240,6 +271,7 @@ export async function createSidebar() {
     const friendCollapse = document.getElementById("friendCollapse")
     const friendList = await getFriendList()
     const friendRequests = await getFriendRequests()
+    const pendingFriends = await getSentRequests()
 	let friendRequestHtml = ""
 
 	// if (friendRequests.length != 0)
@@ -247,7 +279,7 @@ export async function createSidebar() {
             <hr>
             <h3 class="text-primary fs-3 fw-bold">Requests</h3>
                 <ul class="nav nav-pills flex-column mb-auto">
-                    <div id="friendRequestContainer">${friendRequests}</div>
+                    <div id="friendRequestContainer">${friendRequests}${pendingFriends}</div>
                 </ul>
     `
 
