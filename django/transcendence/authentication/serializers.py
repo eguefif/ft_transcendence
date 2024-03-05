@@ -21,3 +21,18 @@ class UserSerializer(serializers.ModelSerializer):
         if not re.fullmatch(password_regex, value):
             raise serializers.ValidationError("Password does not meet requirements")
         return value
+
+class ChangePasswordSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = User
+        fields = ['password']
+    def validate_password(self, value):
+        print(self.instance)
+        if self.instance.check_password(value):
+            raise serializers.ValidationError("New password must not be the same as old password")
+        # Requirements: 4-24 characters, at least one uppercase, one lowercase and one number
+        password_regex = r"^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)[a-zA-Z\d\w\W]{4,24}$"
+        if not re.fullmatch(password_regex, value):
+            raise serializers.ValidationError("Password does not meet requirements")
+        return value
+

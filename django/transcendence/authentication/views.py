@@ -9,7 +9,7 @@ from authentication.decorator import require_authorization, require_otp_token
 from authentication.manageTokens import get_token_user, get_oauth_42_token, get_decoded_token
 from authentication.oauth import get_42_oauth_redirect, authenticate_42_user, refresh_42_tokens
 from authentication.otp import get_new_otp_key, get_key_qr_code, get_current_code
-from authentication.serializers import UserSerializer
+from authentication.serializers import UserSerializer, ChangePasswordSerializer
 from authentication.utils import get_otp_response, get_authenticated_response
 
 ###
@@ -72,6 +72,19 @@ def refresh(request):
     response.status_code = status.HTTP_400_BAD_REQUEST
     return response
 
+@api_view(['POST'])
+@require_authorization
+def password_change(request):
+    user = get_object_or_404(User, username=get_token_user(request.headers["Authorization"]));
+    if user.profile.oauth_42_active or not user.check_password(request.data['password']):
+        return Response({'old_password': 'Wrong credentials'}, status=status.HTTP_404_NOT_FOUND)
+    data = {'password': request.data['new_password']}
+    serializer = ChangePasswordSerializer(user, data=data)
+    if serializer.is_valid():
+        user.set_password(request.data['new_password'])
+        user.save()
+        return Response(status.HTTP_200_OK)
+    return Response({'new_password': serializer.errors['password']}, status=status.HTTP_400_BAD_REQUEST)
 
 ###
 # OTP routes
