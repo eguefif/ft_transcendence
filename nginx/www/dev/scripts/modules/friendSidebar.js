@@ -147,18 +147,21 @@ function connectWebsocket() {
     let ws = new WebSocket(`wss://${hostname}/online_status/`)
 
 	document.addEventListener("startGame", (e) => {
-		ws.send(JSON.stringify({"message": "Game started"}))
+        if (ws.readyState == ws.OPEN)
+		    ws.send(JSON.stringify({"message": "Game started"}))
 	})
 
 	document.addEventListener("endGame", (e) => {
-		ws.send(JSON.stringify({"message": "Game ended"}))
+        if (ws.readyState == ws.OPEN)
+		    ws.send(JSON.stringify({"message": "Game ended"}))
 	})
 
 	const logoutBtn = document.getElementById("logoutButton");
 	if (logoutBtn != undefined) {
 		logoutBtn.addEventListener("click", (e) => {
-			try {
-				ws.close()
+   		try {
+          if (ws.readyState == ws.OPEN)
+			    ws.close()
 			}
 			catch {}
 		})
