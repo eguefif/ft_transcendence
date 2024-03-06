@@ -9,6 +9,7 @@ async function deleteFriendship(username) {
 export async function sendFriendRequest(username) {
     const body = {"username": username}
     const res = await fetcher.post("api/send_friend_request/", body)
+    await updateSidebar()
 }
 
 async function acceptFriendRequest(username) {
@@ -32,7 +33,7 @@ function makeFriendRequestElement(username) {
         <li class="nav-item" style="margin: 0px;">
             <div class="row align-items-center">
                 <div class="col-auto">
-                    <a href="#" class="nav-link" aria-current="page">${username}</a>
+                    <div class="nav-link noclick" aria-current="page">${username}</div>
                 </div>
                 <div class="col">
                     <a name="accept-${username}" class="btn btn-sm btn-success btn-friend-request">Accept</a>
@@ -58,6 +59,9 @@ function createStatusBage(onlineStatus) {
         case "Playing":
             colorClasses = "text-bg-info"
             break;
+        case "Pending":
+            colorClasses = "text-bg-light"
+            break;
         default:
             break;
     }
@@ -72,7 +76,7 @@ function makeFriendElement(username, onlineStatus) {
         <li class="nav-item" style="margin: 0px;">
             <div class="row align-items-center">
                 <div class="col-auto">
-                    <a href="#" class="nav-link" aria-current="page">${username} ${createStatusBage(onlineStatus)}</a>
+                    <div class="nav-link noclick" aria-current="page">${username} ${createStatusBage(onlineStatus)}</div>
                 </div>
                 <div class="col">
                     <a name="delete-${username}" class="btn btn-sm btn-danger btn-delete-friend">Delete</a>
@@ -80,6 +84,32 @@ function makeFriendElement(username, onlineStatus) {
             </div>
         </li>
     `
+}
+
+function makePendingElement(username) {
+    return `
+        <li class="nav-item" style="margin: 0px;">
+            <div class="row align-items-center">
+                <div class="col-auto">
+                    <div class="nav-link noclick" aria-current="page">${username} ${createStatusBage("Pending")}</div>
+                </div>
+            </div>
+        </li>
+    `
+}
+
+async function getSentRequests() {
+    const res = await fetcher.get("api/get_sent_requests/")
+
+    if (res.status != 200)
+        return ""
+
+    let pending_friends = ""
+    for (let i = 0; i < res.data.length; i++) {
+        let user = res.data[i]
+        pending_friends += makePendingElement(user['username'])
+    }
+    return pending_friends
 }
 
 async function getFriendRequests() {
@@ -128,12 +158,10 @@ function connectWebsocket() {
 	if (logoutBtn != undefined) {
 		logoutBtn.addEventListener("click", (e) => {
 			ws.close()
-			console.log("offline")
 		})
 	}
 
 	ws.onopen = async function(e) {
-		console.log('Connection established')
 		await fetcher.sendToken(ws)
         ws.send(JSON.stringify({
             "message": "online",
@@ -141,20 +169,21 @@ function connectWebsocket() {
 	}
 
 	ws.onmessage = async function(e) {
-		console.log(e.data)
-		const friendBtn = document.getElementById("textFriendBtn")
-		if (friendBtn != undefined) {
-			if (!friendBtn.innerHTML.includes("alertNotification")) {
-				friendBtn.innerHTML += `
-	  <span id="alertNotification" class="position-absolute top-0 start-10 translate-middle p-1 bg-danger border border-dark rounded-circle">
-	  </span>
-	  `
-				friendBtn.addEventListener("click", (e) => {
-					let alertNotification = document.getElementById("alertNotification")
-					if (alertNotification != null) {
-						alertNotification.remove()
-					}
-				})
+		if (e.data == "Friend added" || e.data == "Friend request sent") {
+			const friendBtn = document.getElementById("textFriendBtn")
+			if (friendBtn != undefined) {
+				if (!friendBtn.innerHTML.includes("alertNotification")) {
+					friendBtn.innerHTML += `
+		  <span id="alertNotification" class="position-absolute top-0 start-10 translate-middle p-1 bg-danger border border-dark rounded-circle">
+		  </span>
+		  `
+					friendBtn.addEventListener("click", (e) => {
+						let alertNotification = document.getElementById("alertNotification")
+						if (alertNotification != null) {
+							alertNotification.remove()
+						}
+					})
+				}
 			}
 		}
 
@@ -173,11 +202,9 @@ function connectWebsocket() {
 	}
 
 	ws.onerror = function(e) {
-		console.log("Error")
 	}
 
 	ws.onclose = function(e) {
-		console.log("Connection closed")
 	}
 
     return ws
@@ -195,7 +222,8 @@ async function updateSidebar() {
 
     if (friendRequestContainer) {
         const friendRequestContent = await getFriendRequests()
-        friendRequestContainer.innerHTML = friendRequestContent
+        const sentRequestsContent = await getSentRequests()
+        friendRequestContainer.innerHTML = friendRequestContent + sentRequestsContent
     }
 
     initDeleteEventListeners()
@@ -228,10 +256,9 @@ function initDeleteEventListeners() {
 	if (deleteButtons != undefined) {
 		deleteButtons.forEach(btn => {
 			btn.addEventListener("click", async function (e) {
+				e.preventDefault()
 				const name = btn.name
 				const username = name.split('-')[1]
-				e.preventDefault()
-				console.log("Delete " + username)
 				await deleteFriendship(username)
 				updateSidebar()
 			})
@@ -240,29 +267,20 @@ function initDeleteEventListeners() {
 }
 
 export async function createSidebar() {
-    const friendBtn = document.getElementById("friendBtnNavbar")
     const friendCollapse = document.getElementById("friendCollapse")
     const friendList = await getFriendList()
     const friendRequests = await getFriendRequests()
+    const pendingFriends = await getSentRequests()
 	let friendRequestHtml = ""
 
-	// if (friendRequests.length != 0)
     friendRequestHtml = `
             <hr>
             <h3 class="text-primary fs-3 fw-bold">Requests</h3>
                 <ul class="nav nav-pills flex-column mb-auto">
-                    <div id="friendRequestContainer">${friendRequests}</div>
+                    <div id="friendRequestContainer">${friendRequests}${pendingFriends}</div>
                 </ul>
     `
 
-    friendBtn.innerHTML = `
-	<text id="textFriendBtn"
-	class="position-relative"
-	data-bs-toggle="collapse"
-	data-bs-target="#sidebarCollapse"
-	>${getSVG.navbarSVG.friends}
-	</text>
-		`
 	friendCollapse.innerHTML = `
 		<div class="container position-absolute top-5 start-70 end-0" style="max-width: 500px; z-index: 1000">
 			<div class="collapse" id="sidebarCollapse">	

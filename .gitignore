@@ -315,4 +315,4 @@ Thumbs.db
 
 
 #django image files
-django/transcendence/static
+django/transcendence/static/media/images

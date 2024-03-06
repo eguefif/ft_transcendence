@@ -88,8 +88,8 @@ export async function updateUserData() {
 	const imgElement = document.getElementById("profilePicture")
 	const imageReply = await fetcher.get("api/profile/userpicture/")
 	if (imageReply.status >= 200 && imageReply.status < 300 && imageReply.status != 202) {
-		const imageURL = URL.createObjectURL(imageReply.data)
-		imgElement.src = imageURL
+//		const imageURL = URL.createObjectURL(imageReply.data.image)
+		imgElement.src = imageReply.data.image
 		imgElement.onload = () => {
 			URL.revokeObjectURL(imageReply.data)
 		}

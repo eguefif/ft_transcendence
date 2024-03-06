@@ -12,7 +12,7 @@ export async function profile() {
 		displayErrorProfile(games)
 	}
 	else {
-		games = await getData(username)
+		games = await getGames(username)
 		renderProfileStructure(username)
 		renderStats(games)
 		renderHistory(games)
@@ -40,7 +40,7 @@ export async function getUsername() {
 	return username
 }
 
-function getData(username) {
+function getGames(username) {
 	showSpinner()
 	let games = getGameHistoryData(username)
 	return games
@@ -60,15 +60,14 @@ export function showSpinner() {
 async function getGameHistoryData(username) {
 	const retval = await fetcher.get("/api/profile/games")
 	let games = {}
-	if (retval.status >= 200 && retval.status < 300)
-		games = retval.data
-	else if (retval.status >= 300 && retval.status < 500) {
-		games = retval.data
+	if (retval.status >= 300) {
+		games["error"] = "bad request"
 		return games
 	}
-	games = setStatusGame(games, username)
+	games = retval.data
 	if ("error" in games)
 		return games
+	games = setStatusGame(games, username)
 	games = transformDate(games)
 	return games
 }
@@ -253,7 +252,7 @@ function renderHistory(games) {
 		}
 	}
 	else {
-		html += `<div class="container p-3 border fs-3 border-primary border-rounded border-3 bg-dark text-danger">No games played yet</div>`
+		html += `<div class="container p-3 border fs-3 border-primary border-rounded border-3 bg-dark text-danger">No game played yet</div>`
 	}
 	html +=`
 		</div>

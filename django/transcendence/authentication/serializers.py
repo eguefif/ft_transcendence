@@ -22,6 +22,11 @@ class UserSerializer(serializers.ModelSerializer):
             raise serializers.ValidationError("Password does not meet requirements")
         return value
 
+    def validate_email(self, value):
+        if User.objects.filter(email=value).exists():
+            raise serializers.ValidationError("This email address is aleady in use")
+        return value
+
 class ChangePasswordSerializer(serializers.ModelSerializer):
     class Meta:
         model = User
@@ -35,4 +40,3 @@ class ChangePasswordSerializer(serializers.ModelSerializer):
         if not re.fullmatch(password_regex, value):
             raise serializers.ValidationError("Password does not meet requirements")
         return value
-

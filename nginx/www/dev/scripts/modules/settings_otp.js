@@ -1,5 +1,5 @@
 import { fetcher } from "./fetcher.js"
-import { clearContent, closeCovering } from "./utils.js"
+import { clearContent, closeCovering, sendAlert } from "./utils.js"
 import { updatePassAuth } from "./settings.js"
 
 export function updateOtpToggle(data) {

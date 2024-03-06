@@ -19,7 +19,7 @@ class Profile(models.Model):
     STATUS = ( (ONLINE, 'Online'), (OFFLINE, 'Offline'), (AWAY, 'Away'), (PLAYING, 'Playing') )
     
     user = models.OneToOneField(User, on_delete=models.CASCADE)
-    profile_picture = models.ImageField(upload_to=generate_image_uuid)
+    profile_picture = models.ImageField(upload_to=generate_image_uuid, default="default/avatar.png")
     online_status = models.CharField(max_length=20, choices=STATUS, default=OFFLINE)
     channel_name = models.CharField(max_length=100, default="")
     otp_active = models.BooleanField(default=False)
