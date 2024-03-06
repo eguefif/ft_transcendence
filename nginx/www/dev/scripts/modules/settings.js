@@ -40,6 +40,7 @@ async function initSettings() {
 //    const profileImageField = document.getElementById("profileImageField")
 
 //   profileImageField.addEventListener("change", preview_image);
+	initProfileMain();
 	initProfileInfoCard();
 	await updateUserData();
 	initPasswordChange();
@@ -172,12 +173,155 @@ function createModalSettings() {
 }
 
 // PROFILE MAIN
+
+function initProfileMain() {
+	const changeImageButton = document.getElementById("profile-picture-container").querySelector("svg");
+	changeImageButton.addEventListener("click", function (e) {
+		initImageChangeForm();
+	});
+}
+
+function initImageChangeForm() {
+	createImageChangeForm();
+	imageChangeFormInteractions();
+}
+
+function createImageChangeForm() {
+	const modal = document.getElementById("settingsModal").querySelector(".modal-body");
+	const currImage = document.getElementById("profilePicture").cloneNode(true);
+	currImage.id = "image-change-form-image";
+	let form = document.createElement("div");
+	form.classList.add("covering");
+	form.innerHTML = `
+		<form id="image-change-form" action="api/profile/uploadimage/" method="POST" novalidate>
+			<div class="mb-3">
+				<div id="profileImageContainer" class="mb-3">
+					<label for="profileImageField" class="form-label">Profile picture</label>
+					<input class="form-control" type="file" id="profileImageField" accept=".png,.jpg,.jpeg,.gif">
+					<div class="validation-field" id="image-change-validation"></div>
+				</div>
+			</div>
+			<button type="submit" class="btn btn-primary" id="image-change-form-save">Save changes</button>
+			<button type="button" class="btn btn-light" id="image-change-form-cancel">Cancel</button>
+		</form>
+	`
+	modal.appendChild(form);
+	setTimeout(() => {form.classList.add("show");}, 25);
+	form.insertBefore(currImage, form.firstChild);
+}
+
+function imageChangeFormInteractions() {
+	const imageChangeForm = document.getElementById("image-change-form");
+	const btnCancel = document.getElementById("image-change-form-cancel");
+
+	btnCancel.addEventListener("click", function () {
+		closeCovering(imageChangeForm.parentElement);
+	})
+
+	const inputFields = imageChangeForm.querySelectorAll("input");
+	inputFields.forEach((inputField) => {
+		inputField.addEventListener("input", () => {
+			inputField.classList.remove("is-invalid");
+			inputField.parentElement.querySelector(".validation-field").innerText = "";
+			inputField.parentElement.querySelector(".validation-field").classList.remove("invalid-feedback");
+		});
+	});
+
+	const imageField = document.getElementById("profileImageField");
+	imageField.addEventListener("input", () => {
+		const formImage = document.getElementById("image-change-form-image");
+		const file = imageField.files[0];
+		if (!file) {
+			resetFormImage();
+			return;
+		}
+		const allowedTypes = ['image/png', 'image/jpg', 'image/jpeg', 'image/gif'];
+		if (allowedTypes.includes(file.type)) {
+			const previewURL = URL.createObjectURL(file);
+			formImage.src = previewURL;
+			formImage.onload = () => {
+				URL.revokeObjectURL(imageField.value);
+			}
+		}
+		else {
+			resetFormImage();
+		}
+	});
+
+	imageChangeForm.addEventListener("submit", async function (e) {
+		e.preventDefault();
+		if (imageChangeFormIsValid(imageChangeForm)) {
+			const data = new FormData(e.target);
+			const url = e.target.action;
+			const body = {
+				'password': data.get('old-password'),
+				'new_password': data.get('new-password'),
+			}
+			await sendImageChangeRequest(url, body);
+		}
+	})
+}
+
+function resetFormImage() {
+	const currImage = document.getElementById("profilePicture").cloneNode(true);
+	currImage.id = "image-change-form-image";
+	document.getElementById("image-change-form-image").remove();
+	const form = document.getElementById("image-change-form");
+	form.parentElement.insertBefore(currImage, form.parentElement.firstChild);
+}
+
+async function sendImageChangeRequest() {
+
+	/*
+    const validation = document.getElementById("pictureUploadValidation")
+
+    const img = document.getElementById("profilePicture")
+    const file = this.files[0]
+    const formData = new FormData()
+
+    formData.append('image', file)
+
+    const res = await fetcher.post("api/profile/uploadimage/", formData)
+    if (res.status == 201) {
+        img.src = URL.createObjectURL(file)
+        img.width = 150
+        img.height = 150
+        img.onload = () => {
+            URL.revokeObjectURL(file)
+        }
+        validation.innerHTML = ""
+    } else if (res.status == 413) {
+        validation.innerHTML = "Image is too large (> 1 mb)"
+    } else {
+        if (res.data['error'])
+            validation.innerHTML = res.data['error']
+    }
+	*/
+}
+
+function imageChangeFormIsValid() {
+	const imageInputField = document.getElementById("profileImageField");
+	const imageValidation = document.getElementById("image-change-validation");
+	let toggle = true;
+	const file = imageInputField.files[0];
+	const allowedTypes = ['image/png', 'image/jpg', 'image/jpeg', 'image/gif'];
+	if (!file || !allowedTypes.includes(file.type)) {
+		imageInputField.classList.add("is-invalid");
+		imageValidation.innerText = "Please provide a valid image file";
+		imageValidation.classList.add("invalid-feedback");
+		toggle = false;
+	}
+	return toggle;
+}
+
 function updateProfileUsername(data) {
 	const usernameField = document.getElementById("profile-main-username");
 	if (data.username) {
 		usernameField.innerText = data.username;
 	}
 }
+
+
 
 // PROFILE INFO
 
@@ -258,17 +402,17 @@ function createProfileInfoForm() {
 			<div class="mb-3">
 				<label for="info-form-first-name" class="col-md-3 col-form-label">First Name</label>
 				<input type="text" name="firstName" id="info-form-first-name" class="form-control" placeholder="First Name">
-				<div id="info-form-first-name-validation"></div>
+				<div class="validation-field" id="info-form-first-name-validation"></div>
 			</div>
 			<div class="mb-3">
 				<label for="info-form-last-name" class="col-md-3 col-form-label">Last Name</label>
 				<input type="text" name="lastName" id="info-form-last-name" class="form-control" placeholder="Last Name">
-				<div id="info-form-last-name-validation"></div>
+				<div class="validation-field" id="info-form-last-name-validation"></div>
 			</div>
 			<div class="mb-3">
 				<label for="info-form-email" class="col-md-3 col-form-label">Email</label>
 				<input type="email" name="email" id="info-form-email" class="form-control" placeholder="email" pattern="^[\\w\\-\\.]+@([\\w\\-]+\\.)+[\\w\\-]{2,4}$">
-				<div id="info-form-email-validation"></div>
+				<div class="validation-field" id="info-form-email-validation"></div>
 			</div>
 			<button type="submit" class="btn btn-primary" id="info-form-save">Save changes</button>
 			<button type="button" class="btn btn-light" id="info-form-cancel">Cancel</button>
@@ -293,7 +437,6 @@ function createProfileInfoForm() {
 		emailField.disabled = true;
 		emailField.classList.add(".form-control-disabled");
 	}
-	return form;
 }
 
 function profileInfoFormInteractions()
@@ -304,6 +447,15 @@ function profileInfoFormInteractions()
 	btnCancel.addEventListener("click", function () {
 		closeCovering(modifyProfileForm.parentElement);
 	})
+
+	const inputFields = modifyProfileForm.querySelectorAll("input");
+	inputFields.forEach((inputField) => {
+		inputField.addEventListener("input", () => {
+			inputField.classList.remove("is-invalid");
+			inputField.parentElement.querySelector(".validation-field").innerText = "";
+			inputField.parentElement.querySelector(".validation-field").classList.remove("invalid-feedback");
+		});
+	});
 
 	modifyProfileForm.addEventListener("submit", async function (e) {
 		e.preventDefault();
@@ -399,21 +551,19 @@ function createPasswordChangeForm() {
 			<div class="mb-3">
 				<label for="old-password" class="form-label">Old password</label>
 				<input type="password" name='old-password' id="old-password" class="form-control" required>
-				<div id="old-password-validation"></div>
+				<div class="validation-field" id="old-password-validation"></div>
 			</div>
 
 			<div class="mb-3">
 				<label for="new-password" class="form-label">New password</label>
-				<div class="input-group mb-3">
-					<input  type="password" name='new-password' id="new-password" class="form-control" required pattern="^(?=.*[a-z])(?=.*[A-Z])(?=.*\\d)[a-zA-Z\\d\\w\\W]{4,24}$">
-					<span data-bs-toggle="tooltip" data-bs-title="Your password must have between 4-24 characters, at least one uppercase, one lowercase and one number." data-bs-placement="right" class="input-group-text">${getSVG.formSVG.help}</span>
-				</div>
-				<div id="new-password-validation"></div>
+				<input  type="password" name='new-password' id="new-password" class="form-control" required pattern="^(?=.*[a-z])(?=.*[A-Z])(?=.*\\d)[a-zA-Z\\d\\w\\W]{4,24}$">
+				<span data-bs-toggle="tooltip" data-bs-title="Your password must have between 4-24 characters, at least one uppercase, one lowercase and one number." data-bs-placement="right" class="input-group-text">${getSVG.formSVG.help}</span>
+				<div class="validation-field" id="new-password-validation"></div>
 			</div>
 			<div class="mb-3">
 				<label for="confirm-password" class="form-label">Confirm new password</label>
 				<input type="password" name='confirm-password' id="confirm-password" class="form-control" required>
-				<div id="confirm-password-validation"></div>
+				<div class="validation-field" id="confirm-password-validation"></div>
 			</div>
 			<button type="submit" class="btn btn-primary" id="password-change-form-save">Save changes</button>
 			<button type="button" class="btn btn-light" id="password-change-form-cancel">Cancel</button>
@@ -432,6 +582,15 @@ function passwordChangeFormInteractions() {
 	btnCancel.addEventListener("click", function () {
 		closeCovering(passwordChangeForm.parentElement);
 	})
+
+	const inputFields = passwordChangeForm.querySelectorAll("input");
+	inputFields.forEach((inputField) => {
+		inputField.addEventListener("input", () => {
+			inputField.classList.remove("is-invalid");
+			inputField.parentElement.querySelector(".validation-field").innerText = "";
+			inputField.parentElement.querySelector(".validation-field").classList.remove("invalid-feedback");
+		});
+	});
 
 	passwordChangeForm.addEventListener("submit", async function (e) {
 		e.preventDefault();
@@ -592,7 +751,7 @@ function createOtpForm(qrcode) {
 		</form>
 		<div class="d-flex flex-row">
 			<button type="submit" id="activate-otp-confirm" form="activate-otp-form" class="btn btn-primary">Enable</button>
-			<button type="button" id="activate-otp-cancel" class="btn btn-danger">Cancel</button>
+			<button type="button" id="activate-otp-cancel" class="btn btn-light">Cancel</button>
 		</div>`
 	otpForm.querySelector("svg").setAttribute("style", "fill:currentColor");
 	otpForm.querySelector("svg").querySelector("path").removeAttribute("fill");

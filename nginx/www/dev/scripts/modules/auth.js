@@ -197,7 +197,7 @@ function createOtpField() {
 		</form>
 		<div class="d-flex flex-row">
 			<button type="submit" id="otp-login-confirm" form="form-otp-login" class="btn btn-primary">Submit</button>
-			<button type="button" id="otp-login-cancel" class="btn btn-danger">Cancel</button>
+			<button type="button" id="otp-login-cancel" class="btn btn-light">Cancel</button>
 		</div>`
 	modal.appendChild(otpField);
 	setTimeout(() => {otpField.classList.add("show");}, 25);
