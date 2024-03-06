@@ -1,5 +1,6 @@
 import { generateModalConnection } from "./modalConnection.js";
 import { createButton } from "./buttonNav.js";
+import { getSVG } from "./iconSVG.js"
 
 export async function createNavBar () {
 	document.querySelector('body').insertAdjacentHTML("afterbegin", navHTML());
@@ -11,7 +12,7 @@ function navHTML() {
 	<nav class="navbar navbar-expand-sm sticky-top bg-dark">
 		<div class="container-fluid">
 			<a class="navbar navbar-brand" href="/" data-link>
-				<img src="images/logo-new.png" class="nav noclick" alt="" width="150" />
+				${getSVG.navbarSVG.logo}
 			</a>
 			<div id="navBarButton">
 			</div>
