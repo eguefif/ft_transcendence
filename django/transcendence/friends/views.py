@@ -37,6 +37,26 @@ def get_friend_requests(request):
 
 @api_view(['GET'])
 @require_authorization
+def get_sent_requests(request):
+    try:
+        username = get_token_user(request.headers["Authorization"])
+        user = User.objects.get(username=username)
+
+        pending_friendships = Friendship.objects.filter(
+            user1=user,
+            status=Friendship.PENDING
+        )
+
+        user_data = []
+        for fs in pending_friendships:
+            friend_serializer = UserFriendInfoSerializer(fs.user2)
+            user_data.append(friend_serializer.data)
+        return Response(data=user_data, status=status.HTTP_200_OK)
+    except:
+        return Response({'error': 'Could not get pending friend requests'}, status=status.HTTP_400_BAD_REQUEST)
+
+@api_view(['GET'])
+@require_authorization
 def get_friend_list(request):
     try:
         username = get_token_user(request.headers["Authorization"])
@@ -118,6 +138,14 @@ def decline_friend_request(request):
         userToDecline = User.objects.get(username=request.data['username'])
         friendship = Friendship.objects.get(user1=userToDecline, user2=user)
         friendship.delete()
+
+        channel_layer = get_channel_layer()
+        if userToDecline.profile.channel_name != "":
+            async_to_sync(channel_layer.send)(userToDecline.profile.channel_name, {
+                "type": "status.change",
+                "text": "Request denied",
+            })
+
         return Response({'success': 'User has been declined'}, status=status.HTTP_200_OK)
     except Exception as e:
         return Response({'error': str(e)}, status=status.HTTP_400_BAD_REQUEST)
