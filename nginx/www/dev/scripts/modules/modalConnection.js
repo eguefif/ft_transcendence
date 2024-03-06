@@ -70,7 +70,7 @@ function CreateModal(name) {
 							<hr style="width: 33%;" class="solid">
 						</div>
 						<div class="d-flex align-items-center justify-content-center mt-2">
-							<button type="button" id="login-42" class="btn btn-primary"><img src="/images/42_Logo.svg.png" class="me-3" style="width: 25px;"/>Continue with 42</button>
+							<button type="button" id="login-42" class="btn btn-primary">${getSVG.formSVG.logo42} Continue with 42</button>
 						</div>
 					</div>
 				</div>
