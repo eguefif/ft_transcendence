@@ -267,14 +267,12 @@ function initDeleteEventListeners() {
 }
 
 export async function createSidebar() {
-    const friendBtn = document.getElementById("friendBtnNavbar")
     const friendCollapse = document.getElementById("friendCollapse")
     const friendList = await getFriendList()
     const friendRequests = await getFriendRequests()
     const pendingFriends = await getSentRequests()
 	let friendRequestHtml = ""
 
-	// if (friendRequests.length != 0)
     friendRequestHtml = `
             <hr>
             <h3 class="text-primary fs-3 fw-bold">Requests</h3>
@@ -283,14 +281,6 @@ export async function createSidebar() {
                 </ul>
     `
 
-    friendBtn.innerHTML = `
-	<text id="textFriendBtn"
-	class="position-relative"
-	data-bs-toggle="collapse"
-	data-bs-target="#sidebarCollapse"
-	>${getSVG.navbarSVG.friends}
-	</text>
-		`
 	friendCollapse.innerHTML = `
 		<div class="container position-absolute top-5 start-70 end-0" style="max-width: 500px; z-index: 1000">
 			<div class="collapse" id="sidebarCollapse">	

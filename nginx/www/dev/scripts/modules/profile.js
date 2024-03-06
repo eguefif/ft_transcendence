@@ -12,7 +12,7 @@ export async function profile() {
 		displayErrorProfile(games)
 	}
 	else {
-		games = await getData(username)
+		games = await getGames(username)
 		renderProfileStructure(username)
 		renderStats(games)
 		renderHistory(games)
@@ -40,7 +40,7 @@ export async function getUsername() {
 	return username
 }
 
-function getData(username) {
+function getGames(username) {
 	showSpinner()
 	let games = getGameHistoryData(username)
 	return games
@@ -60,12 +60,14 @@ export function showSpinner() {
 async function getGameHistoryData(username) {
 	const retval = await fetcher.get("/api/profile/games")
 	let games = {}
+	if (retval.status >= 300) {
+		games["error"] = "bad request"
+		return games
+	}
 	games = retval.data
 	if ("error" in games)
 		return games
 	games = setStatusGame(games, username)
-	if ("error" in games)
-		return games
 	games = transformDate(games)
 	return games
 }
