@@ -97,7 +97,7 @@ function createFormLogin() {
 			<div class="container text-center">
 				<button form="loginForm" type="submit" class="btn btn-primary">Submit</button>
 				<div class="d-flex align-items-center justify-content-center flex-gap-1">
-				<text class="text-light fs-6">Don't have a account yet ?</text><text class="fs-6" id="btnOpenRegister">Create account</text>
+				<text class="text-light fs-6">Don't have an account yet ? </text><text class="fs-6" id="btnOpenRegister">Create account</text>
 				</div>
 			</div>
 		</form>
@@ -148,7 +148,7 @@ function createFormRegister() {
 			<div class="container text-center">
 				<button type="submit" value="Register" class="btn btn-primary">Submit</button>
 				<div class="d-flex align-items-center justify-content-center flex-gap-1">
-					<text class="text-light fs-6">Do you have an account ?</text><text class="fs-6" id="btnOpenLogin">login</text>
+					<text class="text-light fs-6">Already have an account ? </text><text class="fs-6" id="btnOpenLogin">login</text>
 				</div>
 			</div>
 		</form>
