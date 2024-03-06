@@ -10,6 +10,7 @@ from authentication.oauth import get_42_oauth_redirect, authenticate_42_user, re
 from authentication.otp import get_new_otp_key, get_key_qr_code, get_current_code
 from authentication.serializers import UserSerializer
 from authentication.utils import get_otp_response, get_authenticated_response
+import os
 
 ###
 # Standard routes
@@ -173,8 +174,9 @@ def oauth_42(request):
 
 @api_view(['GET'])
 def login_42(request):
+    host = os.environ["HOSTNAME"]
     request_info = authenticate_42_user(request)
-    response = redirect('https://localhost')
+    response = redirect('https://' + host)
     response.set_cookie(key='oauthToken',
                         value=get_oauth_42_token(request_info['user_info'], request_info['status']),
                         max_age=timedelta(minutes=2),

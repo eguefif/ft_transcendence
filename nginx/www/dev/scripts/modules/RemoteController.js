@@ -72,6 +72,8 @@ export class RemoteController {
 		this.websocket.onclose = (e) => {
 			if (this.timeout == false)
 				this.localMsg = "Connection lost"
+			if (this.timeout == true)
+				this.localMsg = "A player has left the game"
 		}
 
 		this.websocket.onmessage = (e) => {

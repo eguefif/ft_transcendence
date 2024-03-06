@@ -159,8 +159,11 @@ function connectWebsocket() {
 	const logoutBtn = document.getElementById("logoutButton");
 	if (logoutBtn != undefined) {
 		logoutBtn.addEventListener("click", (e) => {
-            if (ws.readyState == ws.OPEN)
+   		try {
+          if (ws.readyState == ws.OPEN)
 			    ws.close()
+			}
+			catch {}
 		})
 	}
 

@@ -70,7 +70,7 @@ function CreateModal(name) {
 							<hr style="width: 33%;" class="solid">
 						</div>
 						<div class="d-flex align-items-center justify-content-center mt-2">
-							<button type="button" id="login-42" class="btn btn-primary">Login with 42</button>
+							<button type="button" id="login-42" class="btn btn-primary">${getSVG.formSVG.logo42} Continue with 42</button>
 						</div>
 					</div>
 				</div>
@@ -96,8 +96,8 @@ function createFormLogin() {
 			</div>
 			<div class="container text-center">
 				<button form="loginForm" type="submit" class="btn btn-primary">Submit</button>
-				<div class="d-flex align-items-center justify-content-center flex-gap-1">
-				<text class="text-light fs-6">Don't have an account yet ? </text><text class="fs-6" id="btnOpenRegister">Create account</text>
+				<div class="d-flex align-items-center justify-content-center flex-gap-0">
+				<text class="text-light fs-6 p-0 m-0 mx-2">Don't have an account yet ?</text><text class="fs-6 p-0 m-0" id="btnOpenRegister">Create account</text>
 				</div>
 			</div>
 		</form>
@@ -147,8 +147,8 @@ function createFormRegister() {
 			</div>
 			<div class="container text-center">
 				<button type="submit" value="Register" class="btn btn-primary">Submit</button>
-				<div class="d-flex align-items-center justify-content-center flex-gap-1">
-					<text class="text-light fs-6">Already have an account ? </text><text class="fs-6" id="btnOpenLogin">login</text>
+				<div class="d-flex align-items-center justify-content-center flex-gap-0">
+					<text class="text-light fs-6 p-0 m-0 mx-2">Already have an account ?</text><text class="fs-6" id="btnOpenLogin">Login</text>
 				</div>
 			</div>
 		</form>
