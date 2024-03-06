@@ -154,7 +154,6 @@ async function sendRegistrationRequest(url, body)
 	})
 	if (result.status >= 400 && result.status < 500)
 	{
-		console.log(result)
 		for (const obj in result.data)
 		{
 			if (obj != undefined) {
