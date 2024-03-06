@@ -40,7 +40,7 @@ function resetPasswordsFormChecks() {
 
 function passwordsMatch(form) {
 	resetPasswordsFormChecks()
-	const reg = new RegExp("^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)[a-zA-Z\d\w\W]{4,24}$")
+	const reg = new RegExp("^(?=.*[0-9])(?=.*[a-z])(?=.*[A-Z])(?!.* ).{4,16}$")
 	if (form["password"].value === "") {
 		const password = document.getElementById("password")
 		const check = document.getElementById("passwordValidation")
@@ -50,7 +50,7 @@ function passwordsMatch(form) {
 			check.innerHTML = 'Password cannot be empty'
 		return false
 	}
-	else if (!reg.test(form["password"])) {
+	else if (!reg.test(form["password"].value)) {
 		const password = document.getElementById("password")
 		const check = document.getElementById("passwordValidation")
 		if (password)
