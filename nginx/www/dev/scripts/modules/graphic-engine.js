@@ -250,11 +250,14 @@ export class Renderer{
 			this.ctx.fillText(winner, (this.bracket.width / 2) - (scale * lenWinner), this.bracket.height / 2 - this.bracket.height / 3.5)
 		}
 		this.ctx.stroke()
+		this.camera.position.set(0, 0, 4)
+		this.controls.enabled = false
 	}
 	hideBracket()
 	{
 		this.scene.remove(this.bracketMiddle, this.entryBL, this.entryBR, this.entryTL, this.entryTR, this.verticalBracketLeft, this.verticalBracketRight, this.bracketLight)
 		this.ctx.clearRect(0, 0, this.bracket.width, this.bracket.height)
+		this.controls.enabled = true
 	}
 	showBoard()
 	{
@@ -279,10 +282,10 @@ export class Renderer{
 	initStars()
 	{
 		var stars = new Array(0);
-		for ( var i = 0; i < 20000; i ++ ) {
-			let x = THREE.MathUtils.randFloatSpread( 1500 );
-			let y = THREE.MathUtils.randFloatSpread( 1500 );
-			let z = THREE.MathUtils.randFloat( -2000, 2000 );
+		for ( var i = 0; i < 40000; i ++ ) {
+			let x = THREE.MathUtils.randFloatSpread( 3000 );
+			let y = THREE.MathUtils.randFloatSpread( 3000 );
+			let z = THREE.MathUtils.randFloatSpread( 3000 );
 			if (!(x > -100 && x < 100 && y < 100 && y > -100 && z > -100 && z <100))
 				stars.push(x, y, z);
 		}
@@ -351,10 +354,16 @@ export class Renderer{
 		this.scene.add(this.pointLight, this.pointLight3, this.pointLight4);
 	}
 
-	initCameraPos()
+	resetCamera()
 	{
 		this.camera.position.set(0, 0, 4);
+	}
+
+	initCameraPos()
+	{
+		this.resetCamera()
 		this.controls = new OrbitControls( this.camera, this.renderer.domElement );
+		this.controls.enablePan = false
 	}
 	
 	render() {
@@ -368,7 +377,7 @@ export class Renderer{
 		this.sun.translateY(0.0002)
 		this.scene.traverse(this.nonBloomed.bind(this))
 		this.pointLight.intensity = (Math.sin(Date.now() / 1000) + 1) * 0.025
-		this.sunLight.intensity = 8000 * (Math.sin(Date.now() / 5000) + 3)
+		this.sunLight.intensity = 8000 * (Math.sin(Date.now() / 5000) + 2)
 		this.composer.render()
 		
 		
@@ -395,7 +404,7 @@ export const renderer = new Renderer()
 
 export class graphicEngine
 {
-	constructor(){
+	constructor(passive){
 		this.board = document.getElementById("board")
 		this.ctx =  this.board.getContext("2d")
 
@@ -405,7 +414,6 @@ export class graphicEngine
 		this.board.setAttribute('height', style_height * dpi);
 		this.board.setAttribute('width', style_width * dpi);
 		
-		// this.generalTopMargin = this.height / 10;
 		this.board.style.top = 'calc(30% + 5em)'
 		this.width = this.board.width
 		this.height = this.board.height
@@ -428,6 +436,8 @@ export class graphicEngine
 		this.marginNames = this.board.height / 5
 		
 		this.Renderer = renderer
+		if (!passive)
+			this.Renderer.resetCamera()
 		this.Renderer.showBoard()
 	}
 
@@ -444,7 +454,6 @@ export class graphicEngine
 			this.displayMessage(model.message)
 			this.displayNames(model.player1, model.player2)
 		}
-		// render()
 		this.ctx.stroke()
 	}
 
@@ -512,4 +521,3 @@ export class graphicEngine
 		this.ctx.fillText(display, this.startTimerCenter, this.startTimerMargin)
 	}
 }
-
