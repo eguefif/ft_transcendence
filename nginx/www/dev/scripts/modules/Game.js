@@ -41,6 +41,7 @@ export class Game {
 				return
 			}
 			if (!this.running) {
+				this.cleanup()
 				return
 			}
 			let data = this.controller.update()
