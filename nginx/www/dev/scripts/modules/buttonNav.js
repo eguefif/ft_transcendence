@@ -9,7 +9,7 @@ export async function createButton () {
 	if (await fetcher.isAuthenticated()) {
 		createBtns()
 		authLogout()
-		generateSettings()
+		await generateSettings()
 	}
 	else {
 		const element = document.getElementById("navBarButton")
