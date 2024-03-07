@@ -70,14 +70,17 @@ export class RemoteController {
 		}
 
 		this.websocket.onclose = (e) => {
-			if (this.timeout == false)
+			if (this.timeout == false) {
 				this.localMsg = "Connection lost"
-			if (this.timeout == true)
+				this.stop = true
+			}
+			else (this.timeout == true)
 				this.localMsg = "A player has left the game"
 		}
 
 		this.websocket.onmessage = (e) => {
 			const msg = JSON.parse(e.data)
+			console.log(msg)
 			switch (msg.command) {
 				case "authsucess":
 					this.running = "authenticated"
@@ -88,6 +91,10 @@ export class RemoteController {
 					break
 				case "timeout":
 					this.localMsg = "You waited too long to press space"
+					this.state = "ending"
+					this.timeout = true
+					break
+				case "timeoutOpponent":
 					this.state = "ending"
 					this.timeout = true
 					break
