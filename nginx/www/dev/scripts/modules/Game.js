@@ -7,12 +7,12 @@ export class Game {
 		this.eventRemover = new AbortController();
 		renderer.showBoard
 		this.controller = controller
-		this.graphicEngine = new graphicEngine()
+		this.passive = passive
+		this.graphicEngine = new graphicEngine(this.passive)
 		this.running = true
 		let menu = document.querySelector("#menubtn")
 		this.initListeners()
 		this.tournament = tournament
-		this.passive = passive
 		if (!this.passive) {
 			const startGameEvent = new Event("startGame")
 			document.dispatchEvent(startGameEvent)
