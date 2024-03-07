@@ -20,46 +20,49 @@ function createModalSettings() {
 		<div class="modal-dialog">
 			<div class="modal-content bg-dark">
 				<div class="modal-header">
-					<h1 class="modal-title fs-5" id="profileLabel">Settings</h1>
+					<h5 class="modal-title fs-5" id="profileLabel">Settings</h5>
 					<div class="btn-close" data-bs-dismiss="modal"></div>
 				</div>
 				<div class="modal-body">
 					<div>
 						<div id="profile-main" class="d-flex flex-column align-items-center">
-							<div id="profile-picture-container">
-								<img id="profilePicture" class="rounded-circle-border mx-auto d-block" alt="profilePicture"/>
-								${getSVG.formSVG.updatePicture}
+							<div id="profile-picture-container" class="d-flex justify-content-center align-items-center">
+								<div class="img-container">
+									<img id="profilePicture" class="" alt="profilePicture"/>
+								</div>
+								<div class="svg-container">
+									${getSVG.formSVG.updatePicture}
+								</div>
 							</div>
 							<span id="profile-main-username" class="fs-1"></span>
 						</div>
-						<hr style="width: 25%">
+						<hr>
 						<div id="profile-info">
-							<h5>Profile info</h5>
+							<span class="fs-5">Profile info</span>
 							<div id="info-first-name" class="d-flex flex-column">
-								<span class="fw-bold">First Name</span>
-								<span class="user-dependent"></span>
+								<span class="lh-1">First Name</span>
+								<span class="lh-sm user-dependent"></span>
 							</div>
 							<div id="info-last-name" class="d-flex flex-column">
-								<span class="fw-bold">Last Name</span>
-								<span class="user-dependent"></span>
+								<span class="lh-1">Last Name</span>
+								<span class="lh-sm user-dependent"></span>
 							</div>
 							<div id="info-email" class="d-flex flex-column">
-								<span class="fw-bold">Email</span>
+								<span class="lh-1">Email</span>
+								<span class="lh-sm user-dependent"></span>
+							</div>
+							<a id="info-edit-button" class="btn btn-primary">Edit</a>
+						</div>
+						<hr>
+						<div id="pass-auth">
+							<span class="fs-5">Password and authentication</span>
+							<div id="auth-type" class="d-flex flex-column">
+								<span class="">Account type</span>
 								<span class="user-dependent"></span>
 							</div>
-							<a id="info-edit-button" class="btn btn-primary">edit</a>
-						</div>
-						<hr style="width: 25%">
-						<div id="pass-auth">
-							<h5>Password and authentication</h5>
 							<div id="pass-change">
 							</div>
-							<div id="auth-type" class="d-flex flex-column">
-								<span class="fw-bold">Account type</span>
-								<span class="user-dependent"></span>
-							</div>
 							<div id="otp-toggle">
-								<span class="fw-bold">Two-factor authentication</span>
 								<div class="user-dependent"></div>
 							</div>
 						</div>

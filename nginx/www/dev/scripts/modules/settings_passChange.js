@@ -20,25 +20,30 @@ function createPasswordChangeForm() {
 	form.classList.add("covering");
 	form.innerHTML = `
 		<form id="password-change-form" action="api/auth/password-change" method="POST" novalidate>
-			<div class="mb-3">
+			<div class="form-field mb-2">
 				<label for="old-password" class="form-label">Old password</label>
 				<input type="password" name='old-password' id="old-password" class="form-control" required>
 				<div class="validation-field" id="old-password-validation"></div>
 			</div>
 
-			<div class="mb-3">
+			<div class="form-field mb-2">
 				<label for="new-password" class="form-label">New password</label>
-				<input  type="password" name='new-password' id="new-password" class="form-control" required pattern="^(?=.*[a-z])(?=.*[A-Z])(?=.*\\d)[a-zA-Z\\d\\w\\W]{4,24}$">
-				<span data-bs-toggle="tooltip" data-bs-title="Your password must have between 4-24 characters, at least one uppercase, one lowercase and one number." data-bs-placement="right" class="input-group-text">${getSVG.formSVG.help}</span>
+				<div class="with-tooltip">
+					<input  type="password" name='new-password' id="new-password" class="form-control" required pattern="^(?=.*[a-z])(?=.*[A-Z])(?=.*\\d)[a-zA-Z\\d\\w\\W]{4,24}$">
+					<span data-bs-toggle="tooltip" data-bs-title="Your password must have between 4-24 characters, at least one uppercase, one lowercase and one number." data-bs-placement="right" class="input-group-text">${getSVG.formSVG.help}</span>
+				</div>
 				<div class="validation-field" id="new-password-validation"></div>
+		
 			</div>
-			<div class="mb-3">
+			<div class="form-field mb-2">
 				<label for="confirm-password" class="form-label">Confirm new password</label>
 				<input type="password" name='confirm-password' id="confirm-password" class="form-control" required>
 				<div class="validation-field" id="confirm-password-validation"></div>
 			</div>
-			<button type="submit" class="btn btn-primary" id="password-change-form-save">Save changes</button>
-			<button type="button" class="btn btn-light" id="password-change-form-cancel">Cancel</button>
+			<div class="btn-container">
+				<button type="submit" class="btn btn-primary" id="password-change-form-save">Save changes</button>
+				<button type="button" class="btn btn-light" id="password-change-form-cancel">Cancel</button>
+			</div>
 		</form>
 	`
 	modal.appendChild(form);
@@ -59,8 +64,9 @@ function passwordChangeFormInteractions() {
 	inputFields.forEach((inputField) => {
 		inputField.addEventListener("input", () => {
 			inputField.classList.remove("is-invalid");
-			inputField.parentElement.querySelector(".validation-field").innerText = "";
-			inputField.parentElement.querySelector(".validation-field").classList.remove("invalid-feedback");
+			const validationId = inputField.id + "-validation";
+			document.getElementById(validationId).innerText = "";
+			document.getElementById(validationId).classList.remove("invalid-feedback");
 		});
 	});
 

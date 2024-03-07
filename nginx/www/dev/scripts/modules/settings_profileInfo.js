@@ -21,23 +21,25 @@ function createProfileInfoForm() {
 	form.classList.add("covering");
 	form.innerHTML = `
 		<form id="profileForm" action="api/profile/updateprofile/" method="POST" novalidate>
-			<div class="mb-3">
+			<div class="form-field mb-2">
 				<label for="info-form-first-name" class="col-md-3 col-form-label">First Name</label>
 				<input type="text" name="firstName" id="info-form-first-name" class="form-control" placeholder="First Name">
 				<div class="validation-field" id="info-form-first-name-validation"></div>
 			</div>
-			<div class="mb-3">
+			<div class="form-field mb-2">
 				<label for="info-form-last-name" class="col-md-3 col-form-label">Last Name</label>
 				<input type="text" name="lastName" id="info-form-last-name" class="form-control" placeholder="Last Name">
 				<div class="validation-field" id="info-form-last-name-validation"></div>
 			</div>
-			<div class="mb-3">
+			<div class="form-field mb-2">
 				<label for="info-form-email" class="col-md-3 col-form-label">Email</label>
 				<input type="email" name="email" id="info-form-email" class="form-control" placeholder="email" pattern="^[\\w\\-\\.]+@([\\w\\-]+\\.)+[\\w\\-]{2,4}$">
 				<div class="validation-field" id="info-form-email-validation"></div>
 			</div>
-			<button type="submit" class="btn btn-primary" id="info-form-save">Save changes</button>
-			<button type="button" class="btn btn-light" id="info-form-cancel">Cancel</button>
+			<div class="btn-container">
+				<button type="submit" class="btn btn-primary" id="info-form-save">Save changes</button>
+				<button type="button" class="btn btn-light" id="info-form-cancel">Cancel</button>
+			</div>
 		</form>
 	`
 	const currFirstName = document.getElementById("info-first-name").querySelector(".user-dependent").innerText;

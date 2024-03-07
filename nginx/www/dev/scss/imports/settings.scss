@@ -44,7 +44,7 @@
     text-align: center;
     color: $light;
   }
-  div {
+  > div {
     display: flex;
     flex-direction: row;
     justify-content: center;
@@ -53,9 +53,147 @@
   }
 }
 
-#profilePicture {
-	max-width: 100%;
-    max-height: 100%;
-    min-width: 100%;
-    max-width: 100%;
+#settingsModal {
+  .modal-header {
+    h5 {
+      color: $light;
+    }
+  }
+  hr {
+    color: $light;
+    min-width: 75%;
+  }
+  .modal-body {
+    > div {
+      display: flex;
+      gap: 0.5rem;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      #profile-info, #pass-auth {
+        .fs-5 {
+          color: $light;
+        }
+        span {
+          color: $light-faded;
+          &.user-dependent {
+            color: $light;
+          }
+        }
+        min-width: 100%;
+        display: flex;
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 0.75rem;
+      }
+    }
+  }
+  .btn {
+    min-width: 130px;
+    margin-top: 0.25rem;
+
+    &.btn-primary:hover {
+      background-color: $primary-hover;
+      border-color: $primary-hover;
+    }
+  }
+  .img-container {
+    margin-top: 0.5rem;
+    margin-bottom: 0.5rem;
+    align-self: center;
+    width: min(calc(0.3 * 500px), 50vw);
+    height: min(calc(0.3 * 500px), 50vw);
+    overflow: hidden;
+    position: relative;
+    border-radius: 50%;
+    img {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      height: 100%;
+      width: 100%;
+      object-fit: cover;
+    }
+  }
+  form {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    .form-field {
+      min-width: 100%;
+      display: flex;
+      flex-direction: column;
+      align-items: flex-start;
+      gap: 0px;
+      label {
+        color: $light-faded; 
+      }
+      .with-tooltip {
+        display: flex;
+        input {
+          border-top-right-radius: 0px;
+          border-bottom-right-radius: 0px;
+        }
+        .input-group-text {
+          border-top-left-radius: 0px;
+          border-bottom-left-radius: 0px;
+        }
+        svg {
+          color: $dark;
+        }
+      }
+    }
+    .validation-field {
+      position: relative;
+    }
+    .invalid-feedback {
+      display: block;
+    }
+    .btn-container {
+      margin-top: 1rem;
+    }
+  }
+}
+
+#profile-main {
+  #profile-picture-container {
+    position: relative;
+    .svg-container {
+      position: absolute;
+      right: 3%;
+      bottom: 3%;
+      width: 20%;
+      height: 20%;
+      border-radius: 50%;
+      background-color: $dark;
+      color: $primary;
+      border-style: solid;
+      border-width: 1px;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      transition: $animation-fast-time;
+      svg {
+        width: 75%
+      }
+      &:hover {
+        cursor: pointer;
+        color: $primary-hover;
+      }
+    }
+  }
+  #profile-main-username {
+    color: $light;
+  }
+}
+
+#pass-auth {
+  #pass-change {
+    transition: $animation-fast-time;
+    &:hover {
+      cursor: pointer;
+      color: $primary-hover;
+    }
+  }
 }

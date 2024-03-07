@@ -22,20 +22,23 @@ function createImageChangeForm() {
 	form.classList.add("covering");
 	form.innerHTML = `
 		<form id="image-change-form" action="api/profile/uploadimage/" method="POST" novalidate>
-			<div class="mb-3">
-				<div id="profileImageContainer" class="mb-3">
+			<div class="img-container"></div>
+			<div>
+				<div id="profileImageContainer" class="form-field">
 					<label for="profileImageField" class="form-label">Profile picture</label>
 					<input class="form-control" type="file" id="profileImageField" accept=".png,.jpg,.jpeg,.gif">
 					<div class="validation-field" id="image-change-validation"></div>
 				</div>
 			</div>
-			<button type="submit" class="btn btn-primary" id="image-change-form-save">Save changes</button>
-			<button type="button" class="btn btn-light" id="image-change-form-cancel">Cancel</button>
+			<div class="btn-container">
+				<button type="submit" class="btn btn-primary" id="image-change-form-save">Save changes</button>
+				<button type="button" class="btn btn-light" id="image-change-form-cancel">Cancel</button>
+			</div>
 		</form>
 	`
 	modal.appendChild(form);
 	setTimeout(() => {form.classList.add("show");}, 25);
-	form.insertBefore(currImage, form.firstChild);
+	document.getElementById("image-change-form").querySelector(".img-container").appendChild(currImage);
 }
 
 function imageChangeFormInteractions() {
@@ -95,7 +98,7 @@ function resetFormImage() {
 	currImage.id = "image-change-form-image";
 	document.getElementById("image-change-form-image").remove();
 	const form = document.getElementById("image-change-form");
-	form.parentElement.insertBefore(currImage, form.parentElement.firstChild);
+	document.getElementById("image-change-form").querySelector(".img-container").appendChild(currImage);
 }
 
 async function sendImageChangeRequest() {
