@@ -8,7 +8,7 @@ export function updateOtpToggle(data) {
 	if (data.authType == 42) {
 		const text = document.createElement("span");
 		otpToggle.appendChild(text);
-		text.innerText = "not available (42 user)"
+		text.innerText = "2FA is not available (42 user)"
 	}
 	else {
 		const button = document.createElement("button");
