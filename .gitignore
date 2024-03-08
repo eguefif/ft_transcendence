@@ -1,8 +1,10 @@
 *.swp
 *.swo
 nginx/www/dev/styles/styles.css
+nginx/www/build/images/save
 package-lock.json
 :w
+
 
 # Byte-compiled / optimized / DLL files
 __pycache__/
@@ -14,7 +16,6 @@ __pycache__/
 
 # Distribution / packaging
 .Python
-build/
 develop-eggs/
 dist/
 downloads/
@@ -185,7 +186,6 @@ cython_debug/
 ## Specific to RubyMotion:
 .dat*
 .repl_history
-build/
 *.bridgesupport
 build-iPhoneOS/
 build-iPhoneSimulator/

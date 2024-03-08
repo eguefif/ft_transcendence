@@ -1,3 +1,4 @@
+import * as bootstrap from "../bootstrap/bootstrap.bundle.min.js";
 import { createAlert } from "./utils.js"
 import { refreshContent } from "./refreshContent.js"
 

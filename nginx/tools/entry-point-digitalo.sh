@@ -12,7 +12,6 @@ if [ $i = 30 ]; then
 	echo "connection with django failed: " $i
 fi
 
-
 cd /var/www/dev/
 
 sed -i '1s/\/\///' ./scripts/modules/modalConnection.js
