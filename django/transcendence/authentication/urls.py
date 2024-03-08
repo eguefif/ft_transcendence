@@ -12,7 +12,8 @@ urlpatterns = [
         path('auth/otp/deactivate', views.otp_deactivate),
         path('auth/oauth/42', views.oauth_42),
         path('auth/oauth/42/login', views.login_42),
-        path('auth/oauth', views.oauth)
+        path('auth/oauth', views.oauth),
+        path('auth/password-change', views.password_change)
         ]
 
 urlpattenrs = format_suffix_patterns(urlpatterns);

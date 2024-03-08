@@ -131,23 +131,27 @@ export class Tournament {
 			if (this.players.filter(x => x == this.players[1]).length > 1) {
 				const input = document.getElementById("player1Tournament")
 				const value = input.value
-				input.setCustomValidity('${value} is a duplicate')
+				input.setCustomValidity(`${value} is a duplicate`)
+				input.reportValidity()
 			}
 		}
 		if (this.players.filter(x => x == this.players[2]).length > 1) {
 			const input = document.getElementById("player2Tournament")
 			const value = input.value
-			input.setCustomValidity('${value} is a duplicate')
+			input.setCustomValidity(`${value} is a duplicate`)
+			input.reportValidity()
 		}
 		if (this.players.filter(x => x == this.players[3]).length > 1) {
 			const input = document.getElementById("player3Tournament")
 			const value = input.value
-			input.setCustomValidity('${value} is a duplicate')
+			input.setCustomValidity(`${value} is a duplicate`)
+			input.reportValidity()
 		}
 		if (this.players.filter(x => x == this.players[4]).length > 1) {
 			const input = document.getElementById("player4Tournament")
 			const value = input.value
-			input.setCustomValidity('${value} is a duplicate')
+			input.setCustomValidity(`${value} is a duplicate`)
+			input.reportValidity()
 		}
 
 	}
@@ -194,7 +198,7 @@ export class Tournament {
 			this.winnerSemi1, this.winnerSemi2, `🏆 The winner is ${this.winner} 🏆`)
 			return
 		}
-		if (this.game == 1){ 
+		if (this.game == 1){
 			renderer.showBracket(this.game, this.players[1], this.players[2], this.players[3], this.players[4])
 		}
 		if (this.game == 2) {
@@ -250,7 +254,7 @@ function tournamentForm() {
 				<div class="invalid-feedback">Aliases are between 4 and 24 characters and are unique</div>
 			</div>
 			<div id="tournamentError"></div>
-			<input type="submit" id="tournamentFormSubmit" value="submit">
+			<button type="submit" id="tournamentFormSubmit" class="btn btn-primary">Submit</button>
 		</form>
 	</div>
 

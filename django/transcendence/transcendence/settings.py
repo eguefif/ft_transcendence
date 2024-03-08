@@ -31,7 +31,7 @@ SECRET_KEY = env["SECRET"]
 
 DEBUG = env["DEBUG"]
 
-if env["DEBUG"]:
+if env["DEBUG"] == "True":
     ALLOWED_HOSTS = ["localhost", env["HOSTNAME"], "django"]
 else:
     ALLOWED_HOSTS = [env["HOSTNAME"], "django"]
@@ -159,6 +159,9 @@ STATIC_URL = 'static/'
 # https://docs.djangoproject.com/en/5.0/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
-
-MEDIA_ROOT = os.path.join(BASE_DIR, 'static/media/')
-MEDIA_URL = '/media/'
+if env["DEBUG"] == "True":
+    MEDIA_ROOT = os.path.join(BASE_DIR, 'static/media/')
+    MEDIA_URL = '/media/'
+else:
+    MEDIA_ROOT = "/var/django/media/"
+    MEDIA_URL = "/media/"

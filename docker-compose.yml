@@ -28,6 +28,8 @@ services:
         condition: service_healthy
     networks:
       - transcendence-net
+    volumes:
+      - django-vol:/var/django/
 
   postgres:
     image: postgres:latest
@@ -62,6 +64,8 @@ services:
 volumes:
   postgres-vol:
     name: postgres-vol
+  django-vol:
+    name: django-vol
 
 networks:
   transcendence-net:

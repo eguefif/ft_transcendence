@@ -17,6 +17,6 @@ class UserProfileSerializer(serializers.ModelSerializer):
     def validate_email(self, value):
         if self.instance.profile.oauth_42_active and self.instance.email != value:
             raise serializers.ValidationError("Cannot change email when authenticated with 42")
-        if User.objects.filter(email=value).exists():
+        if User.objects.filter(email=value).exists() and value != self.instance.email:
             raise serializers.ValidationError("This email address is aleady in use")
         return value

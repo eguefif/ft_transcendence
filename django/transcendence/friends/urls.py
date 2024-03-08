@@ -9,6 +9,7 @@ urlpatterns = [
         path('accept_friend_request/', views.accept_friend_request),
         path('decline_friend_request/', views.decline_friend_request),
         path('delete_friendship/', views.delete_friendship),
+        path('get_sent_requests/', views.get_sent_requests),
         ]
 
 urlpatterns = format_suffix_patterns(urlpatterns)

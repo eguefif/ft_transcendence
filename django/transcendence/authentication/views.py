@@ -1,3 +1,4 @@
+from os import environ
 from datetime import timedelta
 from django.contrib.auth.models import User
 from django.shortcuts import get_object_or_404, redirect
@@ -8,7 +9,7 @@ from authentication.decorator import require_authorization, require_otp_token
 from authentication.manageTokens import get_token_user, get_oauth_42_token, get_decoded_token
 from authentication.oauth import get_42_oauth_redirect, authenticate_42_user, refresh_42_tokens
 from authentication.otp import get_new_otp_key, get_key_qr_code, get_current_code
-from authentication.serializers import UserSerializer
+from authentication.serializers import UserSerializer, ChangePasswordSerializer
 from authentication.utils import get_otp_response, get_authenticated_response
 
 ###
@@ -71,6 +72,19 @@ def refresh(request):
     response.status_code = status.HTTP_400_BAD_REQUEST
     return response
 
+@api_view(['POST'])
+@require_authorization
+def password_change(request):
+    user = get_object_or_404(User, username=get_token_user(request.headers["Authorization"]));
+    if user.profile.oauth_42_active or not user.check_password(request.data['password']):
+        return Response({'old_password': 'Wrong credentials'}, status=status.HTTP_404_NOT_FOUND)
+    data = {'password': request.data['new_password']}
+    serializer = ChangePasswordSerializer(user, data=data)
+    if serializer.is_valid():
+        user.set_password(request.data['new_password'])
+        user.save()
+        return Response(status.HTTP_200_OK)
+    return Response({'new_password': serializer.errors['password']}, status=status.HTTP_400_BAD_REQUEST)
 
 ###
 # OTP routes
@@ -81,9 +95,9 @@ def refresh(request):
 def otp(request):
     try:
         code = request.data["code"]
+        user = User.objects.get(username=get_token_user(request.headers["Authorization"]))
     except:
-        return Response({'info': 'invalid code'}, status.HTTP_400_BAD_REQUEST)
-    user = User.objects.get(username=get_token_user(request.headers["Authorization"]))
+        return Response({'info': 'bad request'}, status.HTTP_400_BAD_REQUEST)
     otp_key = user.profile.otp_key
     if (get_current_code(otp_key) == code and code != user.profile.otp_previous):
         user.profile.otp_previous = code
@@ -113,7 +127,7 @@ def otp_activate_confirm(request):
     otp_key = user.profile.otp_key
     if (get_current_code(otp_key) == code and code != user.profile.otp_previous):
         user.profile.otp_previous = code
-        user.profile.otp_active = True;
+        user.profile.otp_active = True
         user.save()
         return Response(status.HTTP_204_NO_CONTENT)
     return Response({'info': 'invalid code'}, status.HTTP_400_BAD_REQUEST)
@@ -163,7 +177,7 @@ def oauth(request):
     except:
         response.status_code = status.HTTP_401_UNAUTHORIZED
         return response
-    reponse.status_code = status.HTTP_400_BAD_REQUEST
+    response.status_code = status.HTTP_400_BAD_REQUEST
     return response
 
 @api_view(['POST'])
@@ -174,7 +188,7 @@ def oauth_42(request):
 @api_view(['GET'])
 def login_42(request):
     request_info = authenticate_42_user(request)
-    response = redirect('https://localhost')
+    response = redirect("https://" + environ['HOSTNAME'])
     response.set_cookie(key='oauthToken',
                         value=get_oauth_42_token(request_info['user_info'], request_info['status']),
                         max_age=timedelta(minutes=2),

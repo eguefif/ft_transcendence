@@ -1,8 +1,7 @@
 import { fetcher } from "./fetcher.js"
-import { pongMenu } from "./pong.js"
 import { closeModal } from "./modalConnection.js";
-import { createButton } from "./buttonNav.js";
-import { initSidebar } from "./friendSidebar.js"
+import { closeCovering, sendAlert } from "./utils.js";
+import { refreshContent } from "./refreshContent.js"
 
 export function authLogout()
 {
@@ -13,17 +12,15 @@ export function authLogout()
 		if (result.status >= 200 && result.status < 300) {
 			localStorage.removeItem("refreshExpiry")
 			fetcher.reset()
-			await createButton()
-			await pongMenu()
-			await initSidebar()
+			await refreshContent()
 		}
 		else {
-			console.log("Logout failed")
+			console.log("Logout failed");
 		}
 	});
 }
 
-function resetPasswordsFormChecks(form) {
+function resetPasswordsFormChecks() {
 	const password = document.getElementById("password")
 	const password_check = document.getElementById("password-check")
 	const check = document.getElementById("passwordValidation")
@@ -43,7 +40,8 @@ function resetPasswordsFormChecks(form) {
 }
 
 function passwordsMatch(form) {
-	resetPasswordsFormChecks(form)
+	resetPasswordsFormChecks()
+	const reg = new RegExp("^(?=.*[0-9])(?=.*[a-z])(?=.*[A-Z])(?!.* ).{4,16}$")
 	if (form["password"].value === "") {
 		const password = document.getElementById("password")
 		const check = document.getElementById("passwordValidation")
@@ -51,6 +49,15 @@ function passwordsMatch(form) {
 			password.classList.add("is-invalid")
 		if (check)
 			check.innerHTML = 'Password cannot be empty'
+		return false
+	}
+	else if (!reg.test(form["password"].value)) {
+		const password = document.getElementById("password")
+		const check = document.getElementById("passwordValidation")
+		if (password)
+			password.classList.add("is-invalid")
+		if (check)
+			check.innerHTML = 'Password wrong format'
 		return false
 	}
 	else if ((form["password"].value != form["password-check"].value)) {
@@ -158,7 +165,6 @@ async function sendRegistrationRequest(url, body)
 	})
 	if (result.status >= 400 && result.status < 500)
 	{
-		console.log(result)
 		for (const obj in result.data)
 		{
 			if (obj != undefined) {
@@ -176,9 +182,7 @@ async function sendRegistrationRequest(url, body)
 		localStorage.setItem("refreshExpiry", `${refreshExpiry}`)
 		fetcher.setAccess(result.data.accessToken);
 		closeModal('connectionModal')
-		await createButton()
-		await pongMenu()
-		await initSidebar()
+		await refreshContent()
 		return true
 	}
 }
@@ -211,7 +215,7 @@ export function authLogin()
 	login42.addEventListener("click", async function() {
 		let result = await fetcher.post("/api/auth/oauth/42");
 		if (result.status >= 200 && result.status < 300) {
-			localStorage.setItem("oauth-42", "I'm a ninja"); 
+			localStorage.setItem("oauth-42", "I'm a ninja");
 			window.location.href = result.data.redirect
 		}
 	});
@@ -245,9 +249,7 @@ async function sendLoginRequest(url, body)
 			localStorage.setItem("refreshExpiry", `${refreshExpiry}`)
 			fetcher.setAccess(result.data.accessToken);
 			closeModal('connectionModal')
-		  	await createButton()
-			await pongMenu()
-			await initSidebar()
+			refreshContent()
 		}
 		else {
 			if (validationPass) {
@@ -266,46 +268,52 @@ async function sendLoginRequest(url, body)
 }
 
 async function requireOtp() {
-	let code;
-	while (!code) {
-		code = prompt("Please enter one time password");
-	}
-	const refreshExpiry = Date.now() + fetcher.refreshDuration;
-	const result = await fetcher.post("/api/auth/otp/login", {"code": code});
-	if (result.status >= 200 && result.status < 300){
-		localStorage.setItem("refreshExpiry", `${refreshExpiry}`)
-		fetcher.setAccess(result.data.accessToken);
-		closeModal("connectionModal");
-		await createButton();
-		await pongMenu();
-		await initSidebar()
-	}
-	else {
-		await requireOtp()
-	}
+	const otpField = createOtpField();
+	otpField.querySelector("#otp-login-cancel").addEventListener("click", () => {
+		closeCovering(otpField);
+	});
+	otpField.querySelector("input").addEventListener("input", (e) => {
+		e.target.classList.remove("is-invalid");
+	});
+	otpField.querySelector("form").addEventListener("submit", async (e) => {
+		e.preventDefault();
+		const data = new FormData(e.target);
+		const code = data.get('otp-code');
+		if (!code || !(/^\d+$/.test(code))) {
+			otpField.querySelector("input").classList.add("is-invalid");
+			return;
+		}
+		const refreshExpiry = Date.now() + fetcher.refreshDuration;
+		const result = await fetcher.post("/api/auth/otp/login", {'code': code});
+		if (result.status >= 200 && result.status < 300) {
+			closeCovering(otpField);
+			localStorage.setItem("refreshExpiry", `${refreshExpiry}`)
+			fetcher.setAccess(result.data.accessToken);
+			closeModal("connectionModal");
+			await refreshContent();
+		}
+		else {
+			otpField.querySelector("input").classList.add("is-invalid");
+		}
+	});
 }
 
-// THIS IS A TEMPORARY SETUP TO VALIDATE BACKEND AND NEEDS TO BE IMPLEMENTED PROPERLY
-function activateOtp() {
-	const button = document.createElement("button");
-	button.innerText = "Activate 2FA";
-	document.querySelector("body").appendChild(button);
-	button.addEventListener("click", async function() {
-		const result = await fetcher.post("/api/auth/otp/activate");
-		const qrcode = document.createElement("div")
-		let qrcodeSvq = result.data.otpCode;
-		qrcode.innerHTML = result.data.otpCode;
-		document.querySelector("body").appendChild(qrcode);
-		setTimeout(() => {
-			qrcode.remove();
-		}, 5000);
-	})
-	const otherButton = document.createElement("button");
-	otherButton.innerText = "Deactivate 2FA";
-	document.querySelector("body").appendChild(otherButton);
-	otherButton.addEventListener("click", async function() {
-		let result = await fetcher.post("/api/auth/otp/deactivate");
-	})
+function createOtpField() {
+	const modal = document.querySelector("#connectionModal").querySelector(".modal-body");
+	let otpField = document.createElement("div");
+	otpField.classList.add("covering");
+	otpField.innerHTML = `
+		<span>Please enter your 2FA one-time password.</span>
+		<form id="form-otp-login" action="/api/auth/otp/login" method="POST">
+			<input class="form-control" name="otp-code" type="text"></input>
+		</form>
+		<div class="d-flex flex-row">
+			<button type="submit" id="otp-login-confirm" form="form-otp-login" class="btn btn-primary">Submit</button>
+			<button type="button" id="otp-login-cancel" class="btn btn-light">Cancel</button>
+		</div>`
+	modal.appendChild(otpField);
+	setTimeout(() => {otpField.classList.add("show");}, 25);
+	return otpField;
 }
 
 export async function tryAuthenticating() {

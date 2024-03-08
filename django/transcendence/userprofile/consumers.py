@@ -52,7 +52,6 @@ def get_friends_channel_names(user):
 
         return channels
     except:
-        print("Could not get users")
         return None
 
 class OnlineStatusConsumer(AsyncWebsocketConsumer):
@@ -125,14 +124,13 @@ class OnlineStatusConsumer(AsyncWebsocketConsumer):
             await self.close()
         
     async def disconnect(self, close_code):
-        print(f'Closed connection. code={close_code}')
         await set_status(self.user, Profile.OFFLINE)
         channel_layer = get_channel_layer()
         channels = await get_friends_channel_names(self.user)
         for c in channels:
                         await channel_layer.send(c, {
                             "type": "status.change",
-                            "text": "online",
+                            "text": "offline",
                         })
         self.check_last_echo_task.cancel()
 

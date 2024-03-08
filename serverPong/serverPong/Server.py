@@ -183,6 +183,9 @@ class serverPong:
         if self.get_game_state(gameid) != "ending":
             tasks = self.create_tasks(websocket, gameid, player)
             await asyncio.gather(*tasks)
+        elif self.get_game_state(gameid) == "timeout":
+            await self.send_msg(websocket, {"command": "timeoutOpponent"}, player)
+            await self.close_websocket_and_remove_game(websocket, gameid, player)
         else:
             ending_msg = await self.get_ending_message(gameid)
             await self.send_msg(websocket, ending_msg)
@@ -212,6 +215,7 @@ class serverPong:
                 if timeout == 0:
                     if await self.send_msg(websocket, {"command": "timeout"}, player):
                         return False
+                    self.state = "timeout"
                     logging.error(f"Timeout for {player}, ({websocket})")
                     return False
                 await asyncio.sleep(0.5)
