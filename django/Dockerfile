@@ -13,7 +13,7 @@ COPY ./transcendence /var/src/app/
 
 COPY ./tools/entry-point-deploy.sh /entry-point.sh
 RUN chmod +x /entry-point.sh
-RUN mkdir -p /var/django/media/images
+COPY ./transcendence/static/media/default/avatar.png /
 
 EXPOSE 8000
 

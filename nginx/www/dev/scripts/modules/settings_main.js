@@ -1,3 +1,4 @@
+import * as bootstrap from "../bootstrap/bootstrap.bundle.min.js";
 import { fetcher } from "./fetcher.js"
 import { sendAlert, closeCovering } from "./utils.js"
 import { updateUserData } from "./settings.js"

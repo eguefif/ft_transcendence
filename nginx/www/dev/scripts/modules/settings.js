@@ -5,6 +5,7 @@ import { initProfileMain } from "./settings_main.js"
 import { initProfileInfoCard } from "./settings_profileInfo.js"
 import { initPasswordChange } from "./settings_passChange.js"
 import { updateOtpToggle } from "./settings_otp.js"
+import * as bootstrap from "../bootstrap/bootstrap.bundle.min.js";
 
 export async function generateSettings() {
 	removeModal()
@@ -91,7 +92,6 @@ export async function updateUserData() {
 	const imgElement = document.getElementById("profilePicture")
 	const imageReply = await fetcher.get("api/profile/userpicture/")
 	if (imageReply.status >= 200 && imageReply.status < 300 && imageReply.status != 202) {
-//		const imageURL = URL.createObjectURL(imageReply.data.image)
 		imgElement.src = imageReply.data.image
 		imgElement.onload = () => {
 			URL.revokeObjectURL(imageReply.data)

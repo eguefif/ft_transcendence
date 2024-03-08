@@ -22,3 +22,13 @@
     height:38em;
     scrollbar-color: $primary $dark;
 }
+
+.user-link {
+	span {
+		cursor: pointer;
+		transition: $animation-fast-time;
+		&:hover {
+			color: $primary-hover;
+		}
+	}
+}

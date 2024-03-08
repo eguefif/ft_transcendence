@@ -1,3 +1,4 @@
+import * as bootstrap from "../bootstrap/bootstrap.bundle.min.js";
 import { fetcher } from "./fetcher.js"
 import { clearContent, closeCovering, sendAlert } from "./utils.js"
 import { updatePassAuth } from "./settings.js"

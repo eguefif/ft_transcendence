@@ -100,7 +100,7 @@ def is_friend(target, user):
         (Q(user1=target) & Q(user2=user))
     ).exists()
 
-def get_games_history(games, user):
+def get_games_history(games, user, currentUsername):
     retval = dict()
     counter = 0
     usrImg = get_image(user)
@@ -132,7 +132,7 @@ def get_games_history(games, user):
         entry["player2"] = player2
         entry["player1_add"] = True
         entry["player2_add"] = True
-        if user.username == player1:
+        if currentUsername == player1:
             entry["player2_add"] = is_friend(player2_user, player1_user)
         else:
             entry["player1_add"] = is_friend(player1_user, player2_user)
@@ -149,15 +149,17 @@ def get_games_history(games, user):
 @require_authorization
 def get_games(request):
     try:
-        username = get_token_user(request.headers["Authorization"])
+        username = request.GET["user"]
+        currentUsername = get_token_user(request.headers["Authorization"])
+        print("username request: ", username)
+        print("Current user:", username)
     except Exception as e:
-        print("in request catch:", e)
-        return Response(retval, status.HTTP_400_BAD_REQUEST)
+        return Response({"error": "username not found"}, status.HTTP_400_BAD_REQUEST)
     try:
         user = User.objects.get(username=username)
     except Exception:
         retval = {}
-        retval = {"error": "no such username in database"}
+        retval = {"error": "username not found"}
         return Response(retval, status.HTTP_400_BAD_REQUEST)
     games = Game.objects.all().filter(Q(player1__id=user.id) |
                                     Q(player2__id=user.id)).order_by('-time')
@@ -166,7 +168,7 @@ def get_games(request):
         retval = {"error": "No game played yet"}
         return Response(retval, status.HTTP_200_OK)
 
-    games_history = get_games_history(games, user)
+    games_history = get_games_history(games, user, currentUsername)
 
     if not games_history:
         retval = {}
