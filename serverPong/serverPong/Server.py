@@ -145,6 +145,7 @@ class serverPong:
 
     def end_game(self, username):
         gameid = self.get_game_by_username(username)
+        self.set_game_to_disconnected(gameid)
         self.games[gameid].set_looser_by_username(username)
 
     def get_game_by_username(self, username):
