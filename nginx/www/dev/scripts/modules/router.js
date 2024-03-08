@@ -21,7 +21,6 @@ export function initRouter() {
 		]
 		
 		const potentialMatches = routes.map((route) => {
-			var path = location.pathname.split("/")[1]
 			return {
 				route: route,
 				isMatch: location.pathname === route.path
