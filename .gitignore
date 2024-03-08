@@ -1,8 +1,10 @@
 *.swp
 *.swo
 nginx/www/dev/styles/styles.css
+nginx/www/build/images/save
 package-lock.json
 :w
+
 
 # Byte-compiled / optimized / DLL files
 __pycache__/
