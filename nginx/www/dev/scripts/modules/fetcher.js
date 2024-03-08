@@ -196,8 +196,13 @@ function createFetcher() {
 	const sendToken = async (websocket) => {
 		if (await token.refresh()) {
 			let rettoken = token.get()
-				websocket.send(JSON.stringify({"token": rettoken}))
-				return true
+				try {
+					websocket.send(JSON.stringify({"token": rettoken}))
+					return true
+				}
+				catch {
+					return false
+				}
 		}
 		else {
 			return false

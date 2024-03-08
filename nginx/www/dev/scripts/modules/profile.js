@@ -35,7 +35,6 @@ export async function getUsername() {
 		username = msg.data.username
 	else{
 		username = "error"
-		console.log("Error in getusername")
 	}
 	return username
 }
@@ -273,8 +272,6 @@ function addEventListenerAddFriend() {
 	const history = document.getElementById("history")
 	if (history != undefined)
 		history.addEventListener("click", eventAddFriend);
-	else
-		console.log("error getting profileDiv")
 }
 
 async function eventAddFriend(e) {

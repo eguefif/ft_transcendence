@@ -147,13 +147,21 @@ function connectWebsocket() {
     let ws = new WebSocket(`wss://${hostname}/online_status/`)
 
 	document.addEventListener("startGame", (e) => {
-        if (ws.readyState == ws.OPEN)
-		    ws.send(JSON.stringify({"message": "Game started"}))
+        if (ws.readyState == ws.OPEN) {
+			try {
+		    	ws.send(JSON.stringify({"message": "Game started"}))
+			}
+			catch {}
+		}
 	})
 
 	document.addEventListener("endGame", (e) => {
-        if (ws.readyState == ws.OPEN)
-		    ws.send(JSON.stringify({"message": "Game ended"}))
+        if (ws.readyState == ws.OPEN) {
+			try {
+		    	ws.send(JSON.stringify({"message": "Game ended"}))
+			}
+			catch {}
+		}
 	})
 
 	const logoutBtn = document.getElementById("logoutButton");
@@ -169,9 +177,12 @@ function connectWebsocket() {
 
 	ws.onopen = async function(e) {
 		await fetcher.sendToken(ws)
-        ws.send(JSON.stringify({
-            "message": "online",
-        }))
+		try {
+			ws.send(JSON.stringify({
+				"message": "online",
+			}))
+		}
+		catch {}
 	}
 
 	ws.onmessage = async function(e) {
@@ -195,13 +206,19 @@ function connectWebsocket() {
 
         if (e.data == 'server:Game started')
         {
-            ws.send(JSON.stringify({
-                "message": "Game started"
-            }))
+			try {
+				ws.send(JSON.stringify({
+					"message": "Game started"
+				}))
+			}
+			catch {}
         } else if (e.data == 'server:Game ended') {
-            ws.send(JSON.stringify({
-                "message": "Game ended"
-            }))
+			try {
+				ws.send(JSON.stringify({
+					"message": "Game ended"
+				}))
+			}
+			catch {}
         }
 
         await updateSidebar()
@@ -300,7 +317,12 @@ export async function createSidebar() {
 			</div>
 		</div>
     `
-
+	const collapse = document.getElementById("sidebarCollapse")
+	if (collapse) {
+		document.addEventListener("click", () => {
+			collapse.classList.remove("show")
+		});
+	}
     initFriendRequestsEventListeners()
     initDeleteEventListeners()
 }
@@ -319,9 +341,12 @@ export async function initSidebar() {
 
     window.addEventListener("click", function (e) {
         if (ws.readyState == ws.OPEN) {
-            ws.send(JSON.stringify({
-                "message": "online",
-            }))
+			try {
+				ws.send(JSON.stringify({
+					"message": "online",
+				}))
+			}
+			catch {}
         }
     })
     
