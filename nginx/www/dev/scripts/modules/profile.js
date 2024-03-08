@@ -3,9 +3,12 @@ import { renderer } from "./graphic-engine.js"
 import { getSVG } from "./iconSVG.js"
 import { sendFriendRequest } from "./friendSidebar.js"
 
-export async function profile() {
+export async function profile(username=undefined) {
 	hidePong()
-	const username = await getUsername()
+	const hostname = window.location.pathname
+	if (!username)
+		username = await getUsername()
+	console.log(username)
 	let games ={}
 	if (username == "error") {
 		games = {"error": "Problem while fetching data"}
@@ -57,7 +60,7 @@ export function showSpinner() {
 }
 
 async function getGameHistoryData(username) {
-	const retval = await fetcher.get("/api/profile/games")
+	const retval = await fetcher.get(`/api/profile/games?user=${username}`)
 	let games = {}
 	if (retval.status >= 300) {
 		games["error"] = "bad request"

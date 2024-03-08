@@ -1,3 +1,5 @@
+import * as bootstrap from "../bootstrap/bootstrap.bundle.min.js";
+
 export function createAlert(type, message) {
 	let alert = document.createElement("div");
 	alert.classList.add("alert", `alert-${type}`, "alert-dismissible", "fade", "show");

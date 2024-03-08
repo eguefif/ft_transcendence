@@ -149,15 +149,14 @@ def get_games_history(games, user):
 @require_authorization
 def get_games(request):
     try:
-        username = get_token_user(request.headers["Authorization"])
+        username = request.query_params["user"]
     except Exception as e:
-        print("in request catch:", e)
-        return Response(retval, status.HTTP_400_BAD_REQUEST)
+        return Response({"error": "username not found"}, status.HTTP_400_BAD_REQUEST)
     try:
         user = User.objects.get(username=username)
     except Exception:
         retval = {}
-        retval = {"error": "no such username in database"}
+        retval = {"error": "username not found"}
         return Response(retval, status.HTTP_400_BAD_REQUEST)
     games = Game.objects.all().filter(Q(player1__id=user.id) |
                                     Q(player2__id=user.id)).order_by('-time')
