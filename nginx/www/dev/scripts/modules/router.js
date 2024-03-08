@@ -16,7 +16,7 @@ export function initRouter() {
 			{ path: "/", view: () => pongMenu() },
 			{ path: "/remotegame", view: () => initRemoteGame() },
 			{ path: "/localgame", view: () => initLocalGame() },
-			{ path: "/profile", view: () => stats() },
+			{ path: "/profile", view: () => profile() },
 			{ path: "/tournament", view: () => initTournament() },
 		]
 		

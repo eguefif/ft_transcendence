@@ -5,17 +5,14 @@ import { sendFriendRequest } from "./friendSidebar.js"
 
 export async function profile(username=undefined) {
 	hidePong()
-	const hostname = window.location.pathname
 	if (!username)
 		username = await getUsername()
-	console.log(username)
-	let games ={}
 	if (username == "error") {
-		games = {"error": "Problem while fetching data"}
+		const games = {"error": "Problem while fetching data"}
 		displayErrorProfile(games)
 	}
 	else {
-		games = await getGames(username)
+		const games = await getGames(username)
 		renderProfileStructure(username)
 		renderStats(games)
 		renderHistory(games)
@@ -42,9 +39,9 @@ export async function getUsername() {
 	return username
 }
 
-function getGames(username) {
+async function getGames(username) {
 	showSpinner()
-	let games = getGameHistoryData(username)
+	const games = await getGameHistoryData(username)
 	return games
 }
 
@@ -75,9 +72,9 @@ async function getGameHistoryData(username) {
 }
 
 function setStatusGame(games, username) {
-	for (const [key, game] of Object.entries(games)) {
-		const win = `<div class="p-1"><h5 class="text-success fs-3 fw-bold text-center">win</h5></div>`
-		const loss = `<div class="p-1"><h5 class="text-danger fs-3 fw-bold text-center">loss</h5></div>`
+	for (let [key, game] of Object.entries(games)) {
+		let win = `<div class="p-1"><h5 class="text-success fs-3 fw-bold text-center">win</h5></div>`
+		let loss = `<div class="p-1"><h5 class="text-danger fs-3 fw-bold text-center">loss</h5></div>`
 		const addFriend = getSVG.addFriendSVG.addFriend
 		if (!game["player2_add"])
 			game["player2_add"] = addFriend
@@ -87,14 +84,14 @@ function setStatusGame(games, username) {
 			game["player1_add"] = addFriend
 		else
 			game["player1_add"] = ""
-		if (game.player1 === username) {
-			if (game.score_player1 == 3)
+		if (game["player1"] === username) {
+			if (game["score_player1"] == 3)
 				game["status"] = win
-			else
+			else 
 				game["status"] = loss
 		}
 		else {
-			if (game.score_player2 == 3)
+			if (game["score_player2"] == 3)
 				game["status"] = win
 			else
 				game["status"] = loss
@@ -232,7 +229,10 @@ function renderHistory(games) {
 					<div class="col-2"><img src="${game.avatar1}" class="img-fluid rounded float-left"></div>
 					<div class="col-3">
 						<div class="d-flex flex-column">
-							<div class="p-1"><h5 class="text-primary fs-4 fw-bold text-center">${game.player1}${generateAddFriendLink(game.player1, game.player1_add)}</h5></div>
+							<div class="p-1">
+								<h5 class="text-primary user-link fs-4 fw-bold text-center">
+									<span>${game.player1}</span>${generateAddFriendLink(game.player1, game.player1_add)}
+								</h5></div>
 							<div class="p-1"><h5 class="text-secondary fs-3 fw-bold text-center">${game.score_player1}</h5></div>
 						</div>
 					</div>
@@ -244,7 +244,8 @@ function renderHistory(games) {
 					</div>
 					<div class="col-3">
 						<div class="d-flex flex-column">
-							<div class="p-1"><h5 class="text-primary fs-4 fw-bold text-center">${game.player2}${generateAddFriendLink(game.player2, game.player2_add)}</h5></div>
+							<div class="p-1"><h5 class="text-primary user-link fs-4 fw-bold text-center">
+							<span>${game.player2}</span>${generateAddFriendLink(game.player2, game.player2_add)}</h5></div>
 							<div class="p-1"><h5 class="text-secondary fs-3 fw-bold text-center">${game.score_player2}</h5></div>
 						</div>
 					</div>
@@ -260,7 +261,17 @@ function renderHistory(games) {
 		</div>
 		`
 	history.innerHTML = html
+	addUserLinks()
 	addEventListenerAddFriend()
+}
+
+function addUserLinks() {
+	const links = document.getElementById("match-history").querySelectorAll(".user-link")
+	links.forEach((link) => {
+		link.querySelector("span").addEventListener("click", () => {
+			profile(link.innerText.trim())
+		})
+	})
 }
 
 function generateAddFriendLink(name, svg) {
