@@ -137,7 +137,7 @@ class OnlineStatusConsumer(AsyncWebsocketConsumer):
     async def check_last_echo(self):
         while True:
             if self.authenticated and self.user and not self.playing:
-                if datetime.now() - self.last_echo > timedelta(minutes=5):
+                if datetime.now() - self.last_echo > timedelta(minutes=4):
                     channel_layer = get_channel_layer()
                     channels = await get_friends_channel_names(self.user) #notify friends
                     if not self.away:
