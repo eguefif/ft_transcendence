@@ -5,6 +5,8 @@ import { sendFriendRequest } from "./friendSidebar.js"
 
 export async function profile(username=undefined) {
 	hidePong()
+	let profile = document.getElementById("profileDiv")
+	profile.classList.remove("d-none")
 	if (!username)
 		username = await getUsername()
 	if (username == "error") {
@@ -150,7 +152,7 @@ function displayErrorProfile(games) {
 	let profile = document.getElementById("profileDiv")
 	profile.innerHTML = `
 		<div class="d-flex justify-content-center mt-5">
-			<h5 class="text-danger fs-2 fw-bold text-center">${games.error}</h5>
+			<h5 class="text-danger fs-4 fw-bold text-center">${games.error}</h5>
 		<div>
 	`
 }

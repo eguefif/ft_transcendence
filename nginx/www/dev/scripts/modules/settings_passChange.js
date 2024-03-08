@@ -1,3 +1,4 @@
+import * as bootstrap from "../bootstrap/bootstrap.bundle.min.js";
 import { fetcher } from "./fetcher.js"
 import { sendAlert, closeCovering } from "./utils.js"
 import { getSVG } from "./iconSVG.js"

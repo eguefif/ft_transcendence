@@ -32,8 +32,9 @@ export async function initTournament() {
 
 function hideProfile() {
 	let profile = document.getElementById("profileDiv")
-	if (profile != undefined)
-		profile.innerHTML = "" 
+	if (profile != undefined) {
+		profile.classList.add("d-none")
+	}
 }
 
 export async function initRemoteGame() {
