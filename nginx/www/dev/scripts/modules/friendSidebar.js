@@ -234,23 +234,24 @@ function connectWebsocket() {
 }
 
 async function updateSidebar() {
-    const friendBtn = document.getElementById("friendBtnNavbar")
-    const friendListContainer = document.querySelector("#friendListContainer")
-    const friendRequestContainer = document.querySelector("#friendRequestContainer")
-    
-    if (friendListContainer) {
-        const friendListContent = await getFriendList()
-        friendListContainer.innerHTML = friendListContent
-    }
+    if (await fetcher.isAuthenticated()) {
+        const friendListContainer = document.querySelector("#friendListContainer")
+        const friendRequestContainer = document.querySelector("#friendRequestContainer")
+        
+        if (friendListContainer) {
+            const friendListContent = await getFriendList()
+            friendListContainer.innerHTML = friendListContent
+        }
 
-    if (friendRequestContainer) {
-        const friendRequestContent = await getFriendRequests()
-        const sentRequestsContent = await getSentRequests()
-        friendRequestContainer.innerHTML = friendRequestContent + sentRequestsContent
-    }
+        if (friendRequestContainer) {
+            const friendRequestContent = await getFriendRequests()
+            const sentRequestsContent = await getSentRequests()
+            friendRequestContainer.innerHTML = friendRequestContent + sentRequestsContent
+        }
 
-    initDeleteEventListeners()
-    initFriendRequestsEventListeners()
+        initDeleteEventListeners()
+        initFriendRequestsEventListeners()
+    }
 }
 
 function initFriendRequestsEventListeners() {
@@ -268,7 +269,7 @@ function initFriendRequestsEventListeners() {
 				else if (action == "decline")
 					success = await declineFriendRequest(username)
 				if (success)
-					updateSidebar()
+					await updateSidebar()
 			})
 		})
 	}
@@ -283,7 +284,7 @@ function initDeleteEventListeners() {
 				const name = btn.name
 				const username = name.split('-')[1]
 				await deleteFriendship(username)
-				updateSidebar()
+				await updateSidebar()
 			})
 		})
 	}
@@ -323,6 +324,7 @@ export async function createSidebar() {
 			collapse.classList.remove("show")
 		});
 	}
+
     initFriendRequestsEventListeners()
     initDeleteEventListeners()
 }
