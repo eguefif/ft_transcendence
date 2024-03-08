@@ -32,7 +32,7 @@ export async function initTournament() {
 
 function hideProfile() {
 	let profile = document.getElementById("profileDiv")
-	if (profile != undefined) {
+	if (!profile) {
 		profile.classList.add("d-none")
 	}
 }
