@@ -14,9 +14,6 @@ export function authLogout()
 			fetcher.reset()
 			await refreshContent()
 		}
-		else {
-			console.log("Logout failed");
-		}
 	});
 }
 
