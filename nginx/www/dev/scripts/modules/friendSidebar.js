@@ -249,12 +249,12 @@ async function updateSidebar() {
             friendRequestContainer.innerHTML = friendRequestContent + sentRequestsContent
         }
 
-        await initDeleteEventListeners()
-        await initFriendRequestsEventListeners()
+        initDeleteEventListeners()
+        initFriendRequestsEventListeners()
     }
 }
 
-async function initFriendRequestsEventListeners() {
+function initFriendRequestsEventListeners() {
 	const inputs = document.querySelectorAll(".btn-friend-request")
 	if (inputs != undefined) {
 		inputs.forEach(input => {
@@ -275,7 +275,7 @@ async function initFriendRequestsEventListeners() {
 	}
 }
 
-async function initDeleteEventListeners() {
+function initDeleteEventListeners() {
 	const deleteButtons = document.querySelectorAll(".btn-delete-friend")
 	if (deleteButtons != undefined) {
 		deleteButtons.forEach(btn => {
@@ -324,9 +324,9 @@ export async function createSidebar() {
 			collapse.classList.remove("show")
 		});
 	}
-    
-    await initFriendRequestsEventListeners()
-    await initDeleteEventListeners()
+
+    initFriendRequestsEventListeners()
+    initDeleteEventListeners()
 }
 
 export async function initSidebar() {
