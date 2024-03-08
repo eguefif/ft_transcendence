@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<title>ft-Transcendence</title>
+	<link rel="stylesheet" href="styles/styles.css">
+	<!--
+	<script type="importmap">
+        {
+            "imports": {
+                "three": "https://unpkg.com/three@0.161.0/build/three.module.js",
+				"three/addons/": "https://unpkg.com/three@0.161.0/examples/jsm/"
+            }
+        }
+-->
+	<script type="importmap">
+        {
+            "imports": {
+                "three": "/node_modules/three/build/three.module.js",
+				"three/addons/": "/node_modules/three/examples/jsm/"
+            }
+        }
+	</script>
+	<script type="module" src="scripts/main.js" defer></script>
+	<link rel="icon" href="/images/favicon.ico" type="image/x-icon"/>
+</head>
+<body>
+	<div id="alert-container"></div>
+	<div id="friendCollapse"></div>
+	<div id="mainFrame" class="container text-center">
+		<div id="profileDiv"></div>
+		<div id="pongDiv" class="container"></div>
+	</div>
+	<canvas id="bracket"></canvas>
+</body>
+</html>
