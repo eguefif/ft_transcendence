@@ -133,11 +133,10 @@ function createFetcher() {
 			});
 			if (result.status == 401) {
 				if (redo && await token.refresh()) {
-					return await post(url, body, false);
+					return await get(url, false);
 				}
 				else
 					await refreshContent()
-				return await get(url, false);
 			}
 			return await extractData(result);
 		} catch {
