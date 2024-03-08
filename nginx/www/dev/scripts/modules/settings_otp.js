@@ -5,12 +5,7 @@ import { updatePassAuth } from "./settings.js"
 export function updateOtpToggle(data) {
 	const otpToggle = document.querySelector("#otp-toggle").querySelector(".user-dependent");
 	clearContent(otpToggle);
-	if (data.authType == 42) {
-		const text = document.createElement("span");
-		otpToggle.appendChild(text);
-		text.innerText = "2FA is not available (42 user)"
-	}
-	else {
+	if (data.authType != "42") {
 		const button = document.createElement("button");
 		otpToggle.appendChild(button);
 		button.classList.add("btn", "btn-primary");

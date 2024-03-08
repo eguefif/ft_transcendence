@@ -57,7 +57,7 @@ function addRegistrationForm() {
 function CreateModal(name) {
 	return `
 		<div class="modal fade" id="${name}Modal">
-			<div class="modal-dialog">
+			<div class="modal-dialog modal-dialog-centered">
 				<div class="modal-content bg-dark">
 					<div class="modal-header">
 						<h1 class="modal-title fs-5" id="${name}Label"></h1>

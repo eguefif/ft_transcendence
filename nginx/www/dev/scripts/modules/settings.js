@@ -17,7 +17,7 @@ function createModalSettings() {
 	settingsModal.classList.add("modal", "fade");
 	settingsModal.id = "settingsModal";
 	settingsModal.innerHTML = `
-		<div class="modal-dialog">
+		<div class="modal-dialog modal-dialog-centered">
 			<div class="modal-content bg-dark">
 				<div class="modal-header">
 					<h5 class="modal-title fs-5" id="profileLabel">Settings</h5>
