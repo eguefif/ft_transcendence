@@ -132,10 +132,11 @@ def get_games_history(games, user, currentUsername):
         entry["player2"] = player2
         entry["player1_add"] = True
         entry["player2_add"] = True
-        if currentUsername == player1:
-            entry["player2_add"] = is_friend(player2_user, player1_user)
-        else:
-            entry["player1_add"] = is_friend(player1_user, player2_user)
+        currentUser = User.objects.get(username=currentUsername)
+        if currentUsername != player1:
+            entry["player1_add"] = is_friend(player1_user, currentUser)
+        if currentUsername != player2:
+            entry["player2_add"] = is_friend(player2_user, currentUser)
         entry["score_player1"] = int(game.score_player1)
         entry["score_player2"] = int(game.score_player2)
         entry["time"] = game.time

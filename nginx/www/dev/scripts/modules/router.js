@@ -9,7 +9,6 @@ export function initRouter() {
 	let lastState
 
 	const navigateTo = url => {
-		console.log(lastState, url)
 		if (lastState != url) {
 			history.pushState(null, null, url)
 			lastState = url
