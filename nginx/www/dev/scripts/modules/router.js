@@ -6,8 +6,13 @@ import { profile } from "./profile.js"
 import { initTournament } from "./pong.js"
 
 export function initRouter() {
+	let lastState
+
 	const navigateTo = url => {
-		history.pushState(null, null, url)
+		if (lastState != url) {
+			history.pushState(null, null, url)
+			lastState = url
+		}
 		router()
 	}
 
