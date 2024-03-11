@@ -23,21 +23,40 @@ export class Tournament {
 	initEvent() {
 		const playerForm = document.getElementById("tournamentForm")
 		if (playerForm != undefined){
+			let inputs = playerForm.querySelectorAll("input")
+			inputs.forEach((input) => {
+				input.addEventListener("input", () => {
+					input.parentElement.querySelector(".validation-field").classList.remove("invalid-feedback")
+					input.parentElement.querySelector(".validation-field").innerText = ""
+				})
+			})
 			playerForm.addEventListener("submit", (e) => {
 				e.preventDefault()
-				this.players[1]= document.getElementById("player1Tournament").value
-				this.players[2]= document.getElementById("player2Tournament").value
-				this.players[3]= document.getElementById("player3Tournament").value
-				this.players[4]= document.getElementById("player4Tournament").value
+				let inputs = playerForm.querySelectorAll("input")
+				let valid = true
+				inputs.forEach((input) => {
+					if (input.value.length < 4 || input.value.length > 24) {
+						input.parentElement.querySelector(".validation-field").classList.add("invalid-feedback")
+						input.parentElement.querySelector(".validation-field").innerText = "Aliases should be between 4 to 24 characters"
+						valid = false
+					}
+					if (!this.checkUnicityUsername(input, inputs)) {
+						input.parentElement.querySelector(".validation-field").classList.add("invalid-feedback")
+						input.parentElement.querySelector(".validation-field").innerText = "Aliases should be unique"
+						valid = false
+					}
+				})
 				this.state="run"
-				if (this.checkFormsTournament()) {
+				if (valid) {
+					this.players[1] = document.getElementById("player1Tournament").value
+					this.players[2] = document.getElementById("player2Tournament").value
+					this.players[3] = document.getElementById("player3Tournament").value
+					this.players[4] = document.getElementById("player4Tournament").value
 					this.state = "semi"
 					this.displayBracket()
 				}
-				 playerForm.classList.add("was-validated")
 			}, { signal: this.eventRemover.signal }
 			)
-		}
 
 		document.addEventListener("keyup", (e) => {
 			if (e.code == "Space" && (this.state == "semi" || this.state == "final") && this.runninGame == false) {
@@ -46,6 +65,7 @@ export class Tournament {
 		}
 		}, { signal: this.eventRemover.signal }
 		)
+
 
 		document.addEventListener("endGame", (e) => {
 			this.runninGame = false
@@ -77,83 +97,17 @@ export class Tournament {
 				this.eventRemover.abort()
 			}, { signal: this.eventRemover.signal }
 			)
-		}
-	}
-
-	checkFormsTournament() {
-		if (!this.checkUnicityUsername()) {
-			this.warningUnicityUsername()
-			return false
-		}
-		if (this.players[1].length < 4 || this.players[1].length > 24) {
-			return false;
-		}
-		if (this.players[2].length < 4 || this.players[2].length > 24) {
-			document.getElementById("tournamentForm").classList.add("was-validated")
-			return false;
-		}
-		if (this.players[3].length < 4 || this.players[3].length > 24) {
-			document.getElementById("tournamentForm").classList.add("was-validated")
-			return false;
-		}
-		if (this.players[4].length < 4 || this.players[4].length > 24) {
-			document.getElementById("tournamentForm").classList.add("was-validated")
-			this.state = "end"
-			return false;
-		}
-		return true
-	}
-
-	checkUnicityUsername() {
-		if (this.players.filter(x => x == this.players[1]).length > 1)
-			return false
-		if (this.players.filter(x => x == this.players[2]).length > 1)
-			return false
-		if (this.players.filter(x => x == this.players[3]).length > 1)
-			return false
-		if (this.players.filter(x => x == this.players[4]).length > 1)
-			return false
-		return true
-	}
-
-	warningUnicityUsername() {
-		const errorDiv = document.getElementById("tournamentError")
-		if (errorDiv != undefined) {
-			errorDiv.innerHTML = `
-			<div class="text-danger">There are duplicate aliases.</div>
-			`
-		}
-		this.setInvalidInput()
-	}
-
-	async setInvalidInput() {
-		if (!await fetcher.isAuthenticated()) {
-			if (this.players.filter(x => x == this.players[1]).length > 1) {
-				const input = document.getElementById("player1Tournament")
-				const value = input.value
-				input.setCustomValidity(`${value} is a duplicate`)
-				input.reportValidity()
 			}
 		}
-		if (this.players.filter(x => x == this.players[2]).length > 1) {
-			const input = document.getElementById("player2Tournament")
-			const value = input.value
-			input.setCustomValidity(`${value} is a duplicate`)
-			input.reportValidity()
-		}
-		if (this.players.filter(x => x == this.players[3]).length > 1) {
-			const input = document.getElementById("player3Tournament")
-			const value = input.value
-			input.setCustomValidity(`${value} is a duplicate`)
-			input.reportValidity()
-		}
-		if (this.players.filter(x => x == this.players[4]).length > 1) {
-			const input = document.getElementById("player4Tournament")
-			const value = input.value
-			input.setCustomValidity(`${value} is a duplicate`)
-			input.reportValidity()
-		}
+	}
 
+	checkUnicityUsername(currentInput, inputs) {
+		let retval = true;
+		inputs.forEach((input) => {
+			if (input.id != currentInput.id && input.value == currentInput.value)
+				retval = false
+			})
+		return retval
 	}
 
 	runGame() {
@@ -218,7 +172,6 @@ export class Tournament {
 			const player1Input = document.getElementById("player1Tournament");
 			const username = await getUsername()
 			player1Input.value = username
-			player1Input.setAttribute("Readonly", "")
 		}
 	}
 
@@ -231,27 +184,23 @@ function tournamentForm() {
 			<h4 class="text-primary fs-3 fw-bold text-center">Enter aliases</h4>
 			<div class="mb-3">
 				<label for="player1Tournament" class="form-label text-secondary">Player1</label>
-				<input type="text" class="form-control" id="player1Tournament" required minlength=4 maxlength=24/>
-				<div class="invalid-feedback">Aliases are between 4 and 24 characters and are unique</div>
-				<div class="valid-feedback"></div>
+				<input type="text" class="form-control" id="player1Tournament"/>
+				<div class="validation-field"></div>
 			</div>
 			<div class="mb-3">
 				<label for="player2Tournament" class="form-label text-secondary">Player2</label>
-				<input type="text" class="form-control" id="player2Tournament" required minlength=4 maxlength=24>
-				<div class="valid-feedback"></div>
-				<div class="invalid-feedback">Aliases are between 4 and 24 characters and are unique</div>
+				<input type="text" class="form-control" id="player2Tournament"/>
+				<div class="validation-field"></div>
 			</div>
 			<div class="mb-3">
 				<label for="player3Tournament" class="form-label text-secondary">Player3</label>
-				<input type="text" class="form-control" id="player3Tournament" requried minlength=4 maxlength=24>
-				<div class="valid-feedback"></div>
-				<div class="invalid-feedback">Aliases are between 4 and 24 characters and are unique</div>
+				<input type="text" class="form-control" id="player3Tournament"/>
+				<div class="validation-field"></div>
 			</div>
 			<div class="mb-3">
 				<label for="player4Tournament" class="form-label text-secondary">Player4</label>
-				<input type="text" class="form-control" id="player4Tournament" required minlength=4 maxlength=24>
-				<div class="valid-feedback"></div>
-				<div class="invalid-feedback">Aliases are between 4 and 24 characters and are unique</div>
+				<input type="text" class="form-control" id="player4Tournament"/>
+				<div class="validation-field"></div>
 			</div>
 			<div id="tournamentError"></div>
 			<button type="submit" id="tournamentFormSubmit" class="btn btn-primary">Submit</button>
