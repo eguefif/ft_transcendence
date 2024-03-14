@@ -16,6 +16,7 @@ export class RemoteController {
 		this.localMsg= ""
 		this.stop = false
 		this.timeout = false
+		this.spacePressed = false
 	}
 
 	cleanup(){
@@ -74,7 +75,7 @@ export class RemoteController {
 				this.localMsg = "Connection lost"
 			}
 			else (this.timeout == true)
-				this.localMsg = "A player has left the game"
+				this.localMsg = "You waited too long to press space"
 		}
 
 		this.websocket.onmessage = (e) => {
@@ -113,7 +114,12 @@ export class RemoteController {
 						catch {}
 						this.state = "getready"
 					}
-					this.localMsg = "Press space to start the game"
+					if (!this.spacePressed) {
+						this.localMsg = "Press space to start the game"
+					}
+					else {
+						this.localMsg = "You're ready"
+					}
 					this.serverMsg = msg
 					break;
 				case "data":
@@ -153,6 +159,7 @@ export class RemoteController {
 				catch {}
 			}
 			if (e.code == 'Space' && this.state == "getready"){
+				this.spacePressed = true
 				try {
 					this.websocket.send("ready")
 				}
