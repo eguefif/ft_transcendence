@@ -287,7 +287,7 @@ function generateAddFriendLink(name, svg) {
 function addEventListenerAddFriend() {
 	const history = document.getElementById("history")
 	if (history != undefined)
-		history.addEventListener("click", eventAddFriend);
+		history.addEventListener("click", async () => {await eventAddFriend()});
 }
 
 async function eventAddFriend(e) {

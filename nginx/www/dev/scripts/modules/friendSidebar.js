@@ -127,11 +127,9 @@ async function getFriendRequests() {
 }
 
 async function getFriendList() {
-	if (!fetcher.isAuthenticated())
-		return ""
-    const res = await fetcher.get("api/get_friend_list")
+    const res = await fetcher.get("api/get_friend_list/")
 
-    if (res.status != 200)
+    if (!(res.status >= 200 && res.status < 300))
         return ""
 
     let friendsListElements = ""
