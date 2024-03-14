@@ -280,7 +280,7 @@ function generateAddFriendLink(name, svg) {
 	if (svg == "")
 		return ``
 	return `
-		<a href="" value="${name}" class="btn btn-primary mx-1" add-friend-btn>${svg}</a>
+		<a href="" value="${name}" class="btn btn-primary mx-1" addfriendbtn>${svg}</a>
 	`
 }
 
@@ -291,10 +291,10 @@ function addEventListenerAddFriend() {
 }
 
 async function eventAddFriend(e) {
-	if (e.target.matches("[add-friend-btn]")) {
+	if (e.target.matches("[addfriendbtn]")) {
 		e.preventDefault()
 		const username = e.target.getAttribute("value")
-		e.target.remove()
+		e.target.remove();
 		await sendFriendRequest(username)
 	}
 }
