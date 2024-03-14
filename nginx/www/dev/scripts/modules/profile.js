@@ -280,20 +280,21 @@ function generateAddFriendLink(name, svg) {
 	if (svg == "")
 		return ``
 	return `
-		<a href="" value="${name}" class="btn btn-primary mx-1" addFriendBtn>${svg}</a>
+		<a href="" value="${name}" class="btn btn-primary mx-1" add-friend-btn>${svg}</a>
 	`
 }
 
 function addEventListenerAddFriend() {
 	const history = document.getElementById("history")
 	if (history != undefined)
-		history.addEventListener("click", async () => {await eventAddFriend()});
+		history.addEventListener("click", async (e) => {await eventAddFriend(e)});
 }
 
 async function eventAddFriend(e) {
-	if (e.target.matches("[addFriendBtn]")) {
+	if (e.target.matches("[add-friend-btn]")) {
 		e.preventDefault()
 		const username = e.target.getAttribute("value")
+		e.target.remove()
 		await sendFriendRequest(username)
 	}
 }
