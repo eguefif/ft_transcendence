@@ -62,7 +62,7 @@ export class RemoteController {
 		}
 
 		this.websocket.addEventListener("open", async (e) => {
-			fetcher.sendToken(this.websocket)
+			await fetcher.sendToken(this.websocket)
 		} 
 		)
 

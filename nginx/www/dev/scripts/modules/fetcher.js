@@ -1,5 +1,5 @@
 import * as bootstrap from "../bootstrap/bootstrap.bundle.min.js";
-import { createAlert } from "./utils.js"
+import { createAlert, sleep } from "./utils.js"
 import { refreshContent } from "./refreshContent.js"
 
 function createFetcher() {
@@ -10,6 +10,7 @@ function createFetcher() {
 	const token = (function () {
 		let value = "";
 		let expires = 0;
+		let refreshing = false;
 
 		const get = () => {
 			return value;
@@ -30,6 +31,15 @@ function createFetcher() {
 		}
 
 		const refresh = async () => {
+			let maxHang = 0;
+			while (refreshing) {
+				await sleep(10);
+				maxHang += 10;
+				if (maxHang >= 5000) {
+					return false
+				}
+			}
+			refreshing = true;
 			if (
 				!localStorage.getItem("refreshExpiry") ||
 				localStorage.getItem("refreshExpiry") <= Date.now()
@@ -37,11 +47,12 @@ function createFetcher() {
 				localStorage.removeItem("refreshExpiry");
 				value = "";
 				expires = 0;
+				refreshing = false;
 				return false;
 			}
 			try {
 				const refreshExpiry = Date.now() + refreshDuration;
-				expires = Date.now() + accessDuration;
+				let newExpiry = Date.now() + accessDuration;
 				const result = await fetch("/api/auth/refresh", {
 					method: "POST",
 					credentials: "same-origin",
@@ -51,16 +62,20 @@ function createFetcher() {
 					const data = await result.json();
 					value = data.accessToken;
 					localStorage.setItem("refreshExpiry", `${refreshExpiry}`);
+					expires = newExpiry;
+					refreshing = false;
 					return true;
 				} else {
 					value = "";
 					expires = 0;
 					localStorage.removeItem("refreshExpiry");
+					refreshing = false;
 					return false;
 				}
 			} catch {
 				value = "";
 				expires = 0;
+				refreshing = false;
 				return false;
 			}
 		};
@@ -116,7 +131,10 @@ function createFetcher() {
 	}
 
 	const isAuthenticated = async () => {
-		return token.isValid() ? true : await token.refresh();
+		if (token.isValid())
+			return true;
+		let retval = await token.refresh();
+		return retval;
 	};
 
 	const setAccess = (key) => {

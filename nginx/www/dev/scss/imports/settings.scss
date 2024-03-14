@@ -71,10 +71,16 @@
       align-items: center;
       justify-content: center;
       #profile-info, #pass-auth {
+        max-width: 100%;
         .fs-5 {
           color: $light;
         }
+        > div {
+          max-width: 100%;
+        }
         span {
+          overflow-wrap: break-word;
+          text-wrap: wrap;
           color: $light-faded;
           &.user-dependent {
             min-height: 1.25rem;
