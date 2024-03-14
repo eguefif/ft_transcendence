@@ -43,7 +43,10 @@ export function initRouter() {
 		await match.route.view()
 	}
 
-	window.addEventListener("popstate", router)
+	window.addEventListener("popstate", () => {
+		lastState = ""
+		router()
+	})
 
 	document.addEventListener("click", e => {
 		if (e.target.matches("[data-link]")) {
