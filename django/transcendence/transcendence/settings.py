@@ -58,11 +58,13 @@ INSTALLED_APPS = [
 
 ASGI_APPLICATION = 'transcendence.asgi.application'
 
-# TODO CHANGER pour un vrai backend en prod
 CHANNEL_LAYERS = {
     "default": {
-        "BACKEND": "channels.layers.InMemoryChannelLayer"
-    }
+        "BACKEND": "channels_redis.core.RedisChannelLayer",
+        "CONFIG": {
+            "hosts": [("redis", 6379)],
+            }
+        }
 }
 
 MIDDLEWARE = [
