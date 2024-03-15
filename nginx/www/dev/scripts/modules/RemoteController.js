@@ -79,7 +79,7 @@ export class RemoteController {
 			else (this.timeout == true && this.timeoutOpp == false)
 				this.localMsg = "You waited too long to press space"
 			else (this.timeout == true && this.timeoutOpp = true)
-				this.localMsg = "You're opponent has left the game""
+				this.localMsg = "Your opponent has left the game""
 		}
 
 		this.websocket.onmessage = (e) => {
@@ -99,7 +99,7 @@ export class RemoteController {
 					break
 				case "timeoutOpponent":
 					this.state = "ending"
-					this.timeout = false
+					this.timeout = true
 					this.timeoutOpp = true
 					break
 				case "wait":
