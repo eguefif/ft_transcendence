@@ -176,9 +176,21 @@ function connectWebsocket() {
 	ws.onopen = async function(e) {
 		await fetcher.sendToken(ws)
 		try {
-			ws.send(JSON.stringify({
-				"message": "online",
-			}))
+            if (ws.readyState == ws.OPEN)
+            {
+                window.addEventListener("click", function (e) {
+                    try {
+                        ws.send(JSON.stringify({
+                            "message": "online",
+                        }))
+                    }
+                    catch {}
+                })
+
+                ws.send(JSON.stringify({
+                    "message": "online",
+                }))
+            }
 		}
 		catch {}
 	}
@@ -337,18 +349,7 @@ export async function initSidebar() {
         return
     }
 
-    let ws = connectWebsocket()
+    connectWebsocket()
 
-    window.addEventListener("click", function (e) {
-        if (ws.readyState == ws.OPEN) {
-			try {
-				ws.send(JSON.stringify({
-					"message": "online",
-				}))
-			}
-			catch {}
-        }
-    })
-    
     await createSidebar()
 }
