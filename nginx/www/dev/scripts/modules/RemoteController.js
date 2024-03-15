@@ -72,6 +72,7 @@ export class RemoteController {
 		}
 
 		this.websocket.onclose = (e) => {
+			this.running = false
 			if (this.timeout == false && this.timeoutOpp == false) {
 				this.localMsg = "Connection lost"
 			}
