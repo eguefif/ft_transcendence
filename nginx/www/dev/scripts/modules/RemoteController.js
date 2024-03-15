@@ -16,7 +16,6 @@ export class RemoteController {
 		this.localMsg= ""
 		this.stop = false
 		this.timeout = false
-		this.timeoutOpp = false
 		this.spacePressed = false
 	}
 
@@ -72,14 +71,11 @@ export class RemoteController {
 		}
 
 		this.websocket.onclose = (e) => {
-			this.running = false
-			if (this.timeout == false && this.timeoutOpp == false) {
-				this.localMsg = "Connection lost"
+			if (this.timeout == false) {
+				this.localMsg = "A player has left the game"
 			}
-			else (this.timeout == true && this.timeoutOpp == false)
+			else 
 				this.localMsg = "You waited too long to press space"
-			else (this.timeout == true && this.timeoutOpp = true)
-				this.localMsg = "Your opponent has left the game""
 		}
 
 		this.websocket.onmessage = (e) => {
@@ -100,7 +96,6 @@ export class RemoteController {
 				case "timeoutOpponent":
 					this.state = "ending"
 					this.timeout = true
-					this.timeoutOpp = true
 					break
 				case "wait":
 					try {
@@ -139,6 +134,10 @@ export class RemoteController {
 		}
 
 		document.addEventListener("keydown", (e) => {
+			if (this.websocket == undefined)
+				return 
+			if (this.websocket.readyState == 2 || this.websocket.readyState == 3)
+				return
 			if (this.state == "running") {
 				if (e.key == 'ArrowDown') {
 					try {
@@ -156,6 +155,10 @@ export class RemoteController {
 		)
 
 		document.addEventListener("keyup", (e) => {
+			if (this.websocket == undefined)
+				return 
+			if (this.websocket.readyState == 2 || this.websocket.readyState == 3)
+				return
 			if (this.state == "running") {
 				try {
 					this.websocket.send("stop")
