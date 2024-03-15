@@ -16,6 +16,8 @@ services:
     restart: on-failure
     volumes:
       - nginx-vol:/etc/letsencrypt
+    volumes:
+      - django-vol:/var/django/
 
   django:
     container_name: django

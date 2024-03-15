@@ -14,6 +14,8 @@ services:
     networks:
       - transcendence-net
     restart: on-failure
+    volumes:
+      - django-vol:/var/django/
 
   django:
     container_name: django
