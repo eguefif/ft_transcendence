@@ -145,21 +145,27 @@ function connectWebsocket() {
     let ws = new WebSocket(`wss://${hostname}/online_status/`)
 
 	document.addEventListener("startGame", (e) => {
-        if (ws.readyState == ws.OPEN) {
-			try {
-		    	ws.send(JSON.stringify({"message": "Game started"}))
-			}
-			catch {}
-		}
+        if (ws == undefined)
+            return 
+        if (ws.readyState == 2 || ws.readyState == 3)
+            return 
+        try {
+            ws.send(JSON.stringify({"message": "Game started"}))
+        }
+        catch {}
+		
 	})
 
 	document.addEventListener("endGame", (e) => {
-        if (ws.readyState == ws.OPEN) {
-			try {
-		    	ws.send(JSON.stringify({"message": "Game ended"}))
-			}
-			catch {}
-		}
+        if (ws == undefined)
+            return 
+        if (ws.readyState == 2 || ws.readyState == 3)
+            return 
+        try {
+            ws.send(JSON.stringify({"message": "Game ended"}))
+        }
+        catch {}
+		
 	})
 
 	const logoutBtn = document.getElementById("logoutButton");
@@ -174,23 +180,34 @@ function connectWebsocket() {
 	}
 
 	ws.onopen = async function(e) {
+        if (ws == undefined)
+            return 
+        if (ws.readyState == 2 || ws.readyState == 3)
+            return 
 		await fetcher.sendToken(ws)
 		try {
-            if (ws.readyState == ws.OPEN)
-            {
-                window.addEventListener("click", function (e) {
-                    try {
-                        ws.send(JSON.stringify({
-                            "message": "online",
-                        }))
-                    }
-                    catch {}
-                })
+            window.addEventListener("click", function (e) {
+                if (ws == undefined)
+                    return 
+                if (ws.readyState == 2 || ws.readyState == 3)
+                    return 
+                try {
+                    ws.send(JSON.stringify({
+                        "message": "online",
+                    }))
+                }
+                catch {}
+            })
 
-                ws.send(JSON.stringify({
-                    "message": "online",
-                }))
-            }
+            if (ws == undefined)
+                return 
+            if (ws.readyState == 2 || ws.readyState == 3)
+                return 
+        
+            ws.send(JSON.stringify({
+                "message": "online",
+            }))
+            
 		}
 		catch {}
 	}
@@ -216,6 +233,10 @@ function connectWebsocket() {
 
         if (e.data == 'server:Game started')
         {
+            if (ws == undefined)
+                return 
+            if (ws.readyState == 2 || ws.readyState == 3)
+                return 
 			try {
 				ws.send(JSON.stringify({
 					"message": "Game started"
@@ -223,7 +244,11 @@ function connectWebsocket() {
 			}
 			catch {}
         } else if (e.data == 'server:Game ended') {
-			try {
+			if (ws == undefined)
+                return 
+            if (ws.readyState == 2 || ws.readyState == 3)
+                return 
+            try {
 				ws.send(JSON.stringify({
 					"message": "Game ended"
 				}))
