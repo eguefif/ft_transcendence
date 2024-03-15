@@ -72,9 +72,9 @@ export class RemoteController {
 
 		this.websocket.onclose = (e) => {
 			if (this.timeout == false) {
-				this.localMsg = "Connection lost"
+				this.localMsg = "A player has left the game"
 			}
-			else (this.timeout == true)
+			else 
 				this.localMsg = "You waited too long to press space"
 		}
 
@@ -133,8 +133,11 @@ export class RemoteController {
 			}
 		}
 
-
 		document.addEventListener("keydown", (e) => {
+			if (this.websocket == undefined)
+				return 
+			if (this.websocket.readyState == 2 || this.websocket.readyState == 3)
+				return
 			if (this.state == "running") {
 				if (e.key == 'ArrowDown') {
 					try {
@@ -152,6 +155,10 @@ export class RemoteController {
 		)
 
 		document.addEventListener("keyup", (e) => {
+			if (this.websocket == undefined)
+				return 
+			if (this.websocket.readyState == 2 || this.websocket.readyState == 3)
+				return
 			if (this.state == "running") {
 				try {
 					this.websocket.send("stop")
